@@ -1,2 +1,2 @@
 # serk-visuals
-serk visuals
+serk visuals - MEAN PROJECT

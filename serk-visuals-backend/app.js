@@ -3,6 +3,10 @@ const cors = require("cors");
 require("dotenv").config({ path: require('path').join(__dirname, './config/.env') }); // Load environment variables from .env file
 const myDatabaseMongoServer = require("./config/database");
 
+// Import routes
+const bookingRoutes = require("./routes/booking_routes");
+
+
 const app = express();
 
 // Middleware
@@ -12,7 +16,8 @@ app.use(express.json()); // move before routes
 // Connect to the database
 myDatabaseMongoServer();
 
-// Routes (add later)
+// Routes 
+app.use("/api/bookings", bookingRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 3000;

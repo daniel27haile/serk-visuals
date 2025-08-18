@@ -1,0 +1,49 @@
+.wrap { max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+h2 { margin: 0 0 1rem; font-size: clamp(1.5rem, 1.1rem + 1.5vw, 2rem); }
+
+.card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(173, 31, 31, 0.04);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.grid .full { grid-column: 1 / -1; }
+
+label { display: grid; gap: .375rem; font-size: .95rem; }
+input, select, textarea {
+  width: 100%;
+  padding: .65rem .75rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+//   color: #0f172a;
+  color: #e5e9f0;
+}
+
+button {
+  margin-top: 1rem;
+  padding: .65rem 1rem;
+  border-radius: 10px;
+  border: 0;
+  font-weight: 600;
+  background: #06b6d4; color: #06202a;
+  cursor: pointer;
+}
+
+
+.ok { color: #16a34a; margin-top: .75rem; }
+.err { color: #dc2626; margin-top: .75rem; }
+
+@media (prefers-color-scheme: dark) {
+  .card { background: #0b1220; border-color: #1f2a44; }
+  input, select, textarea { background: #0f172a; color: #e5e7eb; border-color: #334155; }
+}
+
+

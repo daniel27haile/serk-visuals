@@ -26,14 +26,17 @@ export const routes: Routes = [
     path: 'book',
     loadComponent: () =>
       import('./pages/booking/booking.component').then(
-        (m) => m.BookingComponent
+        (m) => m.BookingFormPage
       ),
   },
 
   {
-path: 'contact-us',
-loadComponent: ()=> import("./pages/contact-us/contact-us.component").then(m => m.ContactUsComponent)
-  }, 
+    path: 'contact-us',
+    loadComponent: () =>
+      import('./pages/contact-us/contact-us.component').then(
+        (m) => m.ContactUsComponent
+      ),
+  },
 
   {
     path: 'admin',

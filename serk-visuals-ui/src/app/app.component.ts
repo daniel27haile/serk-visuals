@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { BookingComponent } from "./pages/booking/booking.component";
+import { BookingFormPage } from './pages/booking/booking.component';
 import { RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, BookingComponent, RouterLink],
+  imports: [RouterOutlet, BookingFormPage, RouterLink],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

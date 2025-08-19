@@ -1,71 +1,64 @@
 import { Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { BookingService } from '../../shared/services/booking.service';
-import { BookingType } from '../../shared/models/booking.model';
+import { BookingsService } from "../../shared/services/booking.service";
+import { BookingType } from "../../shared/models/booking.model";
 
 @Component({
-  standalone: true,
   selector: 'app-booking-form',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './booking.component.html',
+  templateUrl: "./booking.component.html",
   styleUrls: ['./booking.component.scss'],
 })
-export class BookingComponent {
+export class BookingFormPage {
   private fb = inject(FormBuilder);
-  private api = inject(BookingService);
+  private api = inject(BookingsService);
 
-  // enum options (matches schema)
-  types: BookingType[] = ['wedding', 'event', 'portrait', 'product', 'video'];
+  // enums aligned with backend
+  readonly types: BookingType[] = [
+    'wedding',
+    'event',
+    'portrait',
+    'product',
+    'video',
+  ];
 
-  // ui state as signals (so template's submitting() / submitted() / err() work)
   submitting = signal(false);
   submitted = signal(false);
   err = signal<string | null>(null);
 
-  // form controls (match schema fields)
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    phone: [''], // schema is Number; we’ll convert on submit
-    type: ['wedding' as BookingType, Validators.required],
-    date: ['', Validators.required], // yyyy-mm-dd from <input type="date">
+    phone: [''], // string in UI; convert to number before send
+    type: ['event' as BookingType],
+    date: [''], // yyyy-MM-dd from <input type="date">
     message: [''],
+    // status not needed: backend defaults to "new"
   });
 
-  submit() {
-    this.err.set(null);
-    this.submitted.set(false);
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
+  submit(): void {
+    if (this.form.invalid || this.submitting()) return;
     this.submitting.set(true);
+    this.err.set(null);
+
+    // Normalize fields expected by backend
     const v = this.form.value;
-
-    // Convert phone -> Number (schema expects Number); strip non-digits first
-    const phoneNum =
-      v.phone && String(v.phone).trim() !== ''
-        ? Number(String(v.phone).replace(/[^\d]/g, ''))
-        : undefined;
-
-    // Send date as "YYYY-MM-DD" (your controller normalizes to Date)
     const payload = {
       name: v.name!,
       email: v.email!,
-      phone: phoneNum, // Number | undefined
-      type: v.type!, // BookingType
-      date: v.date!, // string (server will new Date(...))
-      message: v.message || '',
-      // status omitted -> defaults to 'new' on server
+      phone: v.phone ? Number(v.phone) : undefined, // backend expects Number
+      type: v.type ?? undefined,
+      date: v.date ? new Date(v.date).toISOString() : undefined,
+      message: v.message ?? undefined,
     };
 
-    this.api.create(payload as any).subscribe({
+    this.api.create(payload).subscribe({
       next: () => {
         this.submitting.set(false);
         this.submitted.set(true);
-        this.form.reset({ type: 'wedding' });
+        this.form.reset({ type: 'event' }); // reset to defaults
       },
       error: (e) => {
         this.submitting.set(false);

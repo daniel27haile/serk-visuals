@@ -8,7 +8,8 @@ const pick = (obj, keys) =>
     Object.entries(obj || {}).filter(([k]) => keys.includes(k))
   );
 
-exports.list = async (req, res) => {
+  //localhost:3500/api/bookings/list
+exports.getAll = async (req, res) => {
   try {
     const { status, type, q, page = 1, limit = 20 } = req.query;
     const filter = {};

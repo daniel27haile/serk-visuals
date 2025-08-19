@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
-    path: '',
+    path: 'landing-page',
     loadComponent: () =>
       import('./pages/landing-page/landing-page.component').then(
         (m) => m.LandingPageComponent
@@ -11,8 +11,8 @@ export const routes: Routes = [
   {
     path: 'gallery',
     loadComponent: () =>
-      import('./pages/contact-us/contact-us.component').then(
-        (m) => m.ContactUsComponent
+      import('./pages/gallery/gallery.component').then(
+        (m) => m.GalleryComponent
       ),
   },
   {
@@ -26,14 +26,17 @@ export const routes: Routes = [
     path: 'book',
     loadComponent: () =>
       import('./pages/booking/booking.component').then(
-        (m) => m.BookingComponent
+        (m) => m.BookingFormPage
       ),
   },
 
   {
-path: 'contact-us',
-loadComponent: ()=> import("./pages/contact-us/contact-us.component").then(m => m.ContactUsComponent)
-  }, 
+    path: 'contact-us',
+    loadComponent: () =>
+      import('./pages/contact-us/contact-us.component').then(
+        (m) => m.ContactUsComponent
+      ),
+  },
 
   {
     path: 'admin',

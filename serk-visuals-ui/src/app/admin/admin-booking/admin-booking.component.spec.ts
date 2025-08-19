@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BookingFormPage } from './booking.component';
+import { AdminBookingComponent } from './admin-booking.component';
 
 describe('BookingComponent', () => {
-  let component: BookingFormPage;
-  let fixture: ComponentFixture<BookingFormPage>;
+  let component: AdminBookingComponent;
+  let fixture: ComponentFixture<AdminBookingComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BookingFormPage],
+      imports: [AdminBookingComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BookingFormPage);
+    fixture = TestBed.createComponent(AdminBookingComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

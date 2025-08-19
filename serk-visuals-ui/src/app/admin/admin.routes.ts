@@ -13,11 +13,11 @@ export const ADMIN_ROUTES: Routes = [
         (m) => m.DashboardComponent
       ),
   },
-  {
-    path: 'bookings',
-    loadComponent: () =>
-      import('./admin-booking/booking.component').then((m) => m.BookingComponent),
-  },
+//   {
+//     path: 'bookings',
+//     loadComponent: () =>
+//       import('./admin-booking/booking.component').then((m) => m.BookingComponent),
+//   },
   {
     path: 'media',
     loadComponent: () =>

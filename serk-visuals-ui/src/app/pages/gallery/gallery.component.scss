@@ -1,0 +1,47 @@
+ .tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin: 0.5rem 0 1rem;
+        flex-wrap: wrap;
+      }
+      .tabs button {
+        padding: 0.4rem 0.7rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #fff;
+        cursor: pointer;
+      }
+      .tabs .is-active {
+        background: #06b6d4;
+        color: #06202a;
+        border-color: #06b6d4;
+      }
+      .gallery__grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      }
+      .gallery__item {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .gallery__item img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+      }
+      .gallery__item h4 {
+        margin: 0.6rem 0.8rem 0;
+      }
+      .gallery__item .muted {
+        color: #64748b;
+        margin: 0.2rem 0.8rem 0.8rem;
+        font-size: 0.9rem;
+      }
+      .hint {
+        color: #64748b;
+        margin-top: 0.6rem;
+      }

@@ -11,7 +11,7 @@ const BookingSchema = new Schema(
     phone: Number,
     type: {
       type: String,
-      enum: ["wedding", "event", "portrait", "product", "video"],
+      enum: ["wedding", "event", "birthday", "product", "personal", "other"],
     },
     date: Date,
     message: String,

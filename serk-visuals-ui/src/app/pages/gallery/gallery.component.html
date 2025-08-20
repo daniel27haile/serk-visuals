@@ -1,1 +1,31 @@
-<p>gallery works!</p>
+<section class="gallery">
+  <h1>Gallery</h1>
+
+  <div class="tabs">
+    <button
+      *ngFor="let a of albums"
+      [class.is-active]="album() === a"
+      (click)="setAlbum(a)">
+      {{ a }}
+    </button>
+    <button [class.is-active]="!album()" (click)="setAlbum('')">all</button>
+  </div>
+
+  <div class="gallery__grid">
+    <article
+      class="gallery__item"
+      *ngFor="let it of (items() ?? []); trackBy: trackById">
+      <img [src]="it.thumbnail || it.url" [alt]="it.title" loading="lazy" />
+      <h4>{{ it.title }}</h4>
+      <p class="muted">
+        {{ it.album }}
+        <ng-container *ngIf="(it.tags?.length ?? 0) > 0">
+          · {{ it.tags!.join(', ') }}
+        </ng-container>
+      </p>
+    </article>
+  </div>
+
+  <p class="hint" *ngIf="err()">{{ err() }}</p>
+  <p class="hint" *ngIf="!err() && ((items()?.length ?? 0) === 0)">No items.</p>
+</section>

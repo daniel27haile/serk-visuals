@@ -8,7 +8,7 @@ import { BookingType } from "../../shared/models/booking.model";
   selector: 'app-booking-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: "./booking.component.html",
+  templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.scss'],
 })
 export class BookingFormPage {
@@ -19,9 +19,10 @@ export class BookingFormPage {
   readonly types: BookingType[] = [
     'wedding',
     'event',
-    'portrait',
+    'birthday',
     'product',
-    'video',
+    'personal',
+    'other',
   ];
 
   submitting = signal(false);

@@ -1,9 +1,5 @@
 export type BookingType =
-  | 'wedding'
-  | 'event'
-  | 'portrait'
-  | 'product'
-  | 'video';
+ 'wedding' | 'event' | 'birthday' | 'product' | 'personal' | 'other';
 export type BookingStatus = 'new' | 'confirmed' | 'completed' | 'cancelled';
 
 export interface Booking {

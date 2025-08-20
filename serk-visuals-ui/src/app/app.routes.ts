@@ -12,7 +12,7 @@ export const routes: Routes = [
     path: 'gallery',
     loadComponent: () =>
       import('./pages/gallery/gallery.component').then(
-        (m) => m.GalleryComponent
+        (m) => m.GalleryPage
       ),
   },
   {

@@ -1,1 +1,48 @@
-<p>admin-layouts works!</p>
+<div class="admin-layout" [class.drawer-open]="sideOpen">
+  <!-- Off‑canvas sidebar -->
+  <aside
+    class="sidebar"
+    [class.sidebar--open]="sideOpen"
+    role="navigation"
+    aria-label="Admin navigation"
+  >
+    <h2 class="logo">Admin Panel</h2>
+    <nav class="sidebar__nav">
+      <a [routerLink]="['/admin/dashboard']" routerLinkActive="is-active">Dashboard</a>
+      <a [routerLink]="['/admin/bookings']" routerLinkActive="is-active">Bookings</a>
+      <a [routerLink]="['/admin/users']" routerLinkActive="is-active">Users</a>
+      <a [routerLink]="['/admin/projects']" routerLinkActive="is-active">Projects</a>
+      <a [routerLink]="['/admin/settings']" routerLinkActive="is-active">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Backdrop for mobile -->
+  <button
+    class="backdrop"
+    *ngIf="sideOpen"
+    (click)="sideOpen = false"
+    aria-label="Close menu"
+  ></button>
+
+  <section class="admin-content">
+    <header class="topbar">
+      <button
+        class="menu-btn"
+        (click)="sideOpen = !sideOpen"
+        aria-label="Toggle menu"
+        [attr.aria-expanded]="sideOpen"
+        aria-controls="sidebar"
+      >
+        <span class="bar"></span>
+      </button>
+
+      <p class="welcome">Welcome, Admin</p>
+
+      <button class="logout-btn">Logout</button>
+    </header>
+
+    <main class="main-area">
+      <router-outlet></router-outlet>
+    </main>
+  </section>
+</div>

@@ -2,11 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Album, GalleryItem } from '../models/gallery.model';
+import { environment } from '../../../../environment/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class GalleryService {
   private http = inject(HttpClient);
-  private base = '/api/gallery';
+  private base = `${environment.apiBaseUrl}/gallery`;
 
   list(opts?: {
     album?: Album;

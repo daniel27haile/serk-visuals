@@ -1,11 +1,8 @@
 import { Routes } from '@angular/router';
 
 export const ADMIN_ROUTES: Routes = [
-  {
-    path: '',
-    loadComponent: () =>
-      import("./admin-login/admin-login.component").then(m => m.AdminLoginComponent),
-  },
+  { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+
   {
     path: 'dashboard',
     loadComponent: () =>
@@ -13,14 +10,26 @@ export const ADMIN_ROUTES: Routes = [
         (m) => m.DashboardComponent
       ),
   },
-//   {
-//     path: 'bookings',
-//     loadComponent: () =>
-//       import('./admin-booking/booking.component').then((m) => m.BookingComponent),
-//   },
   {
-    path: 'media',
+    path: 'bookings',
     loadComponent: () =>
-      import('./media/media.component').then((m) => m.MediaComponent),
+      import('./admin-booking/admin-booking.component').then(
+        (m) => m.AdminBookingComponent
+      ),
+  },
+  {
+    path: 'users',
+    loadComponent: () =>
+      import('./users/users.component').then((m) => m.UsersComponent),
+  },
+  {
+    path: 'projects',
+    loadComponent: () =>
+      import('./projects/projects.component').then((m) => m.ProjectsComponent),
+  },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./settings/settings.component').then((m) => m.SettingsComponent),
   },
 ];

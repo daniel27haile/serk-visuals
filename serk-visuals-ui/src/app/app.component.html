@@ -1,25 +1,4 @@
-<div>
-  <div class="container">
-    <h1>Welcome to Serk Visuals</h1>
-    <p>Your one-stop solution for visual content creation.</p>
-  </div>
 
-  <app-booking-form></app-booking-form>
-
-  <div class="content">
-     <nav style="display:flex;gap:1rem;padding:1rem 0;">
-  <a [routerLink]="['/']" routerLinkActive="active">Home</a>
-  <a [routerLink]="['/gallery']" routerLinkActive="active">Gallery</a>
-  <a [routerLink]="['/contact-us']" routerLinkActive="active">Contact us</a>
-  <a [routerLink]="['/about-us']" routerLinkActive="active">About Us</a>
-  <a [routerLink]="['/landing-page']" routerLinkActive="active">landing-page</a>
-  <a [routerLink]="['/admin']" routerLinkActive="active">Admin Page</a>
-    </nav>
-</div>
-
-  <router-outlet></router-outlet>
- <div class="footer">
-    <p>&copy; 2025 SerkVisuals. All rights reserved.</p>
-  </div>
-
-</div>
+<!-- App should only host the router -->
+ 
+<router-outlet></router-outlet>

@@ -1,13 +1,13 @@
-  <header class="site-header header">
-    <div class="container header__row">
-      <a routerLink="/" class="logo">SERK Visuals</a>
-      <nav class="nav">
-        <a routerLink="/" routerLinkActive="is-active">Home</a>
-        <a routerLink="/gallery" routerLinkActive="is-active">Gallery</a>
-        <a routerLink="/booking" routerLinkActive="is-active">Booking</a>
-        <a routerLink="/contact" routerLinkActive="is-active">Contact</a>
-        <a routerLink="/about" routerLinkActive="is-active">About</a>
-        <a routerLink="/admin/login" class="btn btn--ghost">Admin</a>
-      </nav>
-    </div>
-  </header>
+ <header class="site-header header">
+  <div class="container header__row">
+    <a routerLink="/" class="logo">Serk Visuals</a>
+    <nav class="nav">
+      <a [routerLink]="['/']" routerLinkActive="is-active">Home</a>
+      <a [routerLink]="['/gallery']" routerLinkActive="is-active">Gallery</a>
+      <a [routerLink]="['/booking']" routerLinkActive="is-active">Booking</a>
+      <a [routerLink]="['/contact-us']" routerLinkActive="is-active">Contact</a>
+      <a [routerLink]="['/about-us']" routerLinkActive="is-active">About</a>
+    </nav>
+  </div>
+</header>
+

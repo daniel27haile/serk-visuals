@@ -32,7 +32,7 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'contact-us',
+        path: 'bookings',
         loadComponent: () =>
           import('./pages/booking/booking.component').then(
             (m) => m.BookingFormPage

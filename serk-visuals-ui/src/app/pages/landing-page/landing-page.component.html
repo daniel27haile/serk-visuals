@@ -1,2 +1,175 @@
-<p>landing-page works!</p>
-<!-- <app-booking-form></app-booking-form> -->
+<!-- HEADER -->
+<!-- <app-header></app-header> -->
+
+<!-- HERO -->
+<section class="container section hero">
+  <div class="copy">
+    <h1>Capture the moments that matter.</h1>
+    <p class="lead">
+      Premium photography & videography for weddings, portraits, events, and
+      brands.
+    </p>
+    <div class="cta-row">
+      <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+      <a [routerLink]="['/gallery']" class="btn btn--ghost">View Gallery</a>
+    </div>
+  </div>
+
+  <div class="hero-media">
+    <div
+      class="slider"
+      (keydown)="onKey($event)"
+      tabindex="0"
+      aria-roledescription="carousel"
+      [attr.aria-label]="'Hero gallery'"
+    >
+      <div
+        class="slides"
+        [style.transform]="'translateX(' + -index() * 100 + '%)'"
+      >
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Wedding scene"
+          priority
+        />
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Portrait lighting"
+        />
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Creative product shoot"
+        />
+
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Creative product shoot"
+        />
+
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Creative product shoot"
+        />
+      </div>
+
+      <div class="nav" aria-hidden="true">
+        <button (click)="prev()" aria-label="Previous slide">‹</button>
+        <button (click)="next()" aria-label="Next slide">›</button>
+      </div>
+
+      <div class="dots" role="tablist" aria-label="Slide selectors">
+        @for (d of slides; track d; let i = $index) {
+        <button
+          class="dot"
+          [class.active]="i === index()"
+          (click)="go(i)"
+          [attr.aria-label]="'Go to slide ' + (i + 1)"
+          role="tab"
+          [attr.aria-selected]="i === index()"
+        ></button>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="container section">
+  <h2>Services</h2>
+  <div class="grid services">
+    <div class="card">
+      <h3>Photography</h3>
+      <p class="lead">Documentary‑style coverage with cinematic edits.</p>
+    </div>
+    <div class="card">
+      <h3>Videography</h3>
+      <p class="lead">
+        Studio or on‑location portraits with professional lighting.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Photo Editing</h3>
+      <p class="lead">Short promos and commercials for social and web.</p>
+    </div>
+
+    <div class="card">
+      <h3>Video Editing</h3>
+      <p class="lead">Short promos and commercials for social and web.</p>
+    </div>
+
+    <div class="card">
+      <h3> Website Development</h3>
+      <p class="lead">Short promos and commercials for social and web.</p>
+    </div>
+
+    <div class="card">
+      <h3>Online Tutoring</h3>
+      <p class="lead">Website development and DevOps with AWS classes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED GALLERY -->
+<section class="container section">
+  <h2 class="section-heading">Featured Gallery</h2>
+  <div class="grid gallery">
+    <img
+      ngSrc="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200"
+      width="1200"
+      height="800"
+      alt="Portrait studio"
+    />
+    <img
+      ngSrc="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200"
+      width="1200"
+      height="800"
+      alt="Street story"
+    />
+    <img
+      ngSrc="https://images.unsplash.com/photo-1475688621402-4257c812d6db?q=80&w=1200"
+      width="1200"
+      height="800"
+      alt="Event ambiance"
+    />
+    <!-- <img ngSrc="https://images.unsplash.com/photo-1520975629018-d2cc7a2e34a9?q=80&w=1200" width="1200" height="800" alt="Product mood" /> -->
+    <img
+      ngSrc="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1200"
+      width="1200"
+      height="800"
+      alt="Outdoor couple"
+    />
+  </div>
+  <div class="button-group">
+    <a [routerLink]="['/gallery']" class="btn btn--ghost">See More</a>
+    <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="container section">
+  <div class="card">
+    <p class="quote">
+      “Serk Visuals captured our day perfectly — timeless photos and a stunning
+      highlight film.”
+    </p>
+    <strong>— M.&nbsp;A., Wedding Client</strong>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<!-- <app-footer></app-footer> -->

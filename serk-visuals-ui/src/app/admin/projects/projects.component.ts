@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './projects.component.html',
-  styleUrl: './projects.component.scss'
+  styleUrls: ['./projects.component.scss'],
 })
-export class ProjectsComponent {
-
-}
+export class ProjectsComponent {}

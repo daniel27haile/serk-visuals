@@ -4,14 +4,24 @@ import { AdminLayoutsComponent } from './layouts/admin-layouts/admin-layouts.com
 import { ADMIN_ROUTES } from './admin/admin.routes';
 
 export const routes: Routes = [
-  // public shell...
+  // Public shell
   {
     path: '',
-    component: PublicLayoutsComponent,
+    component: PublicLayoutsComponent, // must contain <router-outlet>
     children: [
-      // your public pages here...
+      // Homepage at "/"
       {
-        path: 'contact-us',
+        path: 'home',
+        loadComponent: () =>
+          import('./pages/landing-page/landing-page.component').then(
+            (m) => m.LandingPageComponent
+          ),
+      },
+      // Keep "/home" working as an alias
+      { path: 'home', redirectTo: '', pathMatch: 'full' },
+
+      {
+        path: 'contact',
         loadComponent: () =>
           import('./pages/contact-us/contact-us.component').then(
             (m) => m.ContactUsComponent
@@ -29,26 +39,19 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/gallery/gallery.component').then(
             (m) => m.GalleryPage
-          ),
+          ), // ensure export name matches
       },
       {
         path: 'bookings',
         loadComponent: () =>
           import('./pages/booking/booking.component').then(
             (m) => m.BookingFormPage
-          ),
-      },
-      {
-        path: 'home',
-        loadComponent: () =>
-          import('./pages/landing-page/landing-page.component').then(
-            (m) => m.LandingPageComponent
-          ),
+          ), // ensure export name matches
       },
     ],
   },
 
-  // login OUTSIDE the admin shell
+  // Admin login outside admin shell
   {
     path: 'admin/login',
     loadComponent: () =>
@@ -57,12 +60,20 @@ export const routes: Routes = [
       ),
   },
 
-  // admin shell + children
+  // Admin shell
   {
     path: 'admin',
-    component: AdminLayoutsComponent,
-    children: ADMIN_ROUTES,
+    component: AdminLayoutsComponent, // must contain <router-outlet>
+    children: ADMIN_ROUTES, // add a '**' child inside ADMIN_ROUTES if you want an admin-styled 404
+    // canMatch: [adminAuthGuard],     // optional: protect admin
   },
 
-  { path: '**', redirectTo: '' },
+  // Global 404 (keep last)
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./pages/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent
+      ),
+  },
 ];

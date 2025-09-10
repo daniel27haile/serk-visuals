@@ -30,3 +30,35 @@ exports.create = async (req, res, next) => {
     next(err); // let global error handler map to 500
   }
 };
+
+exports.getOne = async (req, res, next) => {
+  try {
+    const doc = await ContactUs.findById(req.params.id);
+    if (!doc) return res.status(404).json({ message: "Contact message not found" });
+    res.json(doc);
+  } catch (err) {
+    next(err); // let global error handler map to 500
+  }
+};
+
+exports.getAll = async (req, res, next) => {
+  try {
+    const { page = 1, pageSize = 10, status } = req.query;
+    const filter = {};
+    if (status) filter.status = status;
+
+    const total = await ContactUs.countDocuments(filter);
+    const items = await ContactUs.find(filter)
+      .sort("-createdAt")
+      .skip((page - 1) * pageSize)
+      .limit(Number(pageSize));
+    res.json({
+      items,
+      total,
+      page: Number(page),
+      pages: Math.ceil(total / pageSize),
+    });
+  } catch (err) {
+    next(err); // let global error handler map to 500
+  }
+};

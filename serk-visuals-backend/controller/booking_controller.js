@@ -1,6 +1,15 @@
 const Booking = require("../models/booking_model");
 
-const ALLOWED_TYPES = ["wedding", "event", "portrait", "product", "video"];
+const ALLOWED_TYPES = [
+  "wedding",
+  "event",
+  "portrait",
+  "product",
+  "video",
+  "birthday",
+  "personal",
+  "other",
+];
 const ALLOWED_STATUS = ["new", "confirmed", "completed", "cancelled"];
 
 const pick = (obj, keys) =>
@@ -8,23 +17,65 @@ const pick = (obj, keys) =>
     Object.entries(obj || {}).filter(([k]) => keys.includes(k))
   );
 
-  //localhost:3500/api/bookings/list
-exports.getAll = async (req, res) => {
+function combineDateAndTime(dateStr, timeStr) {
+  const maybe = new Date(dateStr);
+  if (!isNaN(maybe.getTime()) && String(dateStr).includes("T")) return maybe;
+  const [y, m, d] = String(dateStr).split("-").map(Number);
+  let hh = 0,
+    mm = 0;
+  if (timeStr) {
+    const [H, M] = String(timeStr).split(":").map(Number);
+    hh = H || 0;
+    mm = M || 0;
+  }
+  return new Date(y, (m || 1) - 1, d || 1, hh, mm, 0, 0);
+}
+
+async function getStats(_req, res) {
+  const now = new Date();
+  const in30 = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const [total, pending, upcoming] = await Promise.all([
+    Booking.estimatedDocumentCount(),
+    Booking.countDocuments({ status: { $in: ["new", "confirmed"] } }),
+    Booking.countDocuments({
+      date: { $gte: now, $lte: in30 },
+      status: { $ne: "cancelled" },
+    }),
+  ]);
+  res.json({ total, pending, upcoming });
+}
+
+async function getAll(req, res) {
   try {
-    const { status, type, q, page = 1, limit = 20 } = req.query;
+    const {
+      q,
+      status,
+      type,
+      from,
+      to,
+      page = 1,
+      limit = 20,
+      sort = "-createdAt",
+    } = req.query;
     const filter = {};
     if (status && ALLOWED_STATUS.includes(status)) filter.status = status;
     if (type && ALLOWED_TYPES.includes(type)) filter.type = type;
+    if (from || to) {
+      filter.date = {};
+      if (from) filter.date.$gte = new Date(from);
+      if (to) filter.date.$lte = new Date(to);
+    }
     if (q) {
       const rx = new RegExp(q, "i");
       filter.$or = [{ name: rx }, { email: rx }, { message: rx }];
     }
-
     const perPage = Math.max(1, Number(limit));
     const skip = (Math.max(1, Number(page)) - 1) * perPage;
-
     const [items, total] = await Promise.all([
-      Booking.find(filter).sort("-createdAt").skip(skip).limit(perPage),
+      Booking.find(filter)
+        .sort(String(sort || "-createdAt"))
+        .skip(skip)
+        .limit(perPage),
       Booking.countDocuments(filter),
     ]);
     res.json({
@@ -36,9 +87,9 @@ exports.getAll = async (req, res) => {
   } catch (e) {
     res.status(500).json({ message: e.message });
   }
-};
+}
 
-exports.getOne = async (req, res) => {
+async function getOne(req, res) {
   try {
     const doc = await Booking.findById(req.params.id);
     if (!doc) return res.status(404).json({ message: "Booking not found" });
@@ -46,9 +97,9 @@ exports.getOne = async (req, res) => {
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
-};
+}
 
-exports.create = async (req, res) => {
+async function create(req, res) {
   try {
     const data = pick(req.body, [
       "name",
@@ -56,34 +107,29 @@ exports.create = async (req, res) => {
       "phone",
       "type",
       "date",
+      "time",
       "message",
       "status",
     ]);
-
-    // Validate enums
-    if (data.type && !ALLOWED_TYPES.includes(data.type)) {
+    if (data.type && !ALLOWED_TYPES.includes(data.type))
       return res.status(400).json({ message: "Invalid type" });
-    }
-    if (data.status && !ALLOWED_STATUS.includes(data.status)) {
+    if (data.status && !ALLOWED_STATUS.includes(data.status))
       return res.status(400).json({ message: "Invalid status" });
-    }
-
-    // Normalize date
     if (data.date) {
-      const d = new Date(data.date);
-      if (isNaN(d.getTime()))
-        return res.status(400).json({ message: "Invalid date" });
-      data.date = d;
+      const dt = combineDateAndTime(data.date, data.time);
+      if (isNaN(dt.getTime()))
+        return res.status(400).json({ message: "Invalid date/time" });
+      data.date = dt;
+      delete data.time;
     }
-
     const doc = await Booking.create(data);
     res.status(201).json(doc);
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
-};
+}
 
-exports.update = async (req, res) => {
+async function update(req, res) {
   try {
     const data = pick(req.body, [
       "name",
@@ -91,23 +137,21 @@ exports.update = async (req, res) => {
       "phone",
       "type",
       "date",
+      "time",
       "message",
       "status",
     ]);
-
-    if (data.type && !ALLOWED_TYPES.includes(data.type)) {
+    if (data.type && !ALLOWED_TYPES.includes(data.type))
       return res.status(400).json({ message: "Invalid type" });
-    }
-    if (data.status && !ALLOWED_STATUS.includes(data.status)) {
+    if (data.status && !ALLOWED_STATUS.includes(data.status))
       return res.status(400).json({ message: "Invalid status" });
-    }
     if (data.date) {
-      const d = new Date(data.date);
-      if (isNaN(d.getTime()))
-        return res.status(400).json({ message: "Invalid date" });
-      data.date = d;
+      const dt = combineDateAndTime(data.date, data.time);
+      if (isNaN(dt.getTime()))
+        return res.status(400).json({ message: "Invalid date/time" });
+      data.date = dt;
+      delete data.time;
     }
-
     const doc = await Booking.findByIdAndUpdate(req.params.id, data, {
       new: true,
       runValidators: true,
@@ -117,14 +161,13 @@ exports.update = async (req, res) => {
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
-};
+}
 
-exports.setStatus = async (req, res) => {
+async function setStatus(req, res) {
   try {
     const { status } = req.body;
-    if (!ALLOWED_STATUS.includes(status)) {
+    if (!ALLOWED_STATUS.includes(status))
       return res.status(400).json({ message: "Invalid status" });
-    }
     const doc = await Booking.findByIdAndUpdate(
       req.params.id,
       { status },
@@ -135,9 +178,34 @@ exports.setStatus = async (req, res) => {
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
-};
+}
 
-exports.remove = async (req, res) => {
+async function bulkStatus(req, res) {
+  const { ids = [], status } = req.body || {};
+  if (!Array.isArray(ids) || !ids.length)
+    return res.status(400).json({ message: "ids required" });
+  if (!ALLOWED_STATUS.includes(status))
+    return res.status(400).json({ message: "Invalid status" });
+  const r = await Booking.updateMany(
+    { _id: { $in: ids } },
+    { $set: { status } }
+  );
+  res.json({
+    matched: r.matchedCount ?? r.n,
+    modified: r.modifiedCount ?? r.nModified,
+    status,
+  });
+}
+
+async function bulkDelete(req, res) {
+  const { ids = [] } = req.body || {};
+  if (!Array.isArray(ids) || !ids.length)
+    return res.status(400).json({ message: "ids required" });
+  const r = await Booking.deleteMany({ _id: { $in: ids } });
+  res.json({ deleted: r.deletedCount });
+}
+
+async function remove(req, res) {
   try {
     const doc = await Booking.findByIdAndDelete(req.params.id);
     if (!doc) return res.status(404).json({ message: "Booking not found" });
@@ -145,4 +213,53 @@ exports.remove = async (req, res) => {
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
+}
+
+async function exportCsv(req, res) {
+  const { q, status, type, from, to } = req.query;
+  const filter = {};
+  if (status && ALLOWED_STATUS.includes(status)) filter.status = status;
+  if (type && ALLOWED_TYPES.includes(type)) filter.type = type;
+  if (from || to) {
+    filter.date = {};
+    if (from) filter.date.$gte = new Date(from);
+    if (to) filter.date.$lte = new Date(to);
+  }
+  if (q) {
+    const rx = new RegExp(q, "i");
+    filter.$or = [{ name: rx }, { email: rx }, { message: rx }];
+  }
+  const rows = await Booking.find(filter).sort("-createdAt").lean();
+  const header = "name,email,phone,type,status,date,createdAt\n";
+  const body = rows
+    .map((r) =>
+      [
+        r.name,
+        r.email,
+        r.phone ?? "",
+        r.type ?? "",
+        r.status ?? "",
+        r.date?.toISOString() ?? "",
+        r.createdAt?.toISOString() ?? "",
+      ]
+        .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+        .join(",")
+    )
+    .join("\n");
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", 'attachment; filename="bookings.csv"');
+  res.send(header + body);
+}
+
+module.exports = {
+  getStats,
+  getAll,
+  getOne,
+  create,
+  update,
+  setStatus,
+  bulkStatus,
+  bulkDelete,
+  remove,
+  exportCsv,
 };

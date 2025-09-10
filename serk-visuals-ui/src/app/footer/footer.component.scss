@@ -1,34 +1,231 @@
+/* =========================================
+   SERK Visuals — Footer (SCSS, mobile-first)
+   ========================================= */
+/* Theme & breakpoints */
+
+/* Theme tokens (override in a global theme if you like) */
+$footer-bg: #147fa9;
+$footer-panel: #131824;
+$footer-text: #e7eaf2;
+$footer-dim: #b4bac7;
+$footer-accent: #ff6a00;
+$footer-border: #1f2430;
+
+
+
+$wrap-max: 1200px;
+$col-min: 230px; /* minimum column width before wrapping */
+$radius: .9rem;
+
+/* Breakpoints kept light; grid handles most responsiveness */
+$bp-sm: 480px;
+$bp-md: 768px;
+
+/* Base */
 .site-footer {
-  background-color: #111; // dark footer background
-  color: #fff;
-  padding: 2rem 0;
-  font-size: 0.9rem;
+  --bg: #{$footer-bg};
+  --panel: #{$footer-panel};
+  --text: #{$footer-text};
+  --dim: #{$footer-dim};
+  --accent: #{$footer-accent};
+  --border: #{$footer-border};
 
-  .footer__row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
+  background: var(--bg);
+  color: var(--text);
+  border-top: 1px solid var(--border);
 
-    p {
-      margin: 0;
-      color: #bbb;
+  /* Top row (content columns) */
+  .wrap {
+    max-width: min(#{$wrap-max}, 92vw);
+    margin: 0 auto;
+    padding: clamp(1.25rem, 2vw, 2rem) 1rem;
+
+    display: grid;
+    gap: clamp(.9rem, 1.4vw, 1.25rem);
+    grid-template-columns: repeat(auto-fit, minmax(#{$col-min}, 1fr));
+    align-items: start;
+  }
+
+  /* Bottom bar */
+  .wrap.copy {
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .5rem;
+    text-align: center;
+    color: var(--dim);
+    font-size: .95rem;
+  }
+
+  /* Columns */
+  .footer-col {
+    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01));
+    padding: 0; /* keep clean by default */
+    border-radius: $radius;
+
+    .footer-heading {
+      margin: 0 0 .6rem;
+      font-size: clamp(1.3rem, 1.2vw + .6rem, 1.1rem);
+      letter-spacing: .2px;
+      color: var(--text);
+      font-weight: 700;
     }
 
-    .footer-links {
-      display: flex;
-      gap: 1.5rem;
+    .brand {
+      margin: 0 0 .35rem;
+      font-size: clamp(1.15rem, 1.2vw + .9rem, 1.5rem);
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
 
-      a {
-        color: #fff;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease;
+    .muted {
+      color: var(--dim);
+      line-height: 1.7;
+    }
+  }
 
-        &:hover {
-          color: #ff6a00; // highlight color on hover
+  /* Quick links list */
+  .footer-links {
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: .4rem;
+
+      li {
+        a {
+          --link-bg: transparent;
+          display: inline-flex;
+          align-items: center;
+          gap: .5rem;
+          padding: .35rem .55rem;
+          border-radius: .6rem;
+          text-decoration: none;
+          color: var(--text);
+          background: var(--link-bg);
+          transition: background .15s ease, color .15s ease, transform .15s ease;
+
+          &:hover {
+            color: var(--accent);
+            background: rgba(255,255,255,.04);
+          }
+          &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+          }
+          &:active { transform: translateY(1px); }
         }
       }
     }
   }
+
+  /* Contact text vs links — clearer contrast */
+  .contact {
+    p {
+      margin: 0 0 .4rem;
+      color: var(--dim);
+
+      strong {
+        color: var(--text);
+        font-weight: 700;
+        margin-right: .35rem;
+      }
+
+      a {
+        color: var(--text);
+        text-decoration: none;
+        border-radius: .45rem;
+        padding: .2rem .35rem;
+
+        &:hover { color: var(--accent); background: rgba(255,255,255,.04); }
+        &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      }
+    }
+  }
+
+  /* Social links list */
+  .social {
+    ul {
+      margin: 0; padding: 0; list-style: none;
+      display: grid; gap: .4rem;
+
+      li a {
+        display: inline-flex;
+        align-items: center;
+        gap: .55rem;
+        padding: .35rem .55rem;
+        border-radius: .6rem;
+        text-decoration: none;
+        color: var(--text);
+        transition: background .15s ease, color .15s ease, transform .15s ease;
+
+        &:hover { color: var(--accent); background: rgba(255,255,255,.04); }
+        &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        &:active { transform: translateY(1px); }
+      }
+    }
+  }
+
+  /* ---------------------------------------
+     ICONS (no library) via CSS masks
+     - Uses currentColor so hover/focus styles apply automatically
+     --------------------------------------- */
+  @mixin icon-mask($svg) {
+    &::before {
+      content: "";
+      inline-size: 1em;
+      block-size: 1em;
+      display: inline-block;
+      mask: url("data:image/svg+xml;utf8,#{$svg}") no-repeat center / contain;
+      -webkit-mask: url("data:image/svg+xml;utf8,#{$svg}") no-repeat center / contain;
+      background: currentColor;
+    }
+  }
+
+  /* Email / Phone (attribute selectors) */
+  a[href^="mailto:"] {
+    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/></svg>');
+    &::before { margin-right: .5rem; }
+  }
+  a[href^="tel:"] {
+    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.3 11.3 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1 17 17 0 0 1-15-15 1 1 0 0 1 1-1h3.4a1 1 0 0 1 1 1 11.3 11.3 0 0 0 .6 3.6 1 1 0 0 1-.24 1Z"/></svg>');
+    &::before { margin-right: .5rem; }
+  }
+
+  /* Social icons (domain contains) */
+  a[href*="instagram.com"] {
+    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/></svg>');
+    &::before { margin-right: .5rem; }
+  }
+  a[href*="facebook.com"] {
+    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M13 22v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3V2h-3a5 5 0 0 0-5 5v3H6v4h3v8h4Z"/></svg>');
+    &::before { margin-right: .5rem; }
+  }
+  a[href*="youtube.com"], a[href*="youtu.be"] {
+    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M23 7.1a3 3 0 0 0-2.1-2.1C19 4.5 12 4.5 12 4.5s-7 0-8.9.5A3 3 0 0 0 1 7.1 31.5 31.5 0 0 0 .5 12a31.5 31.5 0 0 0 .5 4.9 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5A3 3 0 0 0 23 16.9 31.5 31.5 0 0 0 23.5 12 31.5 31.5 0 0 0 23 7.1ZM10 15.5v-7l6 3.5-6 3.5Z"/></svg>');
+    &::before { margin-right: .5rem; }
+  }
+
+  /* Accessibility + polish */
+  :where(a) { text-underline-offset: .15em; }
+  :where(a:hover) { text-decoration-thickness: from-font; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  /* Slightly rearrange bottom bar on wider screens */
+  @media (min-width: $bp-md) {
+    .wrap.copy {
+      grid-template-columns: 1fr auto;
+      text-align: left;
+
+      p { margin: 0; }
+      .small { text-align: right; }
+    }
+  }
 }
+/* =========================================
+   End of SERK Visuals — Footer (SCSS, mobile-first)
+   ========================================= */

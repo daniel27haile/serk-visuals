@@ -1,44 +1,35 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Album, GalleryItem } from '../models/gallery.model';
-import { environment } from '../../../../environment/environment.prod';
+import { Album, GalleryItem, Paged } from '../models/gallery.model';
+// import { environment } from '../../../environment/environment'; // adjust path
 
 @Injectable({ providedIn: 'root' })
 export class GalleryService {
   private http = inject(HttpClient);
-  private base = `${environment.apiBaseUrl}/gallery`;
-
+  // private base = `${environment.apiBaseUrl}/gallery`; // e.g. http://localhost:3500/api/gallery
+private base = 'http://localhost:3500/api/gallery';
   list(opts?: {
     album?: Album;
     q?: string;
     page?: number;
     limit?: number;
     published?: boolean;
-  }): Observable<{
-    items: GalleryItem[];
-    total: number;
-    page: number;
-    pages: number;
-  }> {
+  }): Observable<Paged<GalleryItem>> {
     let params = new HttpParams();
     Object.entries(opts || {}).forEach(([k, v]) => {
       if (v !== undefined && v !== null && v !== '')
         params = params.set(k, String(v));
     });
-    return this.http.get<{
-      items: GalleryItem[];
-      total: number;
-      page: number;
-      pages: number;
-    }>(this.base, { params });
+    // prefer GET /api/gallery (we also left /getAll as alias)
+    return this.http.get<Paged<GalleryItem>>(this.base, { params });
+    // or: return this.http.get<Paged<GalleryItem>>(`${this.base}/getAll`, { params });
   }
 
   get(id: string) {
     return this.http.get<GalleryItem>(`${this.base}/${id}`);
   }
 
-  // multipart create
   create(form: {
     title: string;
     album: Album;
@@ -59,7 +50,6 @@ export class GalleryService {
     return this.http.post<GalleryItem>(this.base, fd);
   }
 
-  // multipart update (optional new files)
   update(
     id: string,
     patch: Partial<Omit<GalleryItem, 'url' | 'thumbnail'>> & {

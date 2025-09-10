@@ -32,4 +32,12 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () =>
       import('./settings/settings.component').then((m) => m.SettingsComponent),
   },
+
+  {
+    path: 'gallery',
+    loadComponent: () =>
+      import('./admin-gallery/admin-gallery.component').then(
+        (m) => m.AdminGalleryComponent
+      ),
+  },
 ];

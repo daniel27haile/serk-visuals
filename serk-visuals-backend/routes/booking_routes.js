@@ -1,4 +1,5 @@
-const router = require("express").Router(); // ✅ express router
+// routes/booking_routes.js
+const router = require("express").Router();
 const mongoose = require("mongoose");
 const ctrl = require("../controller/booking_controller");
 
@@ -9,7 +10,7 @@ const validateId = (req, res, next) => {
   next();
 };
 
-// Quick assertion to catch missing handlers early in dev:
+// Quick assertion to catch missing handlers early in dev
 [
   "getStats",
   "getAll",
@@ -27,15 +28,18 @@ const validateId = (req, res, next) => {
   }
 });
 
+/** Stats & export */
 router.get("/stats", ctrl.getStats);
 router.get("/export.csv", ctrl.exportCsv);
 
+/** Bulk ops */
 router.patch("/bulk/status", ctrl.bulkStatus);
 router.delete("/bulk", ctrl.bulkDelete);
 
-router.get("/", ctrl.getAll);
+/** CRUD */
+router.get("/", ctrl.getAll); // GET /api/bookings
 router.get("/getAll", ctrl.getAll); // optional alias
-router.post("/", ctrl.create);
+router.post("/", ctrl.create); // POST /api/bookings
 router.get("/:id", validateId, ctrl.getOne);
 router.patch("/:id", validateId, ctrl.update);
 router.patch("/:id/status", validateId, ctrl.setStatus);

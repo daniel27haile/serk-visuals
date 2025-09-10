@@ -11,7 +11,8 @@ const validateId = (req, res, next) => {
 };
 
 // list + read
-router.get("/getAll", ctrl.list);
+router.get("/", ctrl.list); // 👈 preferred
+router.get("/getAll", ctrl.list); // 👈 legacy/alias
 router.get("/:id", validateId, ctrl.getOne);
 
 // create (multipart)

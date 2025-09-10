@@ -57,6 +57,14 @@
       cursor: pointer;
     }
   }
+
+  input[type="time"] {
+    color-scheme: light;
+    &::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      cursor: pointer;
+    }
+  }
 }
 
 button {

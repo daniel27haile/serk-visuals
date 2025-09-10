@@ -1,10 +1,10 @@
+// server.js
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
-require("dotenv").config({
-  path: require("path").join(__dirname, "./config/.env"),
-});
+require("dotenv").config({ path: path.join(__dirname, "./config/.env") });
 
 const myDatabaseMongoServer = require("./config/database");
 
@@ -15,16 +15,29 @@ const contactUsRoutes = require("./routes/contactus_routes");
 
 const app = express();
 
-// Middlewares
+// Security / CORS
 app.use(cors({ origin: "*" }));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }, // 👈 allow loading images from other origins
+  })
+);
 app.use(express.json());
-app.use(helmet());
 app.use(morgan("dev"));
+
+// Serve uploaded files
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    maxAge: "30d",
+    immutable: true,
+  })
+);
 
 // DB
 myDatabaseMongoServer();
 
-// Mount routes BEFORE 404
+// Routes
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/contact", contactUsRoutes);
@@ -38,7 +51,7 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-const PORT = process.env.PORT || 3500; // <- 3500 confirmed
+const PORT = process.env.PORT || 3500;
 app.listen(PORT, () =>
   console.log(`✅ API running at http://localhost:${PORT}`)
 );

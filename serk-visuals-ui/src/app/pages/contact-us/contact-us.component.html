@@ -1,1 +1,120 @@
-<p>contact-us works!</p>
+<section class="contact container">
+  <header class="contact__header">
+    <h1 class="section-heading">Contact Us</h1>
+    <p class="lead">
+      Tell us about your project, date, and vision. We usually reply within 24 hours.
+    </p>
+  </header>
+
+  <!-- Success banner -->
+  @if (submitted()) {
+    <div class="alert alert--success" role="status" aria-live="polite">
+      <strong>Thanks!</strong> Your message has been sent. We’ll get back to you shortly.
+    </div>
+  }
+
+  <!-- Server error banner -->
+  @if (serverError()) {
+    <div class="alert alert--error" role="alert" aria-live="assertive">
+      {{ serverError() }}
+    </div>
+  }
+
+  <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="form-grid">
+      <!-- Full name -->
+      <div class="field">
+        <label for="fullName">Full name</label>
+        <input
+          id="fullName"
+          type="text"
+          formControlName="fullName"
+          autocomplete="name"
+          [attr.aria-invalid]="f.fullName.invalid && f.fullName.touched"
+        />
+        @if (f.fullName.touched && f.fullName.invalid) {
+          <div class="error">
+            @if (f.fullName.errors?.['required']) { <span>Name is required.</span> }
+            @if (f.fullName.errors?.['minlength']) { <span>At least 2 characters.</span> }
+            @if (f.fullName.errors?.['maxlength']) { <span>Too long.</span> }
+          </div>
+        }
+      </div>
+
+      <!-- Email -->
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          [attr.aria-invalid]="f.email.invalid && f.email.touched"
+        />
+        @if (f.email.touched && f.email.invalid) {
+          <div class="error">
+            @if (f.email.errors?.['required']) { <span>Email is required.</span> }
+            @if (f.email.errors?.['email']) { <span>Enter a valid email.</span> }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Subject -->
+    <div class="field">
+      <label for="subject">Subject</label>
+      <input id="subject" type="text" formControlName="subject" />
+      @if (f.subject.touched && f.subject.invalid) {
+        <div class="error">
+          @if (f.subject.errors?.['required']) { <span>Subject is required.</span> }
+          @if (f.subject.errors?.['minlength']) { <span>At least 3 characters.</span> }
+        </div>
+      }
+    </div>
+
+    <!-- Message -->
+    <div class="field">
+      <label for="message">Message</label>
+      <textarea
+        id="message"
+        rows="6"
+        formControlName="message"
+        [attr.aria-invalid]="f.message.invalid && f.message.touched"
+      ></textarea>
+      @if (f.message.touched && f.message.invalid) {
+        <div class="error">
+          @if (f.message.errors?.['required']) { <span>Please add a message.</span> }
+          @if (f.message.errors?.['minlength']) { <span>At least 10 characters.</span> }
+        </div>
+      }
+    </div>
+
+    <!-- Consent & Submit -->
+    <div class="form-actions">
+      <label class="checkbox">
+        <input type="checkbox" formControlName="consent" />
+        <span>I consent to be contacted about my inquiry.</span>
+      </label>
+
+      <button type="submit" class="btn btn--accent" [disabled]="submitting() || form.invalid">
+        @if (submitting()) { <span>Sending…</span> } @else { <span>Send message</span> }
+      </button>
+    </div>
+
+    <!-- Honeypot (hidden) -->
+    <input formControlName="hp" class="hp" tabindex="-1" autocomplete="off" />
+  </form>
+
+  <!-- Optional: contact details -->
+  <aside class="contact__sidebar">
+    <div class="card">
+      <h2>Prefer email?</h2>
+      <p class="lead"><a href="mailto:hello@serkvisuals.com">hello&#64;serkvisuals.com</a></p>
+      <p>We’re also on Instagram: <a href="https://instagram.com/serkvisuals" target="_blank" rel="noopener">
+  &#64;serkvisuals 
+</a>
+</p> 
+    </div>
+  </aside>
+</section>

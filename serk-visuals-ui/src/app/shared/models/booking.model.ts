@@ -1,16 +1,22 @@
 export type BookingType =
- 'wedding' | 'event' | 'birthday' | 'product' | 'personal' | 'other';
+  | 'wedding'
+  | 'event'
+  | 'birthday'
+  | 'product'
+  | 'personal'
+  | 'other';
+
 export type BookingStatus = 'new' | 'confirmed' | 'completed' | 'cancelled';
 
 export interface Booking {
   _id?: string;
   name: string;
   email: string;
-  phone?: number; // backend expects Number; keep number here
+  phone?: number; // backend expects number
   type?: BookingType;
-  date?: string; // ISO string from <input type="date">
+  date?: string; // ISO datetime
   message?: string;
-  status?: BookingStatus; // default "new" on backend
+  status?: BookingStatus;
   createdAt?: string;
   updatedAt?: string;
 }

@@ -1,62 +1,195 @@
+// --------- Vars
+$bg: #147fa9;
+$text: #fff;
+$accent: #ff6a00;
+$dark: #111;
+$radius: 8px;
+$gap: 1.5rem;
+$transition: 0.2s ease;
+
+$container-max: 1200px;
+$container-pad: clamp(1rem, 2.5vw, 24px);
+
+// --------- Global container
+.container {
+  max-width: $container-max;
+  margin-inline: auto;
+  padding-inline: $container-pad;
+  width: 100%;
+}
+
+// --------- Base header
 .site-header {
-  background-color: #111; // dark background
-  color: #fff;
-  padding: 1rem 0;
+  background-color: $bg;
+  color: $text;
+  padding-block: 1rem;
 
   .header__row {
+    position: relative; // anchor for absolute mobile nav
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: $gap;
+  }
 
-    .logo {
-      font-size: 1.5rem;
-      font-weight: 700;
-      text-decoration: none;
-      color: #fff;
-      letter-spacing: 1px;
-      transition: color 0.2s ease;
+  // --------- Branding
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: $text;
+    letter-spacing: 1px;
+    transition: color $transition;
 
-      &:hover {
-        color: #ff6a00; // accent color
-      }
+    &:hover,
+    &:focus-visible {
+      color: $accent;
+      outline: none;
     }
+  }
 
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
+  // --------- Nav
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: $gap;
 
-      a {
-        color: #fff;
-        text-decoration: none;
-        font-weight: 500;
-        transition: color 0.2s ease;
+    a {
+      color: $text;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color $transition;
 
-        &:hover {
-          color: #ff6a00;
-        }
+      &:hover,
+      &:focus-visible {
+        color: $accent;
+        outline: none;
+      }
 
-        &.is-active {
-          border-bottom: 2px solid #ff6a00;
-          padding-bottom: 0.2rem;
-        }
+      &.is-active {
+        border-bottom: 2px solid $accent;
+        padding-bottom: 0.2rem;
+      }
 
-        &.btn {
-          padding: 0.5rem 1rem;
-          border-radius: 4px;
-          border: 1px solid #ff6a00;
-          transition: all 0.2s ease;
+      &.btn {
+        padding: 0.5rem 1rem;
+        border-radius: $radius;
+        border: 1px solid $accent;
+        transition: all $transition;
 
-          &--ghost {
-            background: transparent;
-            color: #ff6a00;
+        &--ghost {
+          background: transparent;
+          color: $accent;
 
-            &:hover {
-              background-color: #ff6a00;
-              color: #111;
-            }
+          &:hover,
+          &:focus-visible {
+            background-color: $accent;
+            color: $dark;
           }
         }
+      }
+    }
+  }
+
+  // --------- Mobile toggle (hidden on desktop)
+  .menu-toggle {
+    display: none;
+    border: 1px solid rgba($text, 0.35);
+    background: transparent;
+    color: $text;
+    padding: 0.5rem 0.75rem;
+    border-radius: $radius;
+    cursor: pointer;
+    transition: background-color $transition, border-color $transition;
+    z-index: 11;
+
+    &:hover,
+    &:focus-visible {
+      background-color: rgba($dark, 0.15);
+      border-color: rgba($text, 0.6);
+      outline: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+
+    // Hamburger icon
+    .burger {
+      position: relative;
+      display: inline-block;
+      width: 22px; height: 16px;
+
+      span {
+        position: absolute;
+        left: 0; right: 0;
+        height: 2px;
+        background: $text;
+        border-radius: 2px;
+        transition: transform $transition, opacity $transition, top $transition;
+      }
+
+      span:nth-child(1) { top: 0; }
+      span:nth-child(2) { top: 7px; }
+      span:nth-child(3) { top: 14px; }
+
+      &.open {
+        span:nth-child(1) { top: 7px; transform: rotate(45deg); }
+        span:nth-child(2) { opacity: 0; }
+        span:nth-child(3) { top: 7px; transform: rotate(-45deg); }
+      }
+    }
+  }
+}
+
+// --------- Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// --------- Responsive
+@media (max-width: 768px) {
+  .site-header {
+    .menu-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+
+    // collapse nav by default; use .is-open to reveal
+    .nav {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0; right: 0;
+      display: none;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.75rem;
+
+      // match the container’s inline padding so the dropdown aligns
+      padding: 0.75rem $container-pad 1rem;
+      background: $bg;
+      border-bottom: 1px solid rgba($text, 0.15);
+      z-index: 10; // under toggle
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+
+      &.is-open { display: flex; }
+
+      a {
+        padding: 0.6rem 0.25rem;
+        width: 100%;
+      }
+
+      a.is-active {
+        border-bottom: none;
+        background: rgba($dark, 0.12);
+        border-radius: $radius;
+        padding: 0.6rem 0.5rem;
       }
     }
   }

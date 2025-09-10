@@ -1,8 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { BookingsService } from "../../shared/services/booking.service";
-import { BookingType } from "../../shared/models/booking.model";
+import { BookingsService } from '../../shared/services/booking.service';
+import { BookingType } from '../../shared/models/booking.model';
 
 @Component({
   selector: 'app-booking-form',
@@ -12,10 +16,9 @@ import { BookingType } from "../../shared/models/booking.model";
   styleUrls: ['./booking.component.scss'],
 })
 export class BookingFormPage {
-  private fb = inject(FormBuilder);
-  private api = inject(BookingsService);
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly api = inject(BookingsService);
 
-  // enums aligned with backend
   readonly types: BookingType[] = [
     'wedding',
     'event',
@@ -30,36 +33,61 @@ export class BookingFormPage {
   err = signal<string | null>(null);
 
   form = this.fb.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
-    phone: [''], // string in UI; convert to number before send
-    type: ['event' as BookingType],
-    date: [''], // yyyy-MM-dd from <input type="date">
-    message: [''],
-    // status not needed: backend defaults to "new"
+    name: this.fb.control('', [Validators.required, Validators.minLength(2)]),
+    email: this.fb.control('', [Validators.required, Validators.email]),
+    phone: this.fb.control(''),
+    type: this.fb.control<BookingType>('event'),
+    date: this.fb.control('', [Validators.required]),
+    time: this.fb.control('', [Validators.required]),
+    message: this.fb.control(''),
   });
+
+  /** Build ISO (UTC) from local date (yyyy-MM-dd) + time (HH:mm). */
+  private toLocalISO(dateStr: string, timeStr?: string): string {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    let hh = 0,
+      mm = 0;
+    if (timeStr) {
+      const [H, M] = timeStr.split(':').map(Number);
+      hh = H ?? 0;
+      mm = M ?? 0;
+    }
+    const dt = new Date(y, (m || 1) - 1, d || 1, hh, mm, 0, 0); // local time
+    return dt.toISOString(); // store UTC on server
+  }
 
   submit(): void {
     if (this.form.invalid || this.submitting()) return;
     this.submitting.set(true);
     this.err.set(null);
 
-    // Normalize fields expected by backend
-    const v = this.form.value;
+    const v = this.form.getRawValue(); // fully typed, non-nullable
+    const iso = this.toLocalISO(v.date, v.time);
+
+    const phoneTrimmed = v.phone.trim();
     const payload = {
-      name: v.name!,
-      email: v.email!,
-      phone: v.phone ? Number(v.phone) : undefined, // backend expects Number
-      type: v.type ?? undefined,
-      date: v.date ? new Date(v.date).toISOString() : undefined,
-      message: v.message ?? undefined,
+      name: v.name,
+      email: v.email,
+      phone: phoneTrimmed ? Number(phoneTrimmed) : undefined,
+      type: v.type,
+      date: iso, // combined ISO datetime
+      // time: v.time,          // send if you also want raw time
+      message: v.message || undefined,
     };
 
     this.api.create(payload).subscribe({
       next: () => {
         this.submitting.set(false);
         this.submitted.set(true);
-        this.form.reset({ type: 'event' }); // reset to defaults
+        this.form.reset({
+          name: '',
+          email: '',
+          phone: '',
+          type: 'event',
+          date: '',
+          time: '',
+          message: '',
+        });
       },
       error: (e) => {
         this.submitting.set(false);

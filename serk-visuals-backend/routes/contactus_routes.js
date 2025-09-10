@@ -13,5 +13,8 @@ const limiter = rateLimit({
 });
 
 router.post("/", limiter, controller.create);
+router.get("/health", (req, res) => res.json({ status: "ok" }));
+router.get("/:id", controller.getOne);
+router.get("/", controller.getAll);
 
 module.exports = router;

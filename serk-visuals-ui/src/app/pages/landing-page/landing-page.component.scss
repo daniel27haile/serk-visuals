@@ -1,0 +1,293 @@
+/* ===== Landing Page — SCSS (responsive, balanced spacing) ===== */
+
+/* Component host */
+:host {
+  display: block;
+  color: #e9e9ef;
+  background: rgb(58, 55, 55);
+}
+
+/* ---------- Layout helpers ---------- */
+$container-max: 1200px;
+$container-pad-x: clamp(1rem, 4vw, 2rem);  // L/R padding
+$container-pad-y: clamp(1rem, 3vh, 2rem);  // T/B padding
+
+.container {
+  max-width: $container-max;
+  margin-inline: auto;
+  padding-inline: calc(#{$container-pad-x} + env(safe-area-inset-left));
+  padding-inline: calc(#{$container-pad-x} + env(safe-area-inset-right));
+  padding-block: $container-pad-y;
+  width: 100%;
+}
+
+/* Section rhythm */
+.section {
+  padding-block: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+/* Utility grid */
+.grid { display: grid; gap: 1rem; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1rem;
+  border-radius: .7rem;
+  text-decoration: none;
+  border: 1px solid #2a2f3a;
+  color: #e9e9ef;
+  white-space: nowrap;
+}
+.btn--accent { background: #ff5722; border-color: #ff5722; color: #111; font-weight: 800; }
+.btn--ghost  { background: transparent; }
+
+/* ---------- Text ---------- */
+.lead { color: #b8bcc9; }
+
+/* ---------- Headings ---------- */
+.section-heading {
+  margin: 0 0 .75rem;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ---------- HERO ---------- */
+.hero {
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  grid-template-columns: 1fr; /* mobile: single column */
+}
+
+/* Prevent grid overflow on narrow screens */
+.hero > .copy,
+.hero > .hero-media { min-width: 0; }
+
+.hero h1 {
+  font-size: clamp(1.8rem, 3vw, 3rem);
+  line-height: 1.1;
+  margin: 0;
+}
+
+
+.cta-row {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.6rem;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+
+    &--accent {
+      background-color: #ff5722;
+      border-color: #ff5722;
+      color: #111;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    &--ghost {
+      background: transparent;
+      border: 1px solid #e9e9ef;
+      color: #e9e9ef;
+
+      &:hover {
+        border-color: #ff5722;
+        color: #ff5722;
+      }
+    }
+  }
+}
+
+
+
+
+.hero-media {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* ---------- SLIDER ---------- */
+.slider {
+  --slider-h: clamp(200px, 40vh, 380px);
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  outline: none;
+  height: var(--slider-h);
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.slides {
+  display: flex;
+  height: 100%;
+  transition: transform .5s ease;
+  will-change: transform;
+}
+
+.slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Slider nav & dots */
+.nav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+.nav button {
+  pointer-events: auto;
+  background: #00000066;
+  color: #fff;
+  border: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: .6rem;
+  margin: .5rem;
+}
+
+.dots {
+  position: absolute;
+  inset: auto 0 10px 0;
+  display: flex;
+  justify-content: center;
+  gap: .4rem;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff33;
+  border: 0;
+}
+.dot.active { background: #fff; }
+
+/* ---------- SERVICES ---------- */
+.services { grid-template-columns: 1fr; }
+
+.card {
+  background: #11141a;
+  border: 1px solid #1f2330;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+/* ---------- GALLERY ---------- */
+.gallery { grid-template-columns: 1fr; }
+.gallery img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: .75rem;
+}
+
+/* ---------- Global small polish ---------- */
+/* Make images behave nicely everywhere */
+img { max-width: 100%; height: auto; display: block; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .slides { transition: none; }
+}
+
+/* ====== Breakpoints ====== */
+
+/* ≥ 640px (small tablets / landscape phones) */
+@media (min-width: 640px) {
+  .gallery { grid-template-columns: repeat(2, 1fr); }
+  .gallery img { height: 240px; }
+  .services { grid-template-columns: repeat(2, 1fr); }
+  .slider { --slider-h: clamp(220px, 42vh, 420px); }
+}
+
+/* ≥ 1024px (laptops and up) */
+@media (min-width: 1024px) {
+  .hero {
+    grid-template-columns: 1.1fr .9fr;
+    gap: 1.25rem;
+  }
+  .gallery { grid-template-columns: repeat(3, 1fr); }
+  .services { grid-template-columns: repeat(3, 1fr); }
+  .slider { --slider-h: clamp(260px, 46vh, 480px); }
+}
+
+/* ≥ 1280px (large desktops) */
+@media (min-width: 1280px) {
+  .slider { --slider-h: clamp(280px, 48vh, 520px); }
+}
+/* ===== End Landing Page ===== */
+
+
+
+
+
+// for class button-group
+
+.button-group {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.6rem;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+
+    &--accent {
+      background-color: #ff5722;
+      border-color: #ff5722;
+      color: #111;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+
+    &--ghost {
+      background: transparent;
+      border: 1px solid #e9e9ef;
+      color: #e9e9ef;
+
+      &:hover {
+        border-color: #ff5722;
+        color: #ff5722;
+      }
+    }
+  }
+}
+

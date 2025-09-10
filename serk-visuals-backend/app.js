@@ -1,41 +1,44 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-require("dotenv").config({ path: require('path').join(__dirname, './config/.env') }); // Load environment variables from .env file
+const morgan = require("morgan");
+require("dotenv").config({
+  path: require("path").join(__dirname, "./config/.env"),
+});
+
 const myDatabaseMongoServer = require("./config/database");
 
-// Import routes
+// Routers
 const bookingRoutes = require("./routes/booking_routes");
-const galleryRoutes = require("./routes/gallery_routes"); 
+const galleryRoutes = require("./routes/gallery_routes");
 const contactUsRoutes = require("./routes/contactus_routes");
 
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json()); // move before routes
+// Middlewares
+app.use(cors({ origin: "*" }));
+app.use(express.json());
 app.use(helmet());
+app.use(morgan("dev"));
 
-// Connect to the database
+// DB
 myDatabaseMongoServer();
 
-// Routes 
+// Mount routes BEFORE 404
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/contact", contactUsRoutes);
 
-// Error handling middleware
 // 404
-app.use((req, res) => res.status(404).json({ error: 'Not found' }));
+app.use((req, res) => res.status(404).json({ error: "Not found" }));
 
-// Centralized error handler
+// 500
 app.use((err, _req, res, _next) => {
   console.error(err);
-  res.status(500).json({ error: 'Internal server error' });
+  res.status(500).json({ error: "Internal server error" });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+const PORT = process.env.PORT || 3500; // <- 3500 confirmed
+app.listen(PORT, () =>
+  console.log(`✅ API running at http://localhost:${PORT}`)
+);

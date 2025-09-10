@@ -3,42 +3,49 @@
 
   <form [formGroup]="form" (ngSubmit)="submit()" class="card" novalidate>
     <div class="grid">
-      <label>
+      <label for="name">
         Name
-        <input formControlName="name" placeholder="Your full name" />
+        <input id="name" formControlName="name" placeholder="Your full name" autocomplete="name" />
       </label>
 
-      <label>
+      <label for="email">
         Email
-        <input formControlName="email" type="email" placeholder="you@example.com" />
+        <input id="email" formControlName="email" type="email" placeholder="you@example.com" autocomplete="email" />
       </label>
 
-      <label>
+      <label for="phone">
         Phone
-        <input formControlName="phone" type="tel" placeholder="+1 206 555 0199" />
+        <input id="phone" formControlName="phone" type="tel" placeholder="+1 206 555 0199" autocomplete="tel" />
       </label>
 
-      <label>
+      <label for="type">
         Type
-        <select formControlName="type">
+        <select id="type" formControlName="type">
           <option *ngFor="let t of types" [value]="t">{{ t | titlecase }}</option>
         </select>
       </label>
 
-      <label>
+      <label for="date">
         Date
-        <input formControlName="date" type="date" />
+        <input id="date" formControlName="date" type="date" autocomplete="off" />
       </label>
 
-      <label class="full">
+      <label for="time">
+        Time
+        <input id="time" formControlName="time" type="time" step="60" autocomplete="off" />
+      </label>
+
+      <label for="message" class="full">
         Message
-        <textarea rows="4" formControlName="message" placeholder="Tell us about your shoot"></textarea>
+        <textarea id="message" rows="4" formControlName="message" placeholder="Tell us about your shoot"></textarea>
       </label>
     </div>
 
-    <button [disabled]="form.invalid">Submit</button>
+    <button type="submit" [disabled]="form.invalid || submitting()">
+      {{ submitting() ? 'Submitting...' : 'Submit' }}
+    </button>
 
-    <p class="ok" *ngIf="submitted() && !err()">✅ Request sent!</p>
-    <p class="err" *ngIf="err()">❌ {{ err() }}</p>
+    <p class="ok" *ngIf="submitted() && !err()" aria-live="polite">✅ Request sent!</p>
+    <p class="err" *ngIf="err()" aria-live="assertive">❌ {{ err() }}</p>
   </form>
 </section>

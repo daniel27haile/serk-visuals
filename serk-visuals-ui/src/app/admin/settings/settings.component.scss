@@ -1,0 +1,27 @@
+  :host {
+        display: block;
+        color: #e9e9ef;
+        background: #0b0d12;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem;
+      }
+      .section {
+        padding: 1.25rem 0;
+      }
+      h1 {
+        margin: 0 0 1rem;
+        font-size: clamp(1.4rem, 2.5vw, 2rem);
+        font-weight: 800;
+      }
+      .card {
+        background: #10141b;
+        border: 1px solid #1f2430;
+        border-radius: 1rem;
+        padding: 1rem;
+      }
+      .muted {
+        color: #9aa3b5;
+      }

@@ -1,51 +1,83 @@
 <section class="wrap">
   <h2>Book a Session</h2>
 
-  <form [formGroup]="form" (ngSubmit)="submit()" class="card" novalidate>
-    <div class="grid">
-      <label for="name">
-        Name
-        <input id="name" formControlName="name" placeholder="Your full name" autocomplete="name" />
-      </label>
+  <!-- Show the form until submitted -->
+  <ng-container *ngIf="!submitted(); else successTpl">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="card" novalidate>
+      <div class="grid">
+        <label for="name">
+          Name
+          <input id="name" formControlName="name" placeholder="Your full name" autocomplete="name" />
+        </label>
 
-      <label for="email">
-        Email
-        <input id="email" formControlName="email" type="email" placeholder="you@example.com" autocomplete="email" />
-      </label>
+        <label for="email">
+          Email
+          <input id="email" formControlName="email" type="email" placeholder="you@example.com" autocomplete="email" />
+        </label>
 
-      <label for="phone">
-        Phone
-        <input id="phone" formControlName="phone" type="tel" placeholder="+1 206 555 0199" autocomplete="tel" />
-      </label>
+        <label for="phone">
+          Phone
+          <input id="phone" formControlName="phone" type="tel" placeholder="+1 206 555 0199" autocomplete="tel" />
+        </label>
 
-      <label for="type">
-        Type
-        <select id="type" formControlName="type">
-          <option *ngFor="let t of types" [value]="t">{{ t | titlecase }}</option>
-        </select>
-      </label>
+        <label for="type">
+          Type
+          <select id="type" formControlName="type">
+            <option *ngFor="let t of types" [value]="t.value">{{ t.label }}</option>
+          </select>
+        </label>
 
-      <label for="date">
-        Date
-        <input id="date" formControlName="date" type="date" autocomplete="off" />
-      </label>
+        <label for="date">
+          Date
+          <input id="date" formControlName="date" type="date" autocomplete="off" />
+        </label>
 
-      <label for="time">
-        Time
-        <input id="time" formControlName="time" type="time" step="60" autocomplete="off" />
-      </label>
+        <label for="time">
+          Time
+          <input id="time" formControlName="time" type="time" step="60" autocomplete="off" />
+        </label>
 
-      <label for="message" class="full">
-        Message
-        <textarea id="message" rows="4" formControlName="message" placeholder="Tell us about your shoot"></textarea>
-      </label>
+        <label for="duration" title="How long you need for the session">
+          Duration
+          <select id="duration" formControlName="durationMinutes">
+            <option *ngFor="let d of durations" [value]="d">{{ d }} min</option>
+          </select>
+        </label>
+
+        <label for="message" class="full">
+          Message
+          <textarea id="message" rows="4" formControlName="message" placeholder="Tell us about your shoot"></textarea>
+        </label>
+      </div>
+
+      <div *ngIf="slotAvailable() === false" class="err" aria-live="assertive">
+        ❌ This time slot is already booked. Please choose another.
+      </div>
+      <div *ngIf="slotAvailable() === true" class="ok" aria-live="polite">
+        ✅ This time is available.
+      </div>
+
+      <button type="submit" [disabled]="form.invalid || submitting() || slotAvailable() === false">
+        {{ submitting() ? 'Submitting...' : 'Submit' }}
+      </button>
+
+      <p class="err" *ngIf="err()" aria-live="assertive">❌ {{ err() }}</p>
+    </form>
+  </ng-container>
+
+  <!-- Thank-you view -->
+  <ng-template #successTpl>
+    <div class="card" style="text-align:center;">
+      <h3 style="margin-top:0;">Thanks! Your booking request was sent 🎉</h3>
+      <p *ngIf="success() as s">
+        <strong>Requested time:</strong> {{ s.when }} ({{ s.duration }} min)
+        <br />
+        <span *ngIf="s.email">A confirmation was sent to <strong>{{ s.email }}</strong>.</span>
+      </p>
+      <p>We’ll review your request and get back to you shortly.</p>
+
+      <!-- Optional actions -->
+      <a [routerLink]="['/']" class="logout-btn" style="display:inline-block; margin-top:.5rem;">Back to Home</a>
     </div>
-
-    <button type="submit" [disabled]="form.invalid || submitting()">
-      {{ submitting() ? 'Submitting...' : 'Submit' }}
-    </button>
-
-    <p class="ok" *ngIf="submitted() && !err()" aria-live="polite">✅ Request sent!</p>
-    <p class="err" *ngIf="err()" aria-live="assertive">❌ {{ err() }}</p>
-  </form>
+  </ng-template>
 </section>

@@ -5,6 +5,19 @@ const pick = (obj, keys) =>
     Object.entries(obj || {}).filter(([k]) => keys.includes(k))
   );
 
+const absolutize = (req, item) => {
+  if (!item) return item;
+  const host = `${req.protocol}://${req.get("host")}`;
+  const out = { ...item };
+  if (out.url && !/^https?:\/\//i.test(out.url)) {
+    out.url = host + out.url;
+  }
+  if (out.thumbnail && !/^https?:\/\//i.test(out.thumbnail)) {
+    out.thumbnail = host + out.thumbnail;
+  }
+  return out;
+};
+
 exports.list = async (req, res) => {
   try {
     const { album, q, page = 1, limit = 24, published } = req.query;
@@ -26,7 +39,7 @@ exports.list = async (req, res) => {
     ]);
 
     res.json({
-      items,
+      items: items.map((i) => absolutize(req, i)),
       total,
       page: Number(page),
       pages: Math.ceil(total / per),
@@ -40,7 +53,7 @@ exports.getOne = async (req, res) => {
   try {
     const doc = await GalleryItem.findById(req.params.id).lean();
     if (!doc) return res.status(404).json({ message: "Not found" });
-    res.json(doc);
+    res.json(absolutize(req, doc));
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
@@ -48,7 +61,6 @@ exports.getOne = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    // multer .fields(['image','thumb'])
     const image = req.files?.image?.[0];
     if (!image) return res.status(400).json({ message: "Image is required" });
 
@@ -74,7 +86,7 @@ exports.create = async (req, res) => {
       published: body.published === "false" ? false : true,
     });
 
-    res.status(201).json(doc);
+    res.status(201).json(absolutize(req, doc.toObject()));
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
@@ -91,6 +103,7 @@ exports.update = async (req, res) => {
     if (body.album) patch.album = body.album;
     if (typeof body.published !== "undefined")
       patch.published = body.published === "true";
+
     if (typeof body.tags !== "undefined") {
       patch.tags =
         typeof body.tags === "string"
@@ -108,9 +121,10 @@ exports.update = async (req, res) => {
     const doc = await GalleryItem.findByIdAndUpdate(req.params.id, patch, {
       new: true,
       runValidators: true,
-    });
+    }).lean();
+
     if (!doc) return res.status(404).json({ message: "Not found" });
-    res.json(doc);
+    res.json(absolutize(req, doc));
   } catch (e) {
     res.status(400).json({ message: e.message });
   }
@@ -125,7 +139,8 @@ exports.remove = async (req, res) => {
     res.status(400).json({ message: e.message });
   }
 };
-exports.removeAll = async (req, res) => {
+
+exports.removeAll = async (_req, res) => {
   try {
     await GalleryItem.deleteMany({});
     res.status(204).send();

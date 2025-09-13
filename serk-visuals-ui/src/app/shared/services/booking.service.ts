@@ -1,13 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import {
   Booking,
   BookingCreateDto,
   BookingStatus,
 } from '../models/booking.model';
 
-// Use Angular proxy: /api -> http://localhost:3500
 const BASE = 'http://localhost:3500/api/bookings';
 
 @Injectable({ providedIn: 'root' })
@@ -18,6 +17,22 @@ export class BookingsService {
     return this.http.post<Booking>(BASE, payload);
   }
 
+  // Availability helper for the form (live check)
+  checkAvailability(opts: {
+    date: string;
+    time?: string;
+    durationMinutes?: number;
+  }) {
+    let params = new HttpParams().set('date', opts.date);
+    if (opts.time) params = params.set('time', opts.time);
+    if (opts.durationMinutes)
+      params = params.set('durationMinutes', String(opts.durationMinutes));
+    return this.http.get<{ available: boolean; conflict?: any }>(
+      `${BASE}/availability`,
+      { params }
+    );
+  }
+
   list(
     params?: Record<string, string | number | boolean>
   ): Observable<Booking[]> {
@@ -25,7 +40,11 @@ export class BookingsService {
     Object.entries(params ?? {}).forEach(
       ([k, v]) => (hp = hp.set(k, String(v)))
     );
-    return this.http.get<Booking[]>(BASE, { params: hp });
+    // NOTE: your backend returns {items,total,...}. Keep your existing calls in admin as-is;
+    // this list() is currently used seldomly; adapt if needed.
+    return this.http
+      .get<{ items: Booking[] }>(BASE, { params: hp })
+      .pipe(map((r) => r.items));
   }
 
   getOne(id: string): Observable<Booking> {

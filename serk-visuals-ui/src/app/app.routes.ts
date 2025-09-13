@@ -2,23 +2,21 @@ import { Routes } from '@angular/router';
 import { PublicLayoutsComponent } from './layouts/public-layouts/public-layouts.component';
 import { AdminLayoutsComponent } from './layouts/admin-layouts/admin-layouts.component';
 import { ADMIN_ROUTES } from './admin/admin.routes';
+import { adminAuthGuard } from './admin/auth/admin-auth.guard';
 
-export const routes: Routes = [
-  // Public shell
+export const routes = [
   {
     path: '',
-    component: PublicLayoutsComponent, // must contain <router-outlet>
+    component: PublicLayoutsComponent,
     children: [
-      // Homepage at "/"
       {
-        path: 'home',
+        path: '',
         loadComponent: () =>
           import('./pages/landing-page/landing-page.component').then(
             (m) => m.LandingPageComponent
           ),
       },
-      // Keep "/home" working as an alias
-      { path: 'home', redirectTo: '', pathMatch: 'full' },
+      { path: 'home', redirectTo: '', pathMatch: 'full' as const },
 
       {
         path: 'contact',
@@ -39,19 +37,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/gallery/gallery.component').then(
             (m) => m.GalleryPage
-          ), // ensure export name matches
+          ),
       },
       {
         path: 'bookings',
         loadComponent: () =>
           import('./pages/booking/booking.component').then(
             (m) => m.BookingFormPage
-          ), // ensure export name matches
+          ),
       },
     ],
   },
 
-  // Admin login outside admin shell
   {
     path: 'admin/login',
     loadComponent: () =>
@@ -60,15 +57,13 @@ export const routes: Routes = [
       ),
   },
 
-  // Admin shell
   {
     path: 'admin',
-    component: AdminLayoutsComponent, // must contain <router-outlet>
-    children: ADMIN_ROUTES, // add a '**' child inside ADMIN_ROUTES if you want an admin-styled 404
-    // canMatch: [adminAuthGuard],     // optional: protect admin
+    component: AdminLayoutsComponent,
+    canMatch: [adminAuthGuard],
+    children: ADMIN_ROUTES,
   },
 
-  // Global 404 (keep last)
   {
     path: '**',
     loadComponent: () =>
@@ -76,4 +71,4 @@ export const routes: Routes = [
         (m) => m.NotFoundComponent
       ),
   },
-];
+] as const satisfies Routes;

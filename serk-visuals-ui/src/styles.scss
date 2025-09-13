@@ -1,2 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
 @import "./sass/main";
+
+// Layout container (center + side padding)
+$container-max: 1600px;
+$container-pad: clamp(1rem, 2.5vw, 24px);
+
+.container {
+  max-width: $container-max;
+  margin-inline: auto;          // center
+  padding-inline: $container-pad; // left/right space
+  width: 100%;
+}
+
+

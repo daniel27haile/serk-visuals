@@ -1,0 +1,112 @@
+/* Table & toolbar */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  align-items: center;
+  justify-content: space-between;
+
+  .filters { display: flex; gap: .5rem; align-items: center; }
+  input, select, button { padding: .5rem .6rem; }
+}
+.grid {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+
+  th, td {
+    border-bottom: 1px solid #2a2a2a;
+    padding: .6rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .from { display: flex; flex-direction: column; gap: .15rem; }
+  .actions { display: flex; gap: .5rem; }
+}
+.pager { margin-top: 1rem; display: flex; align-items: center; gap: .75rem; }
+.error { color: #ff6b6b; margin: .5rem 0; }
+.empty { opacity: .8; margin-top: 1rem; }
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 80;
+}
+
+.modal {
+  position: fixed;
+  inset: 10% auto auto 50%;
+  transform: translateX(-50%);
+  width: min(820px, 92vw);
+  background: #111;
+  color: #e9e9ef;
+  border: 1px solid #2a2a2a;
+  border-radius: .8rem;
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,.45);
+}
+
+.modal__header,
+.modal__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .8rem 1rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+.modal__footer { border-top: 1px solid #2a2a2a; border-bottom: 0; }
+
+.modal__header h3 { margin: 0; font-size: 1.05rem; }
+
+.modal__close {
+  border: 0;
+  background: transparent;
+  color: #e9e9ef;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.modal__body {
+  padding: 1rem;
+  max-height: 65vh;
+  overflow: auto;
+}
+
+.meta {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 .75rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem 1rem;
+}
+.meta li { opacity: .9; }
+.meta strong { color: #fff; }
+
+.message {
+  white-space: pre-wrap;
+  background: #0b0b0c;
+  border: 1px solid #2a2a2a;
+  border-radius: .5rem;
+  padding: .9rem;
+  line-height: 1.5;
+}
+
+.modal__footer button {
+  padding: .55rem .9rem;
+  border-radius: .5rem;
+  border: 1px solid #2a2a2a;
+  background: #222;
+  color: #e9e9ef;
+  cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .modal { inset: 4% auto auto 50%; }
+  .meta { grid-template-columns: 1fr; }
+}

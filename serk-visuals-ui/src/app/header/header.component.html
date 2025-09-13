@@ -1,13 +1,28 @@
- <header class="site-header header">
+<header class="site-header header">
   <div class="container header__row">
-    <a routerLink="/" class="logo">Serk Visuals</a>
-    <nav class="nav">
-      <a [routerLink]="['/home']" routerLinkActive="is-active">Home</a>
-      <a [routerLink]="['/gallery']" routerLinkActive="is-active">Gallery</a>
-      <a [routerLink]="['/bookings']" routerLinkActive="is-active">Booking</a>
-      <a [routerLink]="['/contact-us']" routerLinkActive="is-active">Contact</a>
-      <a [routerLink]="['/about-us']" routerLinkActive="is-active">About</a>
+    <a [routerLink]="['/home']" class="logo">Serk Visuals</a>
+
+    <!-- Mobile toggle -->
+    <button
+      type="button"
+      class="menu-toggle"
+      [attr.aria-expanded]="isMenuOpen"
+      aria-controls="site-nav"
+      (click)="toggleMenu()"
+    >
+      <span class="sr-only">Toggle menu</span>
+      <span class="burger" [class.open]="isMenuOpen">
+        <span></span><span></span><span></span>
+      </span>
+    </button>
+
+    <!-- Navigation -->
+    <nav id="site-nav" class="nav" [class.is-open]="isMenuOpen">
+      <a [routerLink]="['/home']" routerLinkActive="is-active" (click)="closeMenu()">Home</a>
+      <a [routerLink]="['/gallery']" routerLinkActive="is-active" (click)="closeMenu()">Gallery</a>
+      <a [routerLink]="['/bookings']" routerLinkActive="is-active" (click)="closeMenu()">Booking</a>
+      <a [routerLink]="['/contact']" routerLinkActive="is-active" (click)="closeMenu()">Contact</a>
+      <a [routerLink]="['/about-us']" routerLinkActive="is-active" (click)="closeMenu()">About</a>
     </nav>
   </div>
 </header>
-

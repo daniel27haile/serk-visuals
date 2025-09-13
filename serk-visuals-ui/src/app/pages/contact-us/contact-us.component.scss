@@ -1,0 +1,50 @@
+:host { display:block; color:#e9e9ef; background:rgb(58,55,55); }
+
+.contact.container { max-width: 900px; margin: 0 auto; padding: clamp(1rem, 2vw, 1.5rem); }
+
+.section-heading { font-size: clamp(1.6rem, 2.2vw, 2.2rem); font-weight: 800; margin-bottom:.5rem; }
+.lead { color:#b8bcc9; margin-bottom:1rem; }
+
+.alert {
+  border-radius: .75rem; padding: .75rem 1rem; margin: 1rem 0; font-weight: 600;
+}
+.alert--success { background:#0d1f12; border:1px solid #1e833f; color:#c3f0d0; }
+.alert--error { background:#2a1212; border:1px solid #a63a3a; color:#f5c5c5; }
+
+.form {
+  background:#10141b; border:1px solid #1f2430; border-radius:1rem;
+  padding: clamp(1rem, 2.5vw, 1.5rem); box-shadow:0 10px 30px rgba(0,0,0,.25);
+}
+.form-grid { display:grid; gap:1rem; grid-template-columns: 1fr; }
+.field { display:flex; flex-direction:column; gap:.4rem; }
+.field label { font-weight:700; }
+.field input, .field textarea {
+  background:#0e131a; color:#e9e9ef; border:1px solid #2a2f3a;
+  border-radius:.6rem; padding:.7rem .85rem; font:inherit; width:100%;
+}
+.field textarea { resize: vertical; min-height: 140px; }
+.error { color:#ffb4a6; font-size:.9rem; }
+
+.form-actions { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.75rem; margin-top:1rem; }
+
+.checkbox { display:flex; gap:.5rem; align-items:center; }
+.checkbox input { accent-color:#ff5722; }
+
+.btn { padding:.7rem 1rem; border-radius:.7rem; border:1px solid #2a2f3a; }
+.btn--accent { background:#ff5722; color:#111; font-weight:800; }
+
+.hp { position:absolute; left:-9999px; opacity:0; }
+
+.contact__sidebar { margin-top:1.5rem; }
+.card { background:#0f131a; border:1px solid #1f2430; border-radius:.9rem; padding:1rem; }
+
+/* Breakpoints */
+@media (min-width:600px){
+  .form-grid { grid-template-columns: repeat(2,1fr); }
+  .field:nth-child(3), .field:nth-child(4){ grid-column:1/-1; }
+}
+@media (min-width:900px){
+  .contact.container { max-width:1100px; }
+  .contact { display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; }
+  .contact__header { grid-column:1/-1; }
+}

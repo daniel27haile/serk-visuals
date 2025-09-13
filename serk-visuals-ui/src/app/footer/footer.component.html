@@ -1,9 +1,66 @@
- <footer class="site-footer footer">
-    <div class="container footer__row">
-      <p>&copy; {{year}} SERK Visuals. All rights reserved.</p>
-      <nav class="footer-links">
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-      </nav>
+<footer class="site-footer">
+  <div class="wrap">
+    <!-- Brand/About -->
+    <div class="footer-col">
+      <h2 class="brand">Serk Visuals</h2>
+      <p class="muted">
+        Photography &amp; Videography — capturing stories, emotions, and timeless moments
+        through creative visuals.
+      </p>
     </div>
-  </footer>
+
+    <!-- Quick Links -->
+    <nav class="footer-col footer-links" aria-label="Footer Navigation">
+      <h3 class="footer-heading">Quick Links</h3>
+      <ul>
+        <li><a [routerLink]="['/about-us']">About Us</a></li>
+        <li><a [routerLink]="['/gallery']">Gallery</a></li>
+        <li><a [routerLink]="['/bookings']">Book a Session</a></li>
+        <li><a [routerLink]="['/contact-us']">Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- Contact -->
+    <div class="footer-col contact">
+      <h3 class="footer-heading">Contact</h3>
+      <p>
+        <a href="mailto:hello@serkvisuals.com">hello&#64;serkvisuals.com</a>
+      </p>
+      <p>
+        <a href="tel:+12065550123">+1 (206) 555-0123</a>
+      </p>
+    </div>
+
+    <!-- Social -->
+    <div class="footer-col social">
+      <h3 class="footer-heading">Follow Us</h3>
+      <ul>
+        <li>
+          <a href="https://instagram.com/serkvisuals" target="_blank" rel="noopener noreferrer">
+            &#64;serkvisuals
+          </a>
+        </li>
+        <li>
+          <a href="https://facebook.com/serkvisuals" target="_blank" rel="noopener noreferrer">
+            Facebook
+          </a>
+        </li>
+        <li>
+          <a href="https://youtube.com/@serkvisuals" target="_blank" rel="noopener noreferrer">
+            YouTube
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="wrap copy">
+    <p>&copy; {{ year }} <strong>Serk Visuals</strong>. All rights reserved.</p>
+    <p class="muted small"> Developed by:
+       <a [routerLink]="['/home']" rel="noopener noreferrer">
+             Serk Visuals
+          </a>
+    </p>
+  </div>
+</footer>

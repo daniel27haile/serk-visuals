@@ -2,16 +2,24 @@ import { Routes } from '@angular/router';
 import { PublicLayoutsComponent } from './layouts/public-layouts/public-layouts.component';
 import { AdminLayoutsComponent } from './layouts/admin-layouts/admin-layouts.component';
 import { ADMIN_ROUTES } from './admin/admin.routes';
+import { adminAuthGuard } from './admin/auth/admin-auth.guard';
 
-export const routes: Routes = [
-  // public shell...
+export const routes = [
   {
     path: '',
     component: PublicLayoutsComponent,
     children: [
-      // your public pages here...
       {
-        path: 'contact-us',
+        path: '',
+        loadComponent: () =>
+          import('./pages/landing-page/landing-page.component').then(
+            (m) => m.LandingPageComponent
+          ),
+      },
+      { path: 'home', redirectTo: '', pathMatch: 'full' as const },
+
+      {
+        path: 'contact',
         loadComponent: () =>
           import('./pages/contact-us/contact-us.component').then(
             (m) => m.ContactUsComponent
@@ -38,17 +46,9 @@ export const routes: Routes = [
             (m) => m.BookingFormPage
           ),
       },
-      {
-        path: 'home',
-        loadComponent: () =>
-          import('./pages/landing-page/landing-page.component').then(
-            (m) => m.LandingPageComponent
-          ),
-      },
     ],
   },
 
-  // login OUTSIDE the admin shell
   {
     path: 'admin/login',
     loadComponent: () =>
@@ -57,12 +57,18 @@ export const routes: Routes = [
       ),
   },
 
-  // admin shell + children
   {
     path: 'admin',
     component: AdminLayoutsComponent,
+    canMatch: [adminAuthGuard],
     children: ADMIN_ROUTES,
   },
 
-  { path: '**', redirectTo: '' },
-];
+  {
+    path: '**',
+    loadComponent: () =>
+      import('./pages/not-found/not-found.component').then(
+        (m) => m.NotFoundComponent
+      ),
+  },
+] as const satisfies Routes;

@@ -1,15 +1,14 @@
 const { Schema, model } = require("mongoose");
 
-// keep categories consistent: 'wedding','event','birthday','product','personal'
 const GalleryItemSchema = new Schema(
   {
     title: { type: String, required: true },
     album: {
       type: String,
-      enum: ["wedding", "event", "birthday", "product", "personal", "other"],
+      enum: ["Wedding", "Event", "Birthday", "Product", "Personal", "Other"],
       required: true,
     },
-    url: { type: String, required: true }, // served static: /uploads/...
+    url: { type: String, required: true }, // e.g. /uploads/gallery/xxx.jpg
     thumbnail: { type: String }, // optional
     tags: { type: [String], default: [] },
     published: { type: Boolean, default: true },

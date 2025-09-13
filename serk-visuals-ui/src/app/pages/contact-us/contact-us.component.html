@@ -1,1 +1,93 @@
-<p>contact-us works!</p>
+<section class="contact container">
+  <header class="contact__header">
+    <h1 class="section-heading">Contact Us</h1>
+    <p class="lead">
+      Tell us about your project, date, and vision. We usually reply within 24 hours.
+    </p>
+  </header>
+
+  <!-- Success message replaces the form -->
+  @if (submitted()) {
+    <div class="alert alert--success" role="status" aria-live="polite">
+      <strong>Thanks!</strong> Your message has been sent. We’ll get back to you shortly.
+    </div>
+  } @else {
+    <!-- Server error -->
+    @if (serverError()) {
+      <div class="alert alert--error" role="alert" aria-live="assertive">
+        {{ serverError() }}
+      </div>
+    }
+
+    <!-- Contact Form -->
+    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <div class="form-grid">
+        <!-- Full name -->
+        <div class="field">
+          <label for="fullName">Full name</label>
+          <input id="fullName" type="text" formControlName="fullName" autocomplete="name" />
+          @if (f.fullName.touched && f.fullName.invalid) {
+            <div class="error">
+              @if (f.fullName.errors?.['required']) { <span>Name is required.</span> }
+              @if (f.fullName.errors?.['minlength']) { <span>At least 2 characters.</span> }
+            </div>
+          }
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" formControlName="email" autocomplete="email" />
+          @if (f.email.touched && f.email.invalid) {
+            <div class="error">
+              @if (f.email.errors?.['required']) { <span>Email is required.</span> }
+              @if (f.email.errors?.['email']) { <span>Enter a valid email.</span> }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Subject -->
+      <div class="field">
+        <label for="subject">Subject</label>
+        <input id="subject" type="text" formControlName="subject" />
+      </div>
+
+      <!-- Message -->
+      <div class="field">
+        <label for="message">Message</label>
+        <textarea id="message" rows="6" formControlName="message"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <label class="checkbox">
+          <input type="checkbox" formControlName="consent" />
+          <span>I consent to be contacted about my inquiry.</span>
+        </label>
+
+        <button type="submit" class="btn btn--accent" [disabled]="submitting() || form.invalid">
+          @if (submitting()) { Sending… } @else { Send message }
+        </button>
+      </div>
+
+      <!-- Honeypot -->
+      <input formControlName="hp" class="hp" tabindex="-1" autocomplete="off" />
+    </form>
+  }
+
+  <!-- Sidebar -->
+  <aside class="contact__sidebar">
+    <div class="card">
+      <h2>Prefer email?</h2>
+      <p class="lead">
+        <a href="mailto:hello@serkvisuals.com">hello&#64;serkvisuals.com</a>
+      </p>
+      <p>
+        We’re also on Instagram:
+        <a href="https://instagram.com/serkvisuals" target="_blank" rel="noopener">
+          &#64;serkvisuals
+        </a>
+      </p>
+    </div>
+  </aside>
+</section>

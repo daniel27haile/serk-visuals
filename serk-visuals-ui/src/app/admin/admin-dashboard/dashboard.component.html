@@ -1,1 +1,76 @@
-<p>dashboard works!</p>
+<section class="container section">
+  <header class="topbar">
+    <h1 class="heading">Admin Dashboard</h1>
+    <button class="btn" (click)="refresh()" aria-label="Refresh">Refresh</button>
+  </header>
+
+  @if (loading()) {
+    <div class="skeleton">Loading…</div>
+  } @else if (error()) {
+    <div class="alert alert--error">{{ error() }}</div>
+  } @else {
+    <div class="panels">
+      <!-- Recent bookings -->
+      <div class="panel">
+        <h2 class="panel__title">Recent bookings</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (b of recentBookings(); track idOf(b, $index)) {
+                <tr>
+                  <td><strong>{{ b.name }}</strong></td>
+                  <td>{{ b.date ? (b.date | date:'short') : '—' }}</td>
+                  <td>
+                    <span [ngClass]="['badge', 'badge--' + (b.status ?? 'new')]">
+                      {{ b.status ?? 'new' }}
+                    </span>
+                  </td>
+                  <td class="muted">{{ b.email }}</td>
+                </tr>
+              } @empty {
+                <tr><td colspan="4" class="muted empty">No recent bookings.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Latest messages -->
+      <div class="panel">
+        <h2 class="panel__title">Latest messages</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Client</th>
+                <!-- <th>Subject</th> -->
+                <th>Email</th>
+                <th>Received</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of latestMessages(); track idOf(m, $index)) {
+                <tr>
+                  <td><strong>{{ m.fullName }}</strong></td>
+                  <!-- <td class="muted ellipsis">{{ m.subject }}</td> -->
+                  <td class="muted">{{ m.email }}</td>
+                  <td>{{ m.createdAt ? (m.createdAt | date:'short') : '—' }}</td>
+                </tr>
+              } @empty {
+                <tr><td colspan="4" class="muted empty">No messages yet.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+</section>

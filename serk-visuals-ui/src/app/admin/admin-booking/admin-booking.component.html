@@ -1,1 +1,100 @@
-<p>Admin booking works!</p>
+<section class="container section">
+  <header class="head">
+    <h1>Bookings</h1>
+    <div class="filters">
+      <input type="search" [formControl]="q" placeholder="Search name, email, message…" />
+      <select [formControl]="status" aria-label="Status">
+        <option value="">All statuses</option>
+        <option value="new">New</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+      </select>
+      <select [formControl]="type" aria-label="Type">
+        <option value="">All types</option>
+        <option value="wedding">Wedding</option>
+        <option value="event">Event</option>
+        <option value="portrait">Portrait</option>
+        <option value="product">Product</option>
+        <option value="birthday">Birthday</option>
+        <option value="personal">Personal</option>
+        <option value="other">Other</option>
+      </select>
+      <input type="date" [formControl]="from" />
+      <input type="date" [formControl]="to" />
+      <button (click)="export()">Export CSV</button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="skeleton">Loading bookings…</div>
+  } @else if (error()) {
+    <div class="alert alert--error">{{ error() }}</div>
+  } @else if (!items().length) {
+    <div class="empty">No bookings found.</div>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <input
+                type="checkbox"
+                [checked]="allSelected"
+                (change)="toggleAll($event)"
+                aria-label="Select all"
+              />
+            </th>
+            <th (click)="sortBy('name')">Client</th>
+            <th (click)="sortBy('date')">Date</th>
+            <th (click)="sortBy('status')">Status</th>
+            <th (click)="sortBy('type')">Type</th>
+            <th>Email</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (b of items(); track idOf(b)) {
+            <tr>
+              <td>
+                <input
+                  type="checkbox"
+                  [(ngModel)]="selection[idOf(b)]"
+                  (ngModelChange)="onRowToggle(b, $event)"
+                  aria-label="Select row"
+                />
+              </td>
+              <td><strong>{{ b.name }}</strong></td>
+              <td>{{ b.date ? (b.date | date:'medium') : '—' }}</td>
+              <td>
+                <span class="badge" [ngClass]="'badge--'+(b.status ?? 'new')">
+                  {{ b.status ?? 'new' }}
+                </span>
+              </td>
+              <td class="muted">{{ b.type || '—' }}</td>
+              <td class="muted">{{ b.email }}</td>
+              <td class="actions">
+                <button (click)="setStatus(b,'confirmed')">Confirm</button>
+                <button (click)="setStatus(b,'completed')">Complete</button>
+                <button class="danger" (click)="setStatus(b,'cancelled')">Cancel</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bulk">
+      <button (click)="bulkStatus('confirmed')" [disabled]="!hasSelection()">Bulk Confirm</button>
+      <button (click)="bulkStatus('completed')" [disabled]="!hasSelection()">Bulk Complete</button>
+      <button class="danger" (click)="bulkDelete()" [disabled]="!hasSelection()">Bulk Delete</button>
+    </div>
+
+    <nav class="pager" aria-label="Pagination">
+      <button [disabled]="page===1" (click)="goto(page-1)">Prev</button>
+      <span>Page {{ page }} of {{ pages }}</span>
+      <button [disabled]="page===pages" (click)="goto(page+1)">Next</button>
+    </nav>
+  }
+</section>

@@ -1,3 +1,6 @@
+<!-- HEADER (optional if you render globally) -->
+<!-- <app-header></app-header> -->
+
 <!-- HERO -->
 <section class="container section hero">
   <div class="copy">
@@ -25,12 +28,39 @@
       >
         <img
           class="slide"
-          *ngFor="let s of slider(); trackBy: trackByGallery"
-          [src]="s.url"
-          [alt]="s.title"
-          loading="eager"
+          ngSrc="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1600"
           width="1600"
           height="1000"
+          alt="Wedding scene"
+          priority
+        />
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Portrait lighting"
+        />
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Creative product shoot"
+        />
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Outdoor couple"
+        />
+        <img
+          class="slide"
+          ngSrc="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1600"
+          width="1600"
+          height="1000"
+          alt="Studio portrait"
         />
       </div>
 
@@ -40,39 +70,116 @@
       </div>
 
       <div class="dots" role="tablist" aria-label="Slide selectors">
-        <button
-          class="dot"
-          *ngFor="let _ of slider(); let i = index"
-          [class.active]="i === index()"
-          (click)="go(i)"
-          [attr.aria-label]="'Go to slide ' + (i + 1)"
-          role="tab"
-          [attr.aria-selected]="(i === index()).toString()"
-        ></button>
+        @for (d of slides; track d; let i = $index) {
+          <button
+            class="dot"
+            [class.active]="i === index()"
+            (click)="go(i)"
+            [attr.aria-label]="'Go to slide ' + (i + 1)"
+            role="tab"
+            [attr.aria-selected]="(i === index()).toString()"
+          ></button>
+        }
       </div>
     </div>
-
-    <p class="hint" *ngIf="!loadingSlider() && slider().length === 0 && !errorSlider()">
-      No slider images yet. Add some in Admin → Gallery (placement: slider).
-    </p>
-    <p class="hint error" *ngIf="errorSlider()">{{ errorSlider() }}</p>
   </div>
 </section>
 
-<!-- SERVICES -->
+<!-- SERVICES (fancy styles) -->
 <section class="container section">
   <h2 class="section-heading">Services</h2>
 
   <div class="grid services">
-    <article class="svc" *ngFor="let svc of services">
+    <article class="svc">
       <div class="svc__glow"></div>
-      <div class="svc__icon" aria-hidden="true">{{ svc.icon }}</div>
-      <h3>{{ svc.title }}</h3>
-      <p class="lead clamp-2">{{ svc.copy }}</p>
+      <div class="svc__icon" aria-hidden="true">📷</div>
+      <h3>Photography</h3>
+      <p class="lead clamp-2">
+        Editorial & documentary-style coverage, color-graded to a clean, timeless look.
+      </p>
       <ul class="svc__bullets">
-        <li *ngFor="let b of svc.bullets">{{ b }}</li>
+        <li>Weddings & Engagements</li>
+        <li>Portraits & Headshots</li>
+        <li>Products & Branding</li>
       </ul>
-      <a [routerLink]="svc.ctaLink" class="svc__cta">{{ svc.ctaText }}</a>
+      <a [routerLink]="['/bookings']" class="svc__cta">Book photography →</a>
+    </article>
+
+    <article class="svc">
+      <div class="svc__glow"></div>
+      <div class="svc__icon" aria-hidden="true">🎬</div>
+      <h3>Videography</h3>
+      <p class="lead clamp-2">
+        Story-driven films with cinematic motion, sound design, and tasteful pacing.
+      </p>
+      <ul class="svc__bullets">
+        <li>Wedding Highlight Films</li>
+        <li>Event Recaps</li>
+        <li>Brand Stories</li>
+      </ul>
+      <a [routerLink]="['/bookings']" class="svc__cta">Book videography →</a>
+    </article>
+
+    <article class="svc">
+      <div class="svc__glow"></div>
+      <div class="svc__icon" aria-hidden="true">🪄</div>
+      <h3>Photo Editing</h3>
+      <p class="lead clamp-2">
+        Consistent tone, flattering skin, and refined color science for your images.
+      </p>
+      <ul class="svc__bullets">
+        <li>Pro Retouching</li>
+        <li>Color Grading</li>
+        <li>Batch Processing</li>
+      </ul>
+      <a [routerLink]="['/contact']" class="svc__cta">Contact Us →</a>
+    </article>
+
+    <article class="svc">
+      <div class="svc__glow"></div>
+      <div class="svc__icon" aria-hidden="true">✂️</div>
+      <h3>Video Editing</h3>
+      <p class="lead clamp-2">
+        Snappy cuts, motion graphics, and sound mixing for social & web.
+      </p>
+      <ul class="svc__bullets">
+        <li>Short-form Reels</li>
+        <li>Ads & Promos</li>
+        <li>YouTube & Web</li>
+      </ul>
+      <a [routerLink]="['/contact']" class="svc__cta">Contact Us →</a>
+    </article>
+
+    <article class="svc">
+      <div class="svc__glow"></div>
+      <div class="svc__icon" aria-hidden="true">🌐</div>
+      <h3>Website Development</h3>
+      <p class="lead clamp-2">
+        Fast, modern websites to showcase your brand and book more clients.
+      </p>
+      <ul class="svc__bullets">
+        <li>Modern Frontend</li>
+        <li>CMS & Hosting</li>
+        <li>SEO Basics</li>
+      </ul>
+      <a [routerLink]="['/contact']" class="svc__cta">Contact Us →</a>
+    </article>
+
+    <article class="svc">
+      <div class="svc__glow"></div>
+      <div class="svc__icon" aria-hidden="true">🎓</div>
+      <h3>Online Tutoring</h3>
+      <p class="lead clamp-2">
+        Web Development, DevOps (incl. AWS Certification).
+      </p>
+      <ul class="svc__bullets">
+        <li>Tailored Curriculum</li>
+        <li>Project Feedback</li>
+        <li>Career Guidance</li>
+        <li>Resume writing & optimization</li>
+        <li>Linkedin Optimization</li>
+      </ul>
+      <a [routerLink]="['/contact']" class="svc__cta">Contact Us →</a>
     </article>
   </div>
 </section>
@@ -80,30 +187,39 @@
 <!-- FEATURED GALLERY -->
 <section class="container section">
   <h2 class="section-heading">Featured Gallery</h2>
-
   <div class="grid gallery">
     <img
-      *ngFor="let f of featured(); trackBy: trackByGallery"
-      [src]="f.thumbnail || f.url"
-      [alt]="f.title"
-      loading="lazy"
+      ngSrc="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200"
       width="1200"
       height="800"
+      alt="Portrait studio"
+    />
+    <img
+      ngSrc="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1200"
+      width="1200"
+      height="800"
+      alt="Street story"
+    />
+    <img
+      ngSrc="https://images.unsplash.com/photo-1475688621402-4257c812d6db?q=80&w=1200"
+      width="1200"
+      height="800"
+      alt="Event ambiance"
+    />
+    <img
+      ngSrc="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1200"
+      width="1200"
+      height="800"
+      alt="Outdoor couple"
     />
   </div>
-
-  <p class="hint" *ngIf="!loadingFeatured() && featured().length === 0 && !errorFeatured()">
-    No featured items yet. Add some in Admin → Gallery (placement: featured).
-  </p>
-  <p class="hint error" *ngIf="errorFeatured()">{{ errorFeatured() }}</p>
-
   <div class="button-group">
     <a [routerLink]="['/gallery']" class="btn btn--ghost">See More</a>
     <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
   </div>
 </section>
 
-<!-- TESTIMONIALS -->
+<!-- TESTIMONIALS (five-slide carousel) -->
 <section class="container section">
   <h2 class="section-heading">Client Stories</h2>
 
@@ -118,24 +234,44 @@
       class="t-slides"
       [style.transform]="'translateX(' + -tIndex() * 100 + '%)'"
     >
-      <figure class="t-slide" *ngFor="let t of testimonials(); trackBy: trackByTestimonial">
-        <div class="t-header">
-          <img
-            *ngIf="t.avatar"
-            class="t-avatar"
-            [src]="t.avatar"
-            [alt]="t.author"
-            width="64"
-            height="64"
-            loading="lazy"
-          />
-          <figcaption>
-            <span class="author">{{ t.author }}</span>
-            <span class="role" *ngIf="t.role">— {{ t.role }}</span>
-          </figcaption>
-        </div>
+      <!-- 1 -->
+      <figure class="t-slide">
+        <blockquote class="quote">
+          “Serk Visuals captured our day perfectly — timeless photos and a stunning highlight film.”
+        </blockquote>
+        <figcaption class="author">— M. A., Wedding Client</figcaption>
+      </figure>
 
-        <blockquote class="quote">“{{ t.quote }}”</blockquote>
+      <!-- 2 -->
+      <figure class="t-slide">
+        <blockquote class="quote">
+          “Professional, calm, and creative. Our brand launch looked better than we imagined.”
+        </blockquote>
+        <figcaption class="author">— K. T., Brand Manager</figcaption>
+      </figure>
+
+      <!-- 3 -->
+      <figure class="t-slide">
+        <blockquote class="quote">
+          “They made us feel comfortable on camera and delivered photos we’ll treasure forever.”
+        </blockquote>
+        <figcaption class="author">— L. D., Portrait Client</figcaption>
+      </figure>
+
+      <!-- 4 -->
+      <figure class="t-slide">
+        <blockquote class="quote">
+          “Lightning-fast edits without sacrificing quality. Our event recap went viral.”
+        </blockquote>
+        <figcaption class="author">— J. R., Event Organizer</figcaption>
+      </figure>
+
+      <!-- 5 -->
+      <figure class="t-slide">
+        <blockquote class="quote">
+          “Clear communication, thoughtful direction, and beautiful, consistent color.”
+        </blockquote>
+        <figcaption class="author">— E. S., Creative Director</figcaption>
       </figure>
     </div>
 
@@ -145,20 +281,19 @@
     </div>
 
     <div class="t-dots" role="tablist" aria-label="Testimonial selectors">
-      <button
-        class="t-dot"
-        *ngFor="let _ of testimonials(); let i = index"
-        [class.active]="i === tIndex()"
-        (click)="tGo(i)"
-        [attr.aria-label]="'Go to testimonial ' + (i + 1)"
-        role="tab"
-        [attr.aria-selected]="(i === tIndex()).toString()"
-      ></button>
+      @for (d of tSlides; track d; let i = $index) {
+        <button
+          class="t-dot"
+          [class.active]="i === tIndex()"
+          (click)="tGo(i)"
+          [attr.aria-label]="'Go to testimonial ' + (i + 1)"
+          role="tab"
+          [attr.aria-selected]="(i === tIndex()).toString()"
+        ></button>
+      }
     </div>
   </div>
-
-  <p class="hint" *ngIf="!loadingTestimonials() && testimonials().length === 0 && !errorTestimonials()">
-    No testimonials yet. Add them in Admin → Testimonials.
-  </p>
-  <p class="hint error" *ngIf="errorTestimonials()">{{ errorTestimonials() }}</p>
 </section>
+
+<!-- FOOTER (optional if you render globally) -->
+<!-- <app-footer></app-footer> -->

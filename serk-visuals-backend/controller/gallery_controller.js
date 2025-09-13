@@ -1,5 +1,4 @@
 const GalleryItem = require("../models/gallery_model");
-const { PLACEMENTS } = require("../models/gallery_model");
 
 const pick = (obj, keys) =>
   Object.fromEntries(
@@ -10,28 +9,20 @@ const absolutize = (req, item) => {
   if (!item) return item;
   const host = `${req.protocol}://${req.get("host")}`;
   const out = { ...item };
-  if (out.url && !/^https?:\/\//i.test(out.url)) out.url = host + out.url;
-  if (out.thumbnail && !/^https?:\/\//i.test(out.thumbnail))
+  if (out.url && !/^https?:\/\//i.test(out.url)) {
+    out.url = host + out.url;
+  }
+  if (out.thumbnail && !/^https?:\/\//i.test(out.thumbnail)) {
     out.thumbnail = host + out.thumbnail;
+  }
   return out;
 };
 
 exports.list = async (req, res) => {
   try {
-    const {
-      album,
-      placement,
-      q,
-      page = 1,
-      limit = 24,
-      published,
-      sort = "-createdAt", // allow custom sort e.g. "order,-createdAt"
-    } = req.query;
-
+    const { album, q, page = 1, limit = 24, published } = req.query;
     const filter = {};
     if (album) filter.album = album;
-    if (placement && PLACEMENTS.includes(placement))
-      filter.placement = placement;
     if (published === "true") filter.published = true;
     if (published === "false") filter.published = false;
     if (q) {
@@ -42,19 +33,8 @@ exports.list = async (req, res) => {
     const per = Math.min(100, Math.max(1, Number(limit)));
     const skip = (Math.max(1, Number(page)) - 1) * per;
 
-    // support multi-field sort: "order,-createdAt"
-    const sortObj = {};
-    String(sort)
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean)
-      .forEach((s) => {
-        if (s.startsWith("-")) sortObj[s.slice(1)] = -1;
-        else sortObj[s] = 1;
-      });
-
     const [items, total] = await Promise.all([
-      GalleryItem.find(filter).sort(sortObj).skip(skip).limit(per).lean(),
+      GalleryItem.find(filter).sort("-createdAt").skip(skip).limit(per).lean(),
       GalleryItem.countDocuments(filter),
     ]);
 
@@ -85,14 +65,7 @@ exports.create = async (req, res) => {
     if (!image) return res.status(400).json({ message: "Image is required" });
 
     const thumb = req.files?.thumb?.[0];
-    const body = pick(req.body, [
-      "title",
-      "album",
-      "tags",
-      "published",
-      "placement",
-      "order",
-    ]);
+    const body = pick(req.body, ["title", "album", "tags", "published"]);
 
     const tags =
       typeof body.tags === "string"
@@ -104,18 +77,9 @@ exports.create = async (req, res) => {
         ? body.tags
         : [];
 
-    // validate placement
-    const placement = PLACEMENTS.includes(body.placement)
-      ? body.placement
-      : "gallery";
-
-    const order = Number.isFinite(Number(body.order)) ? Number(body.order) : 0;
-
     const doc = await GalleryItem.create({
       title: body.title,
       album: body.album,
-      placement,
-      order,
       url: `/uploads/gallery/${image.filename}`,
       thumbnail: thumb ? `/uploads/gallery/${thumb.filename}` : undefined,
       tags,
@@ -132,30 +96,13 @@ exports.update = async (req, res) => {
   try {
     const image = req.files?.image?.[0];
     const thumb = req.files?.thumb?.[0];
-    const body = pick(req.body, [
-      "title",
-      "album",
-      "tags",
-      "published",
-      "placement",
-      "order",
-    ]);
+    const body = pick(req.body, ["title", "album", "tags", "published"]);
 
     const patch = {};
     if (body.title) patch.title = body.title;
     if (body.album) patch.album = body.album;
     if (typeof body.published !== "undefined")
       patch.published = body.published === "true";
-
-    if (typeof body.placement !== "undefined") {
-      patch.placement = PLACEMENTS.includes(body.placement)
-        ? body.placement
-        : "gallery";
-    }
-    if (typeof body.order !== "undefined") {
-      const n = Number(body.order);
-      patch.order = Number.isFinite(n) ? n : 0;
-    }
 
     if (typeof body.tags !== "undefined") {
       patch.tags =
@@ -197,34 +144,6 @@ exports.removeAll = async (_req, res) => {
   try {
     await GalleryItem.deleteMany({});
     res.status(204).send();
-  } catch (e) {
-    res.status(400).json({ message: e.message });
-  }
-};
-
-/** Optional: batch reorder for slider/featured */
-exports.reorder = async (req, res) => {
-  try {
-    const { items = [] } = req.body || {};
-    if (!Array.isArray(items) || !items.length)
-      return res.status(400).json({ message: "items required" });
-
-    const ops = items
-      .filter((x) => x?.id)
-      .map((x) => ({
-        updateOne: {
-          filter: { _id: x.id },
-          update: { $set: { order: Number(x.order) || 0 } },
-        },
-      }));
-
-    if (!ops.length) return res.json({ matched: 0, modified: 0 });
-
-    const r = await GalleryItem.bulkWrite(ops);
-    res.json({
-      matched: r.matchedCount ?? r.nMatched ?? 0,
-      modified: r.modifiedCount ?? r.nModified ?? 0,
-    });
   } catch (e) {
     res.status(400).json({ message: e.message });
   }

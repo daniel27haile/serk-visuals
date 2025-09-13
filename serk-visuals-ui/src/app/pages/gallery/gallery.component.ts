@@ -1,20 +1,10 @@
-import {
-  Component,
-  computed,
-  effect,
-  inject,
-  signal,
-  ViewChild,
-  ElementRef,
-  AfterViewInit,
-  OnDestroy,
-  PLATFORM_ID,
-} from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { GalleryService } from '../../shared/services/gallery.service';
 import { Album, GalleryItem } from '../../shared/models/gallery.model';
-import { firstValueFrom, fromEvent, Subscription } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import { firstValueFrom } from 'rxjs';
+
+type Paged<T> = { items: T[]; total: number; page: number; pages: number };
 
 @Component({
   selector: 'app-gallery',
@@ -23,10 +13,8 @@ import { throttleTime } from 'rxjs/operators';
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],
 })
-export class GalleryPage implements AfterViewInit, OnDestroy {
+export class GalleryPage {
   private api = inject(GalleryService);
-  private platformId = inject(PLATFORM_ID);
-  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   albums: Album[] = [
     'Wedding',
@@ -46,71 +34,14 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
   total = signal(0);
   pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit())));
 
-  /** Icon lookup for pills */
-  private readonly albumIcons: Record<Album, string> = {
-    Wedding: '💍',
-    Event: '🎪',
-    Birthday: '🎂',
-    Product: '📷',
-    Personal: '👤',
-    Other: '✨',
-  };
-  albumIcon = (a: Album): string => this.albumIcons[a] ?? '✨';
-
-  // Tabs overflow state
-  @ViewChild('tabWrap') tabWrap?: ElementRef<HTMLDivElement>;
-  canScrollLeft = signal(false);
-  canScrollRight = signal(false);
-
-  private resizeSub?: Subscription;
-
   constructor() {
     effect(
       () => {
+        // react to album/page changes
         void this.fetch();
       },
       { allowSignalWrites: true }
     );
-  }
-
-  ngAfterViewInit(): void {
-    if (!this.isBrowser) return;
-
-    // Initial compute after view is ready
-    setTimeout(() => this.updateTabsOverflow(), 0);
-
-    // Recompute on resize
-    this.resizeSub = fromEvent(window, 'resize')
-      .pipe(throttleTime(100))
-      .subscribe(() => this.updateTabsOverflow());
-  }
-
-  ngOnDestroy(): void {
-    this.resizeSub?.unsubscribe();
-  }
-
-  private updateTabsOverflow() {
-    if (!this.isBrowser) return;
-    const el = this.tabWrap?.nativeElement;
-    if (!el) return;
-    const left = el.scrollLeft > 0;
-    const right = Math.ceil(el.scrollLeft + el.clientWidth) < el.scrollWidth;
-    this.canScrollLeft.set(left);
-    this.canScrollRight.set(right);
-  }
-
-  onTabsScroll() {
-    if (!this.isBrowser) return;
-    this.updateTabsOverflow();
-  }
-
-  scrollTabs(direction: 'left' | 'right') {
-    if (!this.isBrowser) return;
-    const el = this.tabWrap?.nativeElement;
-    if (!el) return;
-    const delta =
-      Math.round(el.clientWidth * 0.8) * (direction === 'left' ? -1 : 1);
-    el.scrollBy({ left: delta, behavior: 'smooth' });
   }
 
   private async fetch() {
@@ -119,12 +50,10 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
     try {
       const res = await firstValueFrom(
         this.api.list({
-          placement: 'gallery',
           album: (this.album() || undefined) as Album | undefined,
           published: true,
           page: this.page(),
           limit: this.limit(),
-          sort: '-createdAt',
         })
       );
       this.items.set(res.items ?? []);
@@ -142,20 +71,6 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
   setAlbum(a: Album | '') {
     this.album.set(a);
     this.page.set(1);
-
-    if (!this.isBrowser) return;
-    // Ensure the selected pill is brought into view on mobile
-    setTimeout(() => {
-      const wrap = this.tabWrap?.nativeElement;
-      if (!wrap) return;
-      const active = wrap.querySelector<HTMLButtonElement>('.tab.is-active');
-      active?.scrollIntoView({
-        inline: 'center',
-        block: 'nearest',
-        behavior: 'smooth',
-      });
-      this.updateTabsOverflow();
-    }, 0);
   }
 
   goto(p: number) {
@@ -165,9 +80,8 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
 
   trackById = (_: number, it: GalleryItem) => it._id!;
 
+  /** Safely join tags for template usage */
   joinTags(tags?: string[] | null): string {
     return Array.isArray(tags) && tags.length ? tags.join(', ') : '';
   }
 }
-
-

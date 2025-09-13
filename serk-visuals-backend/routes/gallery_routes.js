@@ -11,8 +11,8 @@ const validateId = (req, res, next) => {
 };
 
 // list + read
-router.get("/", ctrl.list);
-router.get("/getAll", ctrl.list); // legacy alias
+router.get("/", ctrl.list); // 👈 preferred
+router.get("/getAll", ctrl.list); // 👈 legacy/alias
 router.get("/:id", validateId, ctrl.getOne);
 
 // create (multipart)
@@ -35,9 +35,6 @@ router.patch(
   ]),
   ctrl.update
 );
-
-// optional: batch reorder
-router.patch("/reorder", ctrl.reorder);
 
 // delete
 router.delete("/:id", validateId, ctrl.remove);

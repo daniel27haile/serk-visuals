@@ -1,90 +1,133 @@
 /* =========================================
-   SERK Visuals — Footer (SCSS, mobile-first)
+   SERK Visuals — Fancy Footer (SCSS)
    ========================================= */
-/* Theme & breakpoints */
 
-/* Theme tokens (override in a global theme if you like) */
-$footer-bg: #147fa9;
-$footer-panel: #131824;
-$footer-text: #e7eaf2;
-$footer-dim: #b4bac7;
-$footer-accent: #ff6a00;
-$footer-border: #1f2430;
+/* Theme tokens */
+$bg:            #0a0f1a;
+$panel:         #0f1424;
+$text:          #e7eaf2;
+$dim:           #b4bac7;
+$accent:        #ff6a00;
+$accent-2:      #22d3ee;
+$border:        #1f2430;
+$glass:         rgba(255,255,255,.05);
 
+$wrap-max:      1200px;
+$col-min:       230px;
+$radius:        1rem;
 
-
-$wrap-max: 1200px;
-$col-min: 230px; /* minimum column width before wrapping */
-$radius: .9rem;
-
-/* Breakpoints kept light; grid handles most responsiveness */
-$bp-sm: 480px;
-$bp-md: 768px;
-
-/* Base */
 .site-footer {
-  --bg: #{$footer-bg};
-  --panel: #{$footer-panel};
-  --text: #{$footer-text};
-  --dim: #{$footer-dim};
-  --accent: #{$footer-accent};
-  --border: #{$footer-border};
+  position: relative;
+  isolation: isolate; /* keep effects contained */
+  color: $text;
+  background: radial-gradient(1200px 600px at 10% -10%, #0b1e2b, transparent 55%),
+              radial-gradient(1000px 600px at 90% -20%, #181235, transparent 45%),
+              linear-gradient(180deg, #0a0f1a, #0a0f1a);
+  border-top: 1px solid $border;
+  overflow: clip;
 
-  background: var(--bg);
-  color: var(--text);
-  border-top: 1px solid var(--border);
+  /* Aurora glow layer */
+  .footer-aurora {
+    position: absolute;
+    inset: -30% -10% auto -10%;
+    height: 240px;
+    background: radial-gradient(600px 260px at 15% 25%, rgba(34,211,238,.25), transparent 60%),
+                radial-gradient(500px 240px at 75% 20%, rgba(167,139,250,.18), transparent 60%),
+                radial-gradient(400px 220px at 40% -10%, rgba(255,106,0,.18), transparent 70%);
+    filter: blur(20px);
+    opacity: .75;
+    pointer-events: none;
+    z-index: -1;
+    animation: aurora-float 12s ease-in-out infinite alternate;
+  }
 
-  /* Top row (content columns) */
+  /* Film grain / noise (very subtle) */
+  .footer-noise {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: .06;
+    background-image: url("data:image/svg+xml;utf8,\
+      <svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'>\
+        <filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'></feTurbulence>\
+        <feColorMatrix type='saturate' values='0'></feColorMatrix>\
+        <feComponentTransfer><feFuncA type='table' tableValues='0 0 0 0 0 0 0.4 0'></feFuncA></feComponentTransfer></filter>\
+        <rect width='100%' height='100%' filter='url(%23n)'/>\
+      </svg>");
+    background-size: 220px 220px;
+    mix-blend-mode: overlay;
+    z-index: -1;
+  }
+
+  @keyframes aurora-float {
+    0%   { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(12px) translateX(-8px); }
+  }
+
+  /* Layout wrapper */
   .wrap {
     max-width: min(#{$wrap-max}, 92vw);
     margin: 0 auto;
-    padding: clamp(1.25rem, 2vw, 2rem) 1rem;
+    padding-left:  calc(clamp(1rem, 2.8vw, 2rem) + env(safe-area-inset-left));
+    padding-right: calc(clamp(1rem, 2.8vw, 2rem) + env(safe-area-inset-right));
+    padding-block: clamp(1.2rem, 2.6vw, 2rem);
 
     display: grid;
-    gap: clamp(.9rem, 1.4vw, 1.25rem);
+    gap: clamp(1rem, 2vw, 1.4rem);
     grid-template-columns: repeat(auto-fit, minmax(#{$col-min}, 1fr));
     align-items: start;
   }
 
-  /* Bottom bar */
-  .wrap.copy {
-    border-top: 1px solid var(--border);
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: .5rem;
-    text-align: center;
-    color: var(--dim);
-    font-size: .95rem;
-  }
-
-  /* Columns */
+  /* Glassy panel columns with gradient border */
   .footer-col {
-    background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01));
-    padding: 0; /* keep clean by default */
+    position: relative;
+    padding: clamp(.6rem, 1.2vw, .9rem);
     border-radius: $radius;
+    background:
+      linear-gradient(#0f1424, #0f1424) padding-box,
+      linear-gradient(135deg, rgba(34,211,238,.5), rgba(255,106,0,.4)) border-box;
+    border: 1px solid transparent;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.04) inset,
+      0 10px 26px rgba(0,0,0,.24);
 
     .footer-heading {
       margin: 0 0 .6rem;
-      font-size: clamp(1.3rem, 1.2vw + .6rem, 1.1rem);
+      font-size: clamp(1.05rem, 1.2vw + .35rem, 1.25rem);
       letter-spacing: .2px;
-      color: var(--text);
-      font-weight: 700;
-    }
-
-    .brand {
-      margin: 0 0 .35rem;
-      font-size: clamp(1.15rem, 1.2vw + .9rem, 1.5rem);
+      color: $text;
       font-weight: 800;
-      letter-spacing: .3px;
     }
 
     .muted {
-      color: var(--dim);
+      color: $dim;
       line-height: 1.7;
     }
   }
 
-  /* Quick links list */
+  /* Brand block */
+  .footer-brand {
+    .brand {
+      margin: 0 0 .35rem;
+      font-weight: 900;
+      font-size: clamp(1.4rem, 1.6vw + .9rem, 2rem);
+      letter-spacing: .3px;
+      background: linear-gradient(90deg, #fff, #c9e7ff 35%, #22d3ee 55%, #a78bfa 85%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-wrap: balance;
+
+      span {
+        background: linear-gradient(90deg, #ffd0b0, #ff6a00 45%, #ffd0b0 90%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+    }
+  }
+
+  /* Quick links */
   .footer-links {
     ul {
       margin: 0;
@@ -93,139 +136,121 @@ $bp-md: 768px;
       display: grid;
       gap: .4rem;
 
-      li {
-        a {
-          --link-bg: transparent;
-          display: inline-flex;
-          align-items: center;
-          gap: .5rem;
-          padding: .35rem .55rem;
-          border-radius: .6rem;
-          text-decoration: none;
-          color: var(--text);
-          background: var(--link-bg);
-          transition: background .15s ease, color .15s ease, transform .15s ease;
-
-          &:hover {
-            color: var(--accent);
-            background: rgba(255,255,255,.04);
-          }
-          &:focus-visible {
-            outline: 2px solid var(--accent);
-            outline-offset: 2px;
-          }
-          &:active { transform: translateY(1px); }
-        }
-      }
-    }
-  }
-
-  /* Contact text vs links — clearer contrast */
-  .contact {
-    p {
-      margin: 0 0 .4rem;
-      color: var(--dim);
-
-      strong {
-        color: var(--text);
-        font-weight: 700;
-        margin-right: .35rem;
-      }
-
-      a {
-        color: var(--text);
-        text-decoration: none;
-        border-radius: .45rem;
-        padding: .2rem .35rem;
-
-        &:hover { color: var(--accent); background: rgba(255,255,255,.04); }
-        &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-      }
-    }
-  }
-
-  /* Social links list */
-  .social {
-    ul {
-      margin: 0; padding: 0; list-style: none;
-      display: grid; gap: .4rem;
-
       li a {
+        --bg: transparent;
         display: inline-flex;
         align-items: center;
         gap: .55rem;
-        padding: .35rem .55rem;
+        padding: .35rem .6rem;
         border-radius: .6rem;
         text-decoration: none;
-        color: var(--text);
+        color: $text;
+        background: var(--bg);
         transition: background .15s ease, color .15s ease, transform .15s ease;
+        position: relative;
 
-        &:hover { color: var(--accent); background: rgba(255,255,255,.04); }
-        &:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        /* fancy arrow */
+        &::after {
+          content: "↗";
+          font-size: .9em;
+          opacity: .0;
+          transform: translateY(1px) translateX(-2px);
+          transition: opacity .15s ease, transform .15s ease;
+        }
+
+        &:hover {
+          color: $accent;
+          background: $glass;
+        }
+        &:hover::after { opacity: .9; transform: translateY(1px) translateX(0); }
+        &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
         &:active { transform: translateY(1px); }
       }
     }
   }
 
-  /* ---------------------------------------
-     ICONS (no library) via CSS masks
-     - Uses currentColor so hover/focus styles apply automatically
-     --------------------------------------- */
+  /* Contact */
+  .contact {
+    p { margin: 0 0 .45rem; color: $dim; }
+    a {
+      color: $text; text-decoration: none; border-radius: .45rem; padding: .2rem .35rem;
+      transition: background .15s ease, color .15s ease;
+      &:hover { color: $accent; background: $glass; }
+      &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
+    }
+  }
+
+  /* Social */
+  .social {
+    ul { margin: 0; padding: 0; list-style: none; display: grid; gap: .4rem; }
+    a {
+      display: inline-flex; align-items: center; gap: .55rem;
+      padding: .35rem .6rem; border-radius: .6rem; text-decoration: none;
+      color: $text;
+      transition: background .15s ease, color .15s ease, transform .15s ease;
+
+      &:hover { color: $accent-2; background: $glass; }
+      &:focus-visible { outline: 2px solid $accent-2; outline-offset: 2px; }
+      &:active { transform: translateY(1px); }
+    }
+  }
+
+  /* Icon masks (email/phone + socials) */
   @mixin icon-mask($svg) {
     &::before {
       content: "";
-      inline-size: 1em;
-      block-size: 1em;
+      inline-size: 1em; block-size: 1em;
       display: inline-block;
+      margin-right: .5rem;
       mask: url("data:image/svg+xml;utf8,#{$svg}") no-repeat center / contain;
       -webkit-mask: url("data:image/svg+xml;utf8,#{$svg}") no-repeat center / contain;
       background: currentColor;
     }
   }
-
-  /* Email / Phone (attribute selectors) */
-  a[href^="mailto:"] {
-    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/></svg>');
-    &::before { margin-right: .5rem; }
-  }
-  a[href^="tel:"] {
-    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.3 11.3 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1 17 17 0 0 1-15-15 1 1 0 0 1 1-1h3.4a1 1 0 0 1 1 1 11.3 11.3 0 0 0 .6 3.6 1 1 0 0 1-.24 1Z"/></svg>');
-    &::before { margin-right: .5rem; }
-  }
-
-  /* Social icons (domain contains) */
-  a[href*="instagram.com"] {
-    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/></svg>');
-    &::before { margin-right: .5rem; }
-  }
-  a[href*="facebook.com"] {
-    @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M13 22v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3V2h-3a5 5 0 0 0-5 5v3H6v4h3v8h4Z"/></svg>');
-    &::before { margin-right: .5rem; }
-  }
-  a[href*="youtube.com"], a[href*="youtu.be"] {
+  a[href^="mailto:"]    { @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5v2Z"/></svg>'); }
+  a[href^="tel:"]       { @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.3 11.3 0 0 0 3.6.6 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1 17 17 0 0 1-15-15 1 1 0 0 1 1-1h3.4a1 1 0 0 1 1 1 11.3 11.3 0 0 0 .6 3.6 1 1 0 0 1-.24 1Z"/></svg>'); }
+  a[href*="instagram"]  { @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm6.5-.9a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2Z"/></svg>'); }
+  a[href*="facebook"]   { @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M13 22v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3V2h-3a5 5 0 0 0-5 5v3H6v4h3v8h4Z"/></svg>'); }
+  a[href*="youtube"], a[href*="youtu.be"] {
     @include icon-mask('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23000" d="M23 7.1a3 3 0 0 0-2.1-2.1C19 4.5 12 4.5 12 4.5s-7 0-8.9.5A3 3 0 0 0 1 7.1 31.5 31.5 0 0 0 .5 12a31.5 31.5 0 0 0 .5 4.9 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5A3 3 0 0 0 23 16.9 31.5 31.5 0 0 0 23.5 12 31.5 31.5 0 0 0 23 7.1ZM10 15.5v-7l6 3.5-6 3.5Z"/></svg>');
-    &::before { margin-right: .5rem; }
   }
 
-  /* Accessibility + polish */
-  :where(a) { text-underline-offset: .15em; }
-  :where(a:hover) { text-decoration-thickness: from-font; }
+  /* Bottom bar */
+  .wrap.copy {
+    border-top: 1px solid $border;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .5rem;
+    text-align: center;
+    color: $dim;
+    font-size: .95rem;
 
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
+    .credit-link {
+      color: $text; text-decoration: none; border-radius: .45rem; padding: .2rem .35rem;
+      background:
+        linear-gradient(#0f1424, #0f1424) padding-box,
+        linear-gradient(90deg, rgba(34,211,238,.7), rgba(255,106,0,.6)) border-box;
+      border: 1px solid transparent;
+      transition: filter .2s ease, transform .15s ease, color .15s ease;
+      &:hover { filter: brightness(1.1); color: $accent; }
+      &:focus-visible { outline: 2px solid $accent; outline-offset: 2px; }
+      &:active { transform: translateY(1px); }
+    }
   }
 
-  /* Slightly rearrange bottom bar on wider screens */
-  @media (min-width: $bp-md) {
+  /* Responsiveness for bottom bar */
+  @media (min-width: 768px) {
     .wrap.copy {
       grid-template-columns: 1fr auto;
       text-align: left;
-
       p { margin: 0; }
       .small { text-align: right; }
     }
   }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .footer-aurora { animation: none; }
+    * { transition: none !important; }
+  }
 }
-/* =========================================
-   End of SERK Visuals — Footer (SCSS, mobile-first)
-   ========================================= */

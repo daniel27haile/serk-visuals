@@ -1,22 +1,76 @@
 <section class="gallery">
   <h1>Gallery</h1>
 
-  <div class="tabs">
-    <button *ngFor="let a of albums"
-            [class.is-active]="album() === a"
-            (click)="setAlbum(a)">
-      {{ a }}
+  <!-- Frosted, scrollable, pill tabs with overflow hints + chevrons -->
+  <div
+    class="tabs tabs--frosted"
+    [class.can-left]="canScrollLeft()"
+    [class.can-right]="canScrollRight()"
+  >
+    <button
+      class="tabs__chev tabs__chev--left"
+      type="button"
+      aria-label="Scroll tabs left"
+      [disabled]="!canScrollLeft()"
+      (click)="scrollTabs('left')"
+    >
+      ‹
     </button>
-    <button [class.is-active]="!album()" (click)="setAlbum('')">all</button>
+
+    <div
+      #tabWrap
+      class="tabs__wrap"
+      role="tablist"
+      aria-label="Gallery filters"
+      (scroll)="onTabsScroll()"
+    >
+      <button
+        class="tab"
+        [class.is-active]="!album()"
+        (click)="setAlbum('')"
+        role="tab"
+        [attr.aria-selected]="!album()"
+      >
+        <span class="tab__icon">⭐</span>
+        <span class="tab__label">All</span>
+      </button>
+
+      <button
+        class="tab"
+        *ngFor="let a of albums"
+        [class.is-active]="album() === a"
+        (click)="setAlbum(a)"
+        role="tab"
+        [attr.aria-selected]="album() === a"
+      >
+        <span class="tab__icon">{{ albumIcon(a) }}</span>
+        <span class="tab__label">{{ a }}</span>
+      </button>
+    </div>
+
+    <button
+      class="tabs__chev tabs__chev--right"
+      type="button"
+      aria-label="Scroll tabs right"
+      [disabled]="!canScrollRight()"
+      (click)="scrollTabs('right')"
+    >
+      ›
+    </button>
   </div>
 
   <div class="gallery__grid">
-    <article class="gallery__item" *ngFor="let it of (items() ?? []); trackBy: trackById">
-      <img [src]="it.thumbnail || it.url" [alt]="it.title" loading="lazy" />
+    <article
+      class="gallery__item"
+      *ngFor="let it of (items() ?? []); trackBy: trackById"
+    >
+      <div class="thumb">
+        <img [src]="it.thumbnail || it.url" [alt]="it.title" loading="lazy" />
+        <div class="thumb__overlay"></div>
+      </div>
       <div class="gallery__item-body">
         <h4 [attr.title]="it.title">{{ it.title }}</h4>
-        <p class="muted"
-           [attr.title]="joinTags(it.tags) || null">
+        <p class="muted" [attr.title]="joinTags(it.tags) || null">
           {{ it.album }}
           <ng-container *ngIf="(it.tags?.length ?? 0) > 0">
             · {{ joinTags(it.tags) }}

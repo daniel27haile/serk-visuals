@@ -1,7 +1,12 @@
+// src/app/admin/admin-gallery/admin-gallery.component.ts
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GalleryService } from '../../shared/services/gallery.service';
-import { Album, GalleryItem } from '../../shared/models/gallery.model';
+import {
+  Album,
+  GalleryItem,
+  Placement,
+} from '../../shared/models/gallery.model';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -29,6 +34,8 @@ export class AdminGalleryComponent implements OnInit {
     'Personal',
     'Other',
   ];
+  placements: Placement[] = ['gallery', 'slider', 'featured']; // 👈 new
+
   album = signal<Album | ''>('');
   page = signal(1);
   limit = signal(20);
@@ -39,14 +46,16 @@ export class AdminGalleryComponent implements OnInit {
   total = signal(0);
   pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit())));
 
-  // Create / Edit form
+  // Form (now includes placement + order)
   form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(2)]],
-    album: ['wedding' as Album, Validators.required],
+    album: ['Wedding' as Album, Validators.required],
     tags: [''],
     published: [true],
-    image: [null as File | null], // required on create
-    thumb: [null as File | null], // optional
+    image: [null as File | null],
+    thumb: [null as File | null],
+    placement: ['gallery' as Placement, Validators.required], // 👈 new
+    order: [0, [Validators.min(0)]], // 👈 new
   });
 
   editingId = signal<string | null>(null);
@@ -64,9 +73,9 @@ export class AdminGalleryComponent implements OnInit {
           album: (this.album() || undefined) as Album | undefined,
           page: this.page(),
           limit: this.limit(),
+          // you could also pass placement filter here if desired
         })
       );
-
       this.items.set(res.items);
       this.total.set(res.total);
     } catch (e: any) {
@@ -100,7 +109,6 @@ export class AdminGalleryComponent implements OnInit {
   async submit() {
     if (this.form.invalid) return;
 
-    // Strongly type the raw value to avoid optional chaining noise
     const v = this.form.getRawValue() as {
       title: string;
       album: Album;
@@ -108,6 +116,8 @@ export class AdminGalleryComponent implements OnInit {
       published: boolean;
       image: File | null;
       thumb: File | null;
+      placement: Placement;
+      order: number;
     };
 
     const tags = v.tags
@@ -129,6 +139,8 @@ export class AdminGalleryComponent implements OnInit {
             published: !!v.published,
             image: v.image ?? undefined,
             thumb: v.thumb ?? undefined,
+            placement: v.placement, // 👈 include
+            order: Number(v.order ?? 0), // 👈 include
           })
         );
       } else {
@@ -144,6 +156,8 @@ export class AdminGalleryComponent implements OnInit {
             published: !!v.published,
             image: v.image,
             thumb: v.thumb ?? undefined,
+            placement: v.placement, // 👈 include
+            order: Number(v.order ?? 0), // 👈 include
           })
         );
       }
@@ -165,6 +179,8 @@ export class AdminGalleryComponent implements OnInit {
       published: !!item.published,
       image: null,
       thumb: null,
+      placement: item.placement ?? 'gallery',
+      order: item.order ?? 0,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -178,9 +194,9 @@ export class AdminGalleryComponent implements OnInit {
       published: true,
       image: null,
       thumb: null,
+      placement: 'gallery',
+      order: 0,
     });
-
-    // Avoid "left-hand side may not be optional property access"
     const imgEl = document.getElementById('image') as HTMLInputElement | null;
     if (imgEl) imgEl.value = '';
     const thumbEl = document.getElementById('thumb') as HTMLInputElement | null;

@@ -40,4 +40,13 @@ export const ADMIN_ROUTES: Routes = [
         (m) => m.AdminGalleryComponent
       ),
   },
+
+  {
+    path: 'testimonials',
+    loadComponent: () =>
+      import('./admin-testimonials/admin-testimonials.component').then(
+        (m) => m.AdminTestimonialsComponent
+      ),
+    title: 'Admin • Testimonials',
+  },
 ];

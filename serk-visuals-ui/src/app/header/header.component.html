@@ -1,6 +1,10 @@
-<header class="site-header header">
+<header class="site-header">
   <div class="container header__row">
-    <a [routerLink]="['/home']" class="logo">Serk Visuals</a>
+    <!-- Brand -->
+    <a [routerLink]="['/home']" class="logo" aria-label="Serk Visuals — Home">
+      <span class="logo__mark">SV</span>
+      <span class="logo__text">Serk Visuals</span>
+    </a>
 
     <!-- Mobile toggle -->
     <button
@@ -17,12 +21,22 @@
     </button>
 
     <!-- Navigation -->
-    <nav id="site-nav" class="nav" [class.is-open]="isMenuOpen">
+    <nav id="site-nav" class="nav" [class.is-open]="isMenuOpen" role="navigation" aria-label="Primary">
       <a [routerLink]="['/home']" routerLinkActive="is-active" (click)="closeMenu()">Home</a>
       <a [routerLink]="['/gallery']" routerLinkActive="is-active" (click)="closeMenu()">Gallery</a>
       <a [routerLink]="['/bookings']" routerLinkActive="is-active" (click)="closeMenu()">Booking</a>
       <a [routerLink]="['/contact']" routerLinkActive="is-active" (click)="closeMenu()">Contact</a>
       <a [routerLink]="['/about-us']" routerLinkActive="is-active" (click)="closeMenu()">About</a>
+
+      <!-- CTA visible on desktop; in mobile it sits inside dropdown -->
+      <a
+        class="btn btn--accent nav__cta"
+        [routerLink]="['/bookings']"
+        (click)="closeMenu()"
+        aria-label="Book a session"
+      >
+        Book Now
+      </a>
     </nav>
   </div>
 </header>

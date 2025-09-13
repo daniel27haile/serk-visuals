@@ -9,14 +9,12 @@ const {
 const { ADMIN_EMAIL } = process.env;
 
 const ALLOWED_TYPES = [
-  "wedding",
-  "event",
-  "portrait",
-  "product",
-  "video",
-  "birthday",
-  "personal",
-  "other",
+  "Wedding",
+  "Event",
+  "Birthday",
+  "Product",
+  "Personal",
+  "Other",
 ];
 const ALLOWED_STATUS = ["new", "confirmed", "completed", "cancelled"];
 
@@ -26,7 +24,6 @@ const pick = (obj, keys) =>
   );
 
 function combineDateAndTime(dateStr, timeStr) {
-  // If already full ISO, accept as-is
   const maybe = new Date(dateStr);
   if (!isNaN(maybe.getTime()) && String(dateStr).includes("T")) return maybe;
 
@@ -38,10 +35,23 @@ function combineDateAndTime(dateStr, timeStr) {
     hh = H || 0;
     mm = M || 0;
   }
-  // Local time (server will store Date as UTC internally)
   return new Date(y, (m || 1) - 1, d || 1, hh, mm, 0, 0);
 }
 
+/** Overlap check: any booking (not cancelled) whose [date, end) overlaps with [start, end) */
+async function findConflict(start, end, excludeId) {
+  const q = {
+    status: { $ne: "cancelled" },
+    date: { $lt: end }, // starts before this slot ends
+    end: { $gt: start }, // ends after this slot starts
+  };
+  if (excludeId) q._id = { $ne: excludeId };
+  return Booking.findOne(q)
+    .select("_id name email type status date end")
+    .lean();
+}
+
+/** Stats */
 async function getStats(_req, res) {
   const now = new Date();
   const in30 = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -56,6 +66,35 @@ async function getStats(_req, res) {
   res.json({ total, pending, upcoming });
 }
 
+/** Availability: GET /api/bookings/availability?date=YYYY-MM-DD|ISO&time=HH:mm&durationMinutes=60 */
+async function availability(req, res) {
+  try {
+    const { date, time, durationMinutes } = req.query;
+    const start = combineDateAndTime(date, time);
+    if (isNaN(start.getTime()))
+      return res.status(400).json({ message: "Invalid date/time" });
+
+    // use nullish coalescing (no mixing with ||)
+    const duration = Math.max(
+      15,
+      Math.min(24 * 60, Number(durationMinutes ?? 60))
+    );
+    const end = new Date(start.getTime() + duration * 60 * 1000);
+
+    const conflict = await findConflict(start, end);
+    res.json({
+      available: !conflict,
+      conflict: conflict || null,
+      start,
+      end,
+      durationMinutes: duration,
+    });
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+}
+
+/** List */
 async function getAll(req, res) {
   try {
     const {
@@ -106,6 +145,7 @@ async function getAll(req, res) {
   }
 }
 
+/** Read */
 async function getOne(req, res) {
   try {
     const doc = await Booking.findById(req.params.id);
@@ -116,6 +156,7 @@ async function getOne(req, res) {
   }
 }
 
+/** Create with conflict prevention */
 async function create(req, res) {
   try {
     const data = pick(req.body, [
@@ -127,6 +168,7 @@ async function create(req, res) {
       "time",
       "message",
       "status",
+      "durationMinutes",
     ]);
 
     if (data.type && !ALLOWED_TYPES.includes(data.type))
@@ -134,20 +176,43 @@ async function create(req, res) {
     if (data.status && !ALLOWED_STATUS.includes(data.status))
       return res.status(400).json({ message: "Invalid status" });
 
-    if (data.date) {
-      const dt = combineDateAndTime(data.date, data.time);
-      if (isNaN(dt.getTime()))
-        return res.status(400).json({ message: "Invalid date/time" });
-      data.date = dt;
-      delete data.time;
+    // Compute start/end
+    const start = combineDateAndTime(data.date, data.time);
+    if (isNaN(start.getTime()))
+      return res.status(400).json({ message: "Invalid date/time" });
+    const duration = Math.max(
+      15,
+      Math.min(24 * 60, Number(data.durationMinutes ?? 60))
+    );
+    const end = new Date(start.getTime() + duration * 60 * 1000);
+
+    // Conflict check (block any overlapping booking except 'cancelled')
+    const conflict = await findConflict(start, end);
+    if (conflict) {
+      return res.status(409).json({
+        message: "This time is already booked.",
+        conflict,
+        start,
+        end,
+        durationMinutes: duration,
+      });
     }
 
-    const doc = await Booking.create(data);
+    const doc = await Booking.create({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      type: data.type,
+      date: start,
+      end,
+      durationMinutes: duration,
+      message: data.message,
+      status: data.status || "new",
+    });
 
     // Fire-and-forget emails
     (async () => {
       try {
-        // Admin email
         if (ADMIN_EMAIL) {
           const msg = adminNotification(doc.toObject());
           await sendMail({
@@ -158,7 +223,6 @@ async function create(req, res) {
             replyTo: doc.email || undefined,
           });
         }
-        // Customer email
         if (doc.email) {
           const msg = customerConfirmation(doc.toObject());
           await sendMail({
@@ -179,6 +243,7 @@ async function create(req, res) {
   }
 }
 
+/** Update with conflict prevention */
 async function update(req, res) {
   try {
     const data = pick(req.body, [
@@ -190,6 +255,7 @@ async function update(req, res) {
       "time",
       "message",
       "status",
+      "durationMinutes",
     ]);
 
     if (data.type && !ALLOWED_TYPES.includes(data.type))
@@ -197,15 +263,66 @@ async function update(req, res) {
     if (data.status && !ALLOWED_STATUS.includes(data.status))
       return res.status(400).json({ message: "Invalid status" });
 
-    if (data.date) {
-      const dt = combineDateAndTime(data.date, data.time);
-      if (isNaN(dt.getTime()))
+    // Build patch and recompute end if date/time/duration provided
+    const patch = {
+      ...pick(data, ["name", "email", "phone", "type", "message", "status"]),
+    };
+
+    let start = null,
+      end = null;
+    if (
+      typeof data.date !== "undefined" ||
+      typeof data.time !== "undefined" ||
+      typeof data.durationMinutes !== "undefined"
+    ) {
+      // Need current record to fill missing bits
+      const current = await Booking.findById(req.params.id);
+      if (!current)
+        return res.status(404).json({ message: "Booking not found" });
+
+      const baseStart =
+        typeof data.date !== "undefined" || typeof data.time !== "undefined"
+          ? combineDateAndTime(
+              data.date ?? current.date.toISOString(),
+              data.time
+            )
+          : current.date;
+
+      if (isNaN(baseStart.getTime()))
         return res.status(400).json({ message: "Invalid date/time" });
-      data.date = dt;
-      delete data.time;
+
+      // ✅ Use parentheses / nullish-only to avoid mixing ?? and ||
+      const dur = Math.max(
+        15,
+        Math.min(
+          24 * 60,
+          Number(data.durationMinutes ?? current.durationMinutes ?? 60)
+        )
+      );
+
+      start = baseStart;
+      end = new Date(start.getTime() + dur * 60 * 1000);
+      patch.date = start;
+      patch.end = end;
+      patch.durationMinutes = dur;
+
+      // Only check conflicts if result is an active booking (not cancelled)
+      const targetStatus = patch.status ?? current.status;
+      if (targetStatus !== "cancelled") {
+        const conflict = await findConflict(start, end, current._id);
+        if (conflict) {
+          return res.status(409).json({
+            message: "This time is already booked.",
+            conflict,
+            start,
+            end,
+            durationMinutes: dur,
+          });
+        }
+      }
     }
 
-    const doc = await Booking.findByIdAndUpdate(req.params.id, data, {
+    const doc = await Booking.findByIdAndUpdate(req.params.id, patch, {
       new: true,
       runValidators: true,
     });
@@ -217,11 +334,32 @@ async function update(req, res) {
   }
 }
 
+/** Set status (prevent confirming into an occupied slot) */
 async function setStatus(req, res) {
   try {
     const { status } = req.body;
     if (!ALLOWED_STATUS.includes(status))
       return res.status(400).json({ message: "Invalid status" });
+
+    const current = await Booking.findById(req.params.id);
+    if (!current) return res.status(404).json({ message: "Booking not found" });
+
+    if (status !== "cancelled") {
+      const conflict = await findConflict(
+        current.date,
+        current.end,
+        current._id
+      );
+      if (conflict) {
+        return res.status(409).json({
+          message: "Cannot set status: slot is already booked.",
+          conflict,
+          start: current.date,
+          end: current.end,
+          durationMinutes: current.durationMinutes,
+        });
+      }
+    }
 
     const doc = await Booking.findByIdAndUpdate(
       req.params.id,
@@ -231,7 +369,7 @@ async function setStatus(req, res) {
 
     if (!doc) return res.status(404).json({ message: "Booking not found" });
 
-    // Optional: notify customer of status update
+    // Notify customer (optional)
     (async () => {
       try {
         if (doc.email) {
@@ -255,6 +393,7 @@ async function setStatus(req, res) {
   }
 }
 
+/** Bulk status / delete stay the same */
 async function bulkStatus(req, res) {
   const { ids = [], status } = req.body || {};
   if (!Array.isArray(ids) || !ids.length)
@@ -292,6 +431,7 @@ async function remove(req, res) {
   }
 }
 
+/** CSV now includes end & duration */
 async function exportCsv(req, res) {
   const { q, status, type, from, to } = req.query;
 
@@ -310,7 +450,8 @@ async function exportCsv(req, res) {
 
   const rows = await Booking.find(filter).sort("-createdAt").lean();
 
-  const header = "name,email,phone,type,status,date,createdAt\n";
+  const header =
+    "name,email,phone,type,status,start,end,durationMinutes,createdAt\n";
   const body = rows
     .map((r) =>
       [
@@ -319,10 +460,12 @@ async function exportCsv(req, res) {
         r.phone ?? "",
         r.type ?? "",
         r.status ?? "",
-        r.date?.toISOString() ?? "",
-        r.createdAt?.toISOString() ?? "",
+        r.date ? new Date(r.date).toISOString() : "",
+        r.end ? new Date(r.end).toISOString() : "",
+        r.durationMinutes ?? "",
+        r.createdAt ? new Date(r.createdAt).toISOString() : "",
       ]
-        .map((v) => `"${String(v).replace(/"/g, '""')}"`)
+        .map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`)
         .join(",")
     )
     .join("\n");
@@ -333,6 +476,7 @@ async function exportCsv(req, res) {
 }
 
 module.exports = {
+  availability,
   getStats,
   getAll,
   getOne,

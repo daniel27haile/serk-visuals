@@ -1,20 +1,30 @@
-// routes/contact-us.routes.js
+// routes/contactus_routes.js
 const router = require("express").Router();
 const rateLimit = require("express-rate-limit");
 const controller = require("../controller/contactus_controller");
+const { requireAuth, requireRole } = require("../middleware/auth");
 
+// Public health + create
+router.get("/health", (_req, res) => res.json({ status: "ok" }));
+router.post(
+  "/",
+  rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+  controller.create
+);
 
-// 10 requests / 10 minutes per IP (tweak as needed)
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// 🛡️ Admin-only from here
+router.use(requireAuth, requireRole(["admin", "editor"]));
 
-router.post("/", limiter, controller.create);
-router.get("/health", (req, res) => res.json({ status: "ok" }));
-router.get("/:id", controller.getOne);
 router.get("/", controller.getAll);
+router.get("/:id", controller.getOne);
+router.patch("/:id", controller.update);
+router.patch("/:id/status", controller.updateStatus);
+router.delete("/:id", controller.softDelete);
+router.delete("/:id/hard", controller.hardDelete);
 
 module.exports = router;

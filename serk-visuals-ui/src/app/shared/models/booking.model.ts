@@ -1,10 +1,10 @@
 export type BookingType =
-  | 'wedding'
-  | 'event'
-  | 'birthday'
-  | 'product'
-  | 'personal'
-  | 'other';
+  | 'Wedding'
+  | 'Event'
+  | 'Birthday'
+  | 'Product'
+  | 'Personal'
+  | 'Other';
 
 export type BookingStatus = 'new' | 'confirmed' | 'completed' | 'cancelled';
 
@@ -12,9 +12,13 @@ export interface Booking {
   _id?: string;
   name: string;
   email: string;
-  phone?: number; // backend expects number
+  phone?: number; // keep Number to match backend for now
   type?: BookingType;
-  date?: string; // ISO datetime
+
+  date?: string; // ISO start
+  end?: string; // ISO end
+  durationMinutes?: number;
+
   message?: string;
   status?: BookingStatus;
   createdAt?: string;
@@ -22,4 +26,4 @@ export interface Booking {
 }
 
 export interface BookingCreateDto
-  extends Omit<Booking, '_id' | 'createdAt' | 'updatedAt'> {}
+  extends Omit<Booking, '_id' | 'createdAt' | 'updatedAt' | 'end'> {}

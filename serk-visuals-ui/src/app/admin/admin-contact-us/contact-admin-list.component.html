@@ -1,0 +1,100 @@
+<section class="toolbar">
+  <div class="filters">
+    <input
+      [(ngModel)]="query"
+      (keyup.enter)="onSearch()
+      "
+      placeholder="Search name/email/subject/message"
+    />
+    <select [(ngModel)]="status" (change)="onSearch()">
+      <option value="">All statuses</option>
+      <option value="new">New</option>
+      <option value="read">Read</option>
+      <option value="replied">Replied</option>
+    </select>
+    <button (click)="onSearch()">Search</button>
+  </div>
+
+  <div class="paging">
+    <label>
+      Page size:
+      <select [(ngModel)]="pageSize" (change)="onSearch()">
+        <option *ngFor="let s of [5,10,20,50,100]" [value]="s">{{ s }}</option>
+      </select>
+    </label>
+  </div>
+</section>
+
+<div *ngIf="loading()">Loading…</div>
+<div *ngIf="error()" class="error">{{ error() }}</div>
+
+<table *ngIf="!loading() && items().length" class="grid">
+  <thead>
+    <tr>
+      <th>When</th>
+      <th>From</th>
+      <th>Subject</th>
+      <th>Status</th>
+      <th style="width:220px">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let c of items(); trackBy: trackById">
+      <td>{{ c.createdAt | date:'short' }}</td>
+      <td>
+        <div class="from">
+          <strong>{{ c.fullName }}</strong>
+          <small>{{ c.email }}</small>
+        </div>
+      </td>
+      <td>{{ c.subject }}</td>
+      <td>
+        <select [ngModel]="c.status" (ngModelChange)="changeStatus(c, $event)">
+          <option value="new">new</option>
+          <option value="read">read</option>
+          <option value="replied">replied</option>
+        </select>
+      </td>
+      <td class="actions">
+        <!-- Open modal instead of navigating -->
+        <button (click)="openModal(c)">Open</button>
+        <button (click)="delete(c)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<nav *ngIf="pages() > 1" class="pager">
+  <button [disabled]="page()===1" (click)="prevPage()">Prev</button>
+  <span>Page {{ page() }} / {{ pages() }}</span>
+  <button [disabled]="page()===pages()" (click)="nextPage()">Next</button>
+</nav>
+
+<div *ngIf="!loading() && !items().length" class="empty">No messages.</div>
+
+<!-- ===== Modal (in-page popup) ===== -->
+<div class="modal-backdrop" *ngIf="modalOpen()" (click)="closeModal()"></div>
+
+<section class="modal" *ngIf="modalOpen()" role="dialog" aria-modal="true" aria-label="Contact message">
+  <header class="modal__header">
+    <h3>Message</h3>
+    <button class="modal__close" (click)="closeModal()" aria-label="Close">✕</button>
+  </header>
+
+  <div class="modal__body" *ngIf="selected() as s">
+    <ul class="meta">
+      <li><strong>Name:</strong> {{ s.fullName }}</li>
+      <li><strong>Email:</strong> {{ s.email }}</li>
+      <li><strong>Subject:</strong> {{ s.subject }}</li>
+      <li><strong>Status:</strong> {{ s.status }}</li>
+      <li><strong>Created:</strong> {{ s.createdAt | date:'short' }}</li>
+    </ul>
+
+    <!-- Show the exact message text; not HTML to avoid XSS -->
+    <pre class="message">{{ s.message }}</pre>
+  </div>
+
+  <footer class="modal__footer">
+    <button (click)="closeModal()">Close</button>
+  </footer>
+</section>

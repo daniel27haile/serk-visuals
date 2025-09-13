@@ -10,8 +10,9 @@ const validateId = (req, res, next) => {
   next();
 };
 
-// Quick assertion to catch missing handlers early in dev
+// Sanity
 [
+  "availability",
   "getStats",
   "getAll",
   "getOne",
@@ -23,10 +24,12 @@ const validateId = (req, res, next) => {
   "remove",
   "exportCsv",
 ].forEach((k) => {
-  if (typeof ctrl[k] !== "function") {
+  if (typeof ctrl[k] !== "function")
     throw new Error(`Controller "${k}" is not a function`);
-  }
 });
+
+/** NEW: availability */
+router.get("/availability", ctrl.availability);
 
 /** Stats & export */
 router.get("/stats", ctrl.getStats);
@@ -37,9 +40,9 @@ router.patch("/bulk/status", ctrl.bulkStatus);
 router.delete("/bulk", ctrl.bulkDelete);
 
 /** CRUD */
-router.get("/", ctrl.getAll); // GET /api/bookings
-router.get("/getAll", ctrl.getAll); // optional alias
-router.post("/", ctrl.create); // POST /api/bookings
+router.get("/", ctrl.getAll);
+router.get("/getAll", ctrl.getAll); // alias
+router.post("/", ctrl.create);
 router.get("/:id", validateId, ctrl.getOne);
 router.patch("/:id", validateId, ctrl.update);
 router.patch("/:id/status", validateId, ctrl.setStatus);

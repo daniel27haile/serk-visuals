@@ -17,12 +17,12 @@ export class GalleryPage {
   private api = inject(GalleryService);
 
   albums: Album[] = [
-    'wedding',
-    'event',
-    'birthday',
-    'product',
-    'personal',
-    'other',
+    'Wedding',
+    'Event',
+    'Birthday',
+    'Product',
+    'Personal',
+    'Other',
   ];
   album = signal<Album | ''>(''); // '' = all
   page = signal(1);

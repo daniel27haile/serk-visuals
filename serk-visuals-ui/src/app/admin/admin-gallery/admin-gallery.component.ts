@@ -22,12 +22,12 @@ export class AdminGalleryComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   albums: Album[] = [
-    'wedding',
-    'event',
-    'birthday',
-    'product',
-    'personal',
-    'other',
+    'Wedding',
+    'Event',
+    'Birthday',
+    'Product',
+    'Personal',
+    'Other',
   ];
   album = signal<Album | ''>('');
   page = signal(1);
@@ -173,7 +173,7 @@ export class AdminGalleryComponent implements OnInit {
     this.editingId.set(null);
     this.form.reset({
       title: '',
-      album: 'wedding',
+      album: 'Wedding',
       tags: '',
       published: true,
       image: null,

@@ -5,7 +5,7 @@ const GalleryItemSchema = new Schema(
     title: { type: String, required: true },
     album: {
       type: String,
-      enum: ["wedding", "event", "birthday", "product", "personal", "other"],
+      enum: ["Wedding", "Event", "Birthday", "Product", "Personal", "Other"],
       required: true,
     },
     url: { type: String, required: true }, // e.g. /uploads/gallery/xxx.jpg

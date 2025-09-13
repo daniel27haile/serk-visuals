@@ -8,12 +8,24 @@
   >
     <h2 class="logo">Admin Panel</h2>
     <nav class="sidebar__nav">
-      <a [routerLink]="['/admin/dashboard']" routerLinkActive="is-active">Dashboard</a>
-      <a [routerLink]="['/admin/bookings']" routerLinkActive="is-active">Bookings</a>
-      <a [routerLink]="['/admin/users']" routerLinkActive="is-active">Users</a>
-      <a [routerLink]="['/admin/projects']" routerLinkActive="is-active">Projects</a>
-      <a [routerLink]="['/admin/settings']" routerLinkActive="is-active">Settings</a>
-      <a [routerLink]="['/admin/gallery']" routerLinkActive="is-active">Gallery</a>
+      <a [routerLink]="['/admin/dashboard']" routerLinkActive="is-active"
+        >Dashboard</a
+      >
+      <a [routerLink]="['/admin/bookings']" routerLinkActive="is-active"
+        >Bookings</a
+      >
+      <a [routerLink]="['/admin/contact']" routerLinkActive="is-active"
+        >User Contacts</a
+      >
+      <a [routerLink]="['/admin/projects']" routerLinkActive="is-active"
+        >Projects</a
+      >
+      <a [routerLink]="['/admin/settings']" routerLinkActive="is-active"
+        >Settings</a
+      >
+      <a [routerLink]="['/admin/gallery']" routerLinkActive="is-active"
+        >Gallery</a
+      >
     </nav>
   </aside>
 
@@ -39,7 +51,9 @@
 
       <p class="welcome">Welcome, Admin</p>
 
-      <button class="logout-btn">Logout</button>
+      <!-- layouts/admin-layouts/admin-layouts.component.html -->
+
+      <button class="logout-btn" (click)="logout()">Logout</button>
     </header>
 
     <main class="main-area">

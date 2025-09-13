@@ -1,10 +1,12 @@
 export type Album =
-  | 'wedding'
-  | 'event'
-  | 'birthday'
-  | 'product'
-  | 'personal'
-  | 'other';
+  | 'Wedding'
+  | 'Event'
+  | 'Birthday'
+  | 'Product'
+  | 'Personal'
+  | 'Other';
+
+  
 
 export interface GalleryItem {
   _id?: string;

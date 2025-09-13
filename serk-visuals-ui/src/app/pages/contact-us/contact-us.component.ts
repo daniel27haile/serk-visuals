@@ -1,11 +1,10 @@
-// src/app/contact-us/contact-us.component.ts
+// src/app/pages/contact-us/contact-us.component.ts
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import {
   ReactiveFormsModule,
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-// import { HttpClientModule } from '@angular/common/http';
 import { ContactUsService } from '../../shared/services/contact-us.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
@@ -22,7 +21,6 @@ export class ContactUsComponent {
   private svc = inject(ContactUsService);
   private destroyRef = inject(DestroyRef);
 
-  // UI state with signals
   submitting = signal(false);
   submitted = signal(false);
   serverError = signal<string | null>(null);
@@ -60,37 +58,21 @@ export class ContactUsComponent {
       ],
       updateOn: 'change',
     }),
-    // Honeypot field (hidden in UI). If filled → ignore server call.
-    hp: this.fb.control<string>(''),
-    // Optional consent checkbox (not required by backend)
+    hp: this.fb.control<string>(''), // Honeypot
     consent: this.fb.control<boolean>(true),
   });
 
-  // Convenience getter
   get f() {
     return this.form.controls;
   }
 
   onSubmit() {
     this.serverError.set(null);
-    this.submitted.set(false);
 
-    // Bot check
     if (this.form.value.hp) {
-      console.log('value.hp filled:', this.form.value.hp);
-      // Silently succeed (pretend it worked)
-      this.form.reset({
-        fullName: '',
-        email: '',
-        subject: '',
-        message: '',
-        hp: '',
-        consent: true,
-      });
       this.submitted.set(true);
       return;
     }
-
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;

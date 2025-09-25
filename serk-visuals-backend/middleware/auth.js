@@ -34,8 +34,17 @@ function requireRole(roles = ["admin"]) {
   };
 }
 
+// Convenience combo for admin-only routes
+// Express accepts arrays of middleware.
+const requireAdmin = [requireAuth, requireRole(["admin"])];
+
 function setAuthCookie(res, token) {
   const isProd = process.env.NODE_ENV === "production";
+
+  // NOTE: If your frontend and backend are on different domains in production,
+  // you’ll likely want: sameSite: "none", secure: true
+  // res.cookie(COOKIE_NAME, token, { httpOnly: true, sameSite: "none", secure: true, ... })
+
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: isProd ? "lax" : "lax",
@@ -57,6 +66,7 @@ function clearAuthCookie(res) {
 module.exports = {
   requireAuth,
   requireRole,
+  requireAdmin, // 👈 export this
   signToken,
   verifyToken,
   setAuthCookie,

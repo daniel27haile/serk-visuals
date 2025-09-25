@@ -1,4 +1,154 @@
-  <section class="container section">
-      <h1>Projects</h1>
-      <div class="empty">Projects dashboard is coming soon.</div>
-    </section>
+<section class="container section">
+  <!-- Header + Filters -->
+  <header class="head">
+    <h1>Projects</h1>
+
+    <div class="filters">
+      <input
+        class="search"
+        placeholder="Search projects"
+        [value]="q()"
+        (keyup.enter)="onSearchEnter($event)"
+      />
+
+      <select [(ngModel)]="status" (ngModelChange)="page.set(1)">
+        <option [ngValue]="''">All statuses</option>
+        <option *ngFor="let s of statuses" [ngValue]="s">
+          {{ s === 'in-progress' ? 'In progress' : (s | titlecase) }}
+        </option>
+      </select>
+
+      <select [(ngModel)]="year" (ngModelChange)="page.set(1)">
+        <option [ngValue]="''">Any year</option>
+        <option *ngFor="let y of years" [ngValue]="y">{{ y }}</option>
+      </select>
+
+      <select [(ngModel)]="month" (ngModelChange)="page.set(1)">
+        <option [ngValue]="''">Any month</option>
+        <option *ngFor="let m of months" [ngValue]="m.v">{{ m.label }}</option>
+      </select>
+
+      <button class="btn ghost" (click)="resetFilters()">Reset</button>
+
+      <label class="psize">
+        Page size:
+        <select [(ngModel)]="pageSize" (ngModelChange)="page.set(1)">
+          <option *ngFor="let s of [5,10,20,50,100]" [ngValue]="s">{{ s }}</option>
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <!-- Create / Edit -->
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <h2 class="card__title">{{ editingId() ? 'Edit project' : 'Add new project' }}</h2>
+
+    <div class="grid form-grid">
+      <label>
+        <span class="lbl">Title</span>
+        <input formControlName="title" placeholder="Project title" />
+      </label>
+
+      <label>
+        <span class="lbl">Status</span>
+        <select formControlName="status">
+          <option *ngFor="let s of statuses" [value]="s">
+            {{ s === 'in-progress' ? 'In progress' : (s | titlecase) }}
+          </option>
+        </select>
+      </label>
+
+      <!-- ✅ Clickable calendar icon via template ref -->
+      <label class="date-field">
+        <span class="lbl">Created date (optional)</span>
+        <div class="date-input-wrap">
+          <input type="date" formControlName="createdAt" #createdAtInput />
+          <button
+            type="button"
+            class="date-btn"
+            aria-label="Open calendar"
+            (click)="openDate(createdAtInput)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8"  y1="2" x2="8"  y2="6"></line>
+              <line x1="3"  y1="10" x2="21" y2="10"></line>
+            </svg>
+          </button>
+        </div>
+      </label>
+
+      <label class="file">
+        <span class="lbl">Cover image {{ editingId() ? '(optional if not changing)' : '(required)' }}</span>
+        <input type="file" accept="image/*" (change)="onFile('cover', $event)" />
+      </label>
+
+      <label class="file">
+        <span class="lbl">Thumbnail (optional)</span>
+        <input type="file" accept="image/*" (change)="onFile('thumb', $event)" />
+      </label>
+
+      <label class="full">
+        <span class="lbl">Tags (comma separated)</span>
+        <input formControlName="tagsCsv" placeholder="wedding, commercial, outdoor" />
+      </label>
+
+      <label class="full">
+        <span class="lbl">Notes</span>
+        <textarea rows="3" formControlName="notes" placeholder="Short description"></textarea>
+      </label>
+
+      <div class="full" *ngIf="coverPreview()">
+        <span class="lbl">Preview</span>
+        <img [src]="coverPreview()!" alt="Cover preview" class="preview" />
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" type="submit">
+        {{ editingId() ? 'Update' : 'Create' }}
+      </button>
+      <button class="btn" type="button" *ngIf="editingId()" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </form>
+
+  <div class="skeleton" *ngIf="loading()">Loading…</div>
+  <div class="alert alert--error" *ngIf="!loading() && error()">{{ error() }}</div>
+
+  <div class="grid-list" *ngIf="!loading() && !error() && items().length">
+    <article class="tile" *ngFor="let it of items(); trackBy: trackById">
+      <img [src]="it.thumbnail || it.cover" [alt]="it.title" />
+      <div class="tile__body">
+        <div class="row">
+          <h4 class="tile__title clamp-2">{{ it.title }}</h4>
+          <span class="chip"
+                [class.s1]="it.status === 'new'"
+                [class.s2]="it.status === 'in-progress'"
+                [class.s3]="it.status === 'completed'"
+                [class.s4]="it.status === 'delivered'">
+            {{ it.status === 'in-progress' ? 'In progress' : (it.status | titlecase) }}
+          </span>
+        </div>
+
+        <p class="muted">
+          <ng-container *ngIf="it.createdAt">{{ ageFrom(it.createdAt) }}</ng-container>
+          <ng-container *ngIf="it.tags?.length"> · {{ it.tags!.join(', ') }}</ng-container>
+        </p>
+
+        <div class="tile__actions">
+          <button class="btn sm" (click)="edit(it)">Edit</button>
+          <button class="btn sm danger" (click)="remove(it)">Delete</button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <p class="muted" *ngIf="!loading() && !error() && !items().length">No projects found.</p>
+
+  <nav class="pager" *ngIf="!loading() && pages() > 1" aria-label="Pagination">
+    <button class="btn" [disabled]="page()===1" (click)="goto(page()-1)">Prev</button>
+    <span>Page {{ page() }} of {{ pages() }}</span>
+    <button class="btn" [disabled]="page()===pages()" (click)="goto(page()+1)">Next</button>
+  </nav>
+</section>

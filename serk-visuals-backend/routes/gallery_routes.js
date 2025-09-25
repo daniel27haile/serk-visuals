@@ -1,34 +1,24 @@
-const router = require("express").Router();
-const mongoose = require("mongoose");
-const ctrl = require("../controller/gallery_controller");
+// routes/gallery_routes.js
+const express = require("express");
 const { upload } = require("../config/upload");
+const ctrl = require("../controller/gallery_controller");
 
-const validateId = (req, res, next) => {
-  if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(400).json({ message: "Invalid id" });
-  }
-  next();
-};
+const router = express.Router();
 
-// list + read
 router.get("/", ctrl.list);
-router.get("/getAll", ctrl.list); // legacy alias
-router.get("/:id", validateId, ctrl.getOne);
+router.get("/:id", ctrl.getOne);
 
-// create (multipart)
 router.post(
   "/",
   upload.fields([
-    { name: "image", maxCount: 1 }, // required
-    { name: "thumb", maxCount: 1 }, // optional
+    { name: "image", maxCount: 1 },
+    { name: "thumb", maxCount: 1 },
   ]),
   ctrl.create
 );
 
-// update (multipart optional)
 router.patch(
   "/:id",
-  validateId,
   upload.fields([
     { name: "image", maxCount: 1 },
     { name: "thumb", maxCount: 1 },
@@ -36,12 +26,8 @@ router.patch(
   ctrl.update
 );
 
-// optional: batch reorder
-router.patch("/reorder", ctrl.reorder);
-
-// delete
-router.delete("/:id", validateId, ctrl.remove);
-// delete all
+router.delete("/:id", ctrl.remove);
 router.delete("/", ctrl.removeAll);
+router.post("/reorder", ctrl.reorder);
 
 module.exports = router;

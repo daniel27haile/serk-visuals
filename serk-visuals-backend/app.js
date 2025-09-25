@@ -6,6 +6,8 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 require("dotenv").config({ path: path.join(__dirname, "./config/.env") });
+const projectRoutes = require("./routes/project_routes");
+
 
 const connectMongo = require("./config/database");
 
@@ -17,9 +19,18 @@ const authRoutes = require("./routes/auth_routes");
 const testimonialRoutes = require("./routes/testimonial_routes");
 
 const app = express();
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:4200";
 
-app.use(cors({ origin: FRONTEND_ORIGIN, credentials: true }));
+//CORS
+const rawOrigins = process.env.FRONTEND_ORIGIN || "http://localhost:4200";
+const ALLOWLIST = rawOrigins.split(",").map(s => s.trim());
+app.use(cors({
+  origin: (origin, cb) => {
+    if (!origin || ALLOWLIST.includes(origin)) return cb(null, true);
+    return cb(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+}));
+
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cookieParser());
 app.use(express.json({ limit: "1mb" }));
@@ -40,6 +51,11 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/contact", contactUsRoutes);
 app.use("/api/testimonials", testimonialRoutes); // 👈 mount here
+app.use("/api/projects", projectRoutes);
+
+//check health
+// put above 404 handler:
+app.get('/health', (_req, res) => res.status(200).send('OK'));
 
 // 404 + error
 app.use((req, res) => res.status(404).json({ error: "Not found" }));

@@ -1,22 +1,7 @@
+// config/upload.js
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 
-const dest = path.join(__dirname, "..", "uploads", "gallery");
-fs.mkdirSync(dest, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, dest),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    const base = path
-      .basename(file.originalname, ext)
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-    cb(null, `${Date.now()}-${base}${ext}`);
-  },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (_req, file, cb) => {
   const ok = /image\/(png|jpe?g|webp|gif|bmp|svg\+xml)/.test(file.mimetype);

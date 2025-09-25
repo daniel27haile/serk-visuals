@@ -1,10 +1,12 @@
 <!-- HERO -->
 <section class="container section hero">
   <div class="copy">
-    <h1>Capture the moments that matter.</h1>
+    <h1>Bring your vision to life.</h1> 
     <p class="lead">
-      Premium photography & videography for weddings, portraits, events, and brands.
+      Professional photography & videography, modern website development, and
+      hands-on online tutoring in Full-Stack & AWS.
     </p>
+
     <div class="cta-row">
       <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
       <a [routerLink]="['/gallery']" class="btn btn--ghost">View Gallery</a>
@@ -52,7 +54,10 @@
       </div>
     </div>
 
-    <p class="hint" *ngIf="!loadingSlider() && slider().length === 0 && !errorSlider()">
+    <p
+      class="hint"
+      *ngIf="!loadingSlider() && slider().length === 0 && !errorSlider()"
+    >
       No slider images yet. Add some in Admin → Gallery (placement: slider).
     </p>
     <p class="hint error" *ngIf="errorSlider()">{{ errorSlider() }}</p>
@@ -92,7 +97,10 @@
     />
   </div>
 
-  <p class="hint" *ngIf="!loadingFeatured() && featured().length === 0 && !errorFeatured()">
+  <p
+    class="hint"
+    *ngIf="!loadingFeatured() && featured().length === 0 && !errorFeatured()"
+  >
     No featured items yet. Add some in Admin → Gallery (placement: featured).
   </p>
   <p class="hint error" *ngIf="errorFeatured()">{{ errorFeatured() }}</p>
@@ -118,7 +126,10 @@
       class="t-slides"
       [style.transform]="'translateX(' + -tIndex() * 100 + '%)'"
     >
-      <figure class="t-slide" *ngFor="let t of testimonials(); trackBy: trackByTestimonial">
+      <figure
+        class="t-slide"
+        *ngFor="let t of testimonials(); trackBy: trackByTestimonial"
+      >
         <div class="t-header">
           <img
             *ngIf="t.avatar"
@@ -157,8 +168,17 @@
     </div>
   </div>
 
-  <p class="hint" *ngIf="!loadingTestimonials() && testimonials().length === 0 && !errorTestimonials()">
+  <p
+    class="hint"
+    *ngIf="
+      !loadingTestimonials() &&
+      testimonials().length === 0 &&
+      !errorTestimonials()
+    "
+  >
     No testimonials yet. Add them in Admin → Testimonials.
   </p>
-  <p class="hint error" *ngIf="errorTestimonials()">{{ errorTestimonials() }}</p>
+  <p class="hint error" *ngIf="errorTestimonials()">
+    {{ errorTestimonials() }}
+  </p>
 </section>

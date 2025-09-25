@@ -1,7 +1,7 @@
 <section class="gallery">
   <h1>Gallery</h1>
 
-  <!-- Frosted, scrollable, pill tabs with overflow hints + chevrons -->
+  <!-- Frosted, scrollable, pill tabs -->
   <div
     class="tabs tabs--frosted"
     [class.can-left]="canScrollLeft()"
@@ -13,9 +13,7 @@
       aria-label="Scroll tabs left"
       [disabled]="!canScrollLeft()"
       (click)="scrollTabs('left')"
-    >
-      ‹
-    </button>
+    >‹</button>
 
     <div
       #tabWrap
@@ -29,7 +27,7 @@
         [class.is-active]="!album()"
         (click)="setAlbum('')"
         role="tab"
-        [attr.aria-selected]="!album()"
+        [attr.aria-selected]="(!album()).toString()"
       >
         <span class="tab__icon">⭐</span>
         <span class="tab__label">All</span>
@@ -41,7 +39,7 @@
         [class.is-active]="album() === a"
         (click)="setAlbum(a)"
         role="tab"
-        [attr.aria-selected]="album() === a"
+        [attr.aria-selected]="(album() === a).toString()"
       >
         <span class="tab__icon">{{ albumIcon(a) }}</span>
         <span class="tab__label">{{ a }}</span>
@@ -54,18 +52,20 @@
       aria-label="Scroll tabs right"
       [disabled]="!canScrollRight()"
       (click)="scrollTabs('right')"
-    >
-      ›
-    </button>
+    >›</button>
   </div>
 
+  <!-- Grid -->
   <div class="gallery__grid">
-    <article
-      class="gallery__item"
-      *ngFor="let it of (items() ?? []); trackBy: trackById"
-    >
+    <article class="gallery__item" *ngFor="let it of (items() ?? []); trackBy: trackById; let i = index">
       <div class="thumb">
-        <img [src]="it.thumbnail || it.url" [alt]="it.title" loading="lazy" />
+        <img
+          class="zoomable"
+          [src]="it.thumbnail || it.url"
+          [alt]="it.title"
+          loading="lazy"
+          (click)="openLightbox(i)"
+        />
         <div class="thumb__overlay"></div>
       </div>
       <div class="gallery__item-body">
@@ -89,3 +89,30 @@
     <button [disabled]="page()===pages()" (click)="goto(page()+1)">Next</button>
   </nav>
 </section>
+
+<!-- LIGHTBOX -->
+<div
+  *ngIf="lightboxOpen()"
+  id="lb-root"
+  class="lightbox-backdrop"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'Image preview'"
+  tabindex="0"
+  (click)="closeLightbox()"
+  (keydown)="onLightboxKey($event)"
+>
+  <div class="lightbox" (click)="$event.stopPropagation()">
+    <button class="lb-close" type="button" aria-label="Close" (click)="closeLightbox()">×</button>
+    <button class="lb-nav prev" type="button" aria-label="Previous image" (click)="lbPrev()">‹</button>
+    <button class="lb-nav next" type="button" aria-label="Next image" (click)="lbNext()">›</button>
+
+    <ng-container *ngIf="lbCurr() as curr">
+      <img class="lb-img" [src]="curr.url" [alt]="curr.title" />
+      <div class="lb-caption">
+        <span class="title">{{ curr.title }}</span>
+        <span class="count">{{ lightboxIdx() + 1 }} / {{ items().length }}</span>
+      </div>
+    </ng-container>
+  </div>
+</div>

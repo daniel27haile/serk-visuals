@@ -6,11 +6,7 @@ import {
   effect,
   PLATFORM_ID,
 } from '@angular/core';
-import {
-  isPlatformBrowser,
-  CommonModule,
-  NgOptimizedImage,
-} from '@angular/common';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
@@ -31,7 +27,7 @@ type ServiceCard = {
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, NgOptimizedImage],
+  imports: [CommonModule, RouterLink],
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.scss'],
 })
@@ -53,7 +49,7 @@ export class LandingPageComponent implements OnDestroy {
   errorFeatured = signal<string | null>(null);
   errorTestimonials = signal<string | null>(null);
 
-  // ====== SERVICES (six cards) ======
+  // ====== SERVICES ======
   services: ServiceCard[] = [
     {
       icon: '📷',
@@ -114,16 +110,21 @@ export class LandingPageComponent implements OnDestroy {
     },
   ];
 
-  // ====== SLIDERS STATE ======
+  // ===== SLIDERS STATE =====
   index = signal(0); // hero slider
   tIndex = signal(0); // testimonials
   private heroTimer: ReturnType<typeof setInterval> | null = null;
   private testiTimer: ReturnType<typeof setInterval> | null = null;
 
+  // ===== LIGHTBOX STATE =====
+  lightboxOpen = signal(false);
+  lightboxIdx = signal(0);
+  lightboxList = signal<GalleryItem[]>([]);
+  private _prevOverflow: string | undefined;
+
   constructor() {
     effect(
       () => {
-        // Load dynamic content
         this.loadSlider();
         this.loadFeatured();
         this.loadTestimonials();
@@ -146,13 +147,13 @@ export class LandingPageComponent implements OnDestroy {
     try {
       const res = await firstValueFrom(
         this.galleryApi.list({
-          placement: 'slider', // server filters for landing slider items
+          placement: 'slider',
           published: true,
           limit: 10,
           sort: 'order,-createdAt',
         })
       );
-      const items: GalleryItem[] = res.items ?? [];
+      const items = res.items ?? [];
       this.slider.set(items);
       if (this.index() >= items.length) this.index.set(0);
     } catch (e: any) {
@@ -170,14 +171,13 @@ export class LandingPageComponent implements OnDestroy {
     try {
       const res = await firstValueFrom(
         this.galleryApi.list({
-          placement: 'featured', // server filters for featured gallery
+          placement: 'featured',
           published: true,
           limit: 12,
           sort: 'order,-createdAt',
         })
       );
-      const items: GalleryItem[] = res.items ?? [];
-      this.featured.set(items);
+      this.featured.set(res.items ?? []);
     } catch (e: any) {
       console.error(e);
       this.errorFeatured.set(e?.error?.message || 'Failed to load featured.');
@@ -198,7 +198,7 @@ export class LandingPageComponent implements OnDestroy {
           sort: 'order,-createdAt',
         })
       );
-      const items: Testimonial[] = res.items ?? [];
+      const items = res.items ?? [];
       this.testimonials.set(items);
       if (this.tIndex() >= items.length) this.tIndex.set(0);
     } catch (e: any) {
@@ -228,6 +228,7 @@ export class LandingPageComponent implements OnDestroy {
     this.stopTimers();
     if (isPlatformBrowser(this.platformId)) {
       document.removeEventListener('pointermove', this.onPointerMove);
+      this.lockScroll(false);
     }
   }
 
@@ -267,9 +268,56 @@ export class LandingPageComponent implements OnDestroy {
     if (e.key === 'ArrowLeft') this.tPrev();
   }
 
-  // ===== trackBy functions =====
+  // ===== trackBy =====
   trackByGallery = (_: number, it: GalleryItem) => it._id!;
   trackByTestimonial = (_: number, it: Testimonial) => it._id ?? it.author;
+
+  // ===== Lightbox =====
+  openLightbox(list: GalleryItem[], startIndex: number) {
+    this.lightboxList.set(list);
+    this.lightboxIdx.set(startIndex);
+    this.lightboxOpen.set(true);
+    this.stopTimers();
+    this.lockScroll(true);
+
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        document.getElementById('lb-root')?.focus();
+      }, 0);
+    }
+  }
+
+  closeLightbox() {
+    this.lightboxOpen.set(false);
+    this.lockScroll(false);
+    if (isPlatformBrowser(this.platformId)) this.startTimers();
+  }
+
+  lbNext() {
+    const len = this.lightboxList().length || 1;
+    this.lightboxIdx.update((i) => (i + 1) % len);
+  }
+  lbPrev() {
+    const len = this.lightboxList().length || 1;
+    this.lightboxIdx.update((i) => (i - 1 + len) % len);
+  }
+  onLightboxKey(e: KeyboardEvent) {
+    if (!this.lightboxOpen()) return;
+    if (e.key === 'Escape') this.closeLightbox();
+    if (e.key === 'ArrowRight') this.lbNext();
+    if (e.key === 'ArrowLeft') this.lbPrev();
+  }
+
+  private lockScroll(on: boolean) {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const root = document.documentElement;
+    if (on) {
+      this._prevOverflow = root.style.overflow;
+      root.style.overflow = 'hidden';
+    } else {
+      root.style.overflow = this._prevOverflow ?? '';
+    }
+  }
 
   // Nice hover glow on .svc cards
   private onPointerMove = (ev: PointerEvent) => {

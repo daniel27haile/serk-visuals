@@ -45,6 +45,7 @@ export class ContactAdminListComponent {
       status: this.status() || undefined,
       q: this.query() || undefined,
     };
+
     queueMicrotask(() => this.fetch(params));
   });
 
@@ -75,28 +76,32 @@ export class ContactAdminListComponent {
   }
 
   prevPage() {
-    if (this.page() > 1) this.page.set(this.page() - 1);
+    if (this.page() > 1) {
+      this.page.set(this.page() - 1);
+    }
   }
 
   nextPage() {
-    if (this.page() < this.pages()) this.page.set(this.page() + 1);
+    if (this.page() < this.pages()) {
+      this.page.set(this.page() + 1);
+    }
   }
 
   // === Modal open/close & mark-as-read ===
   openModal(item: ContactItem) {
     this.selected.set(item);
+
     // auto-mark as read if currently new
     if (item.status === 'new') {
       this.api.updateStatus(item.id, 'read').subscribe({
         next: (updated) => {
-          // update selected + list cache
           this.selected.set(updated);
           this.items.update((xs) =>
-            xs.map((x) => (x.id === updated.id ? updated : x))
+            xs.map((x) => (x.id === updated.id ? updated : x)),
           );
         },
         error: () => {
-          // non-blocking: still keep modal open even if API fails
+          // non-blocking: keep modal open even if API fails
         },
       });
     }
@@ -107,29 +112,42 @@ export class ContactAdminListComponent {
   }
 
   // ESC to close
-  @HostListener('document:keydown.escape', ['$event'])
+  @HostListener('document:keydown.escape')
   onEsc() {
-    if (this.modalOpen()) this.closeModal();
+    if (this.modalOpen()) {
+      this.closeModal();
+    }
   }
 
-  changeStatus(item: ContactItem, status: 'new' | 'read' | 'replied') {
+  changeStatus(item: ContactItem, status: string) {
+    if (status !== 'new' && status !== 'read' && status !== 'replied') {
+      return;
+    }
+
     this.api.updateStatus(item.id, status).subscribe({
       next: (updated) => {
         this.items.update((xs) =>
-          xs.map((x) => (x.id === updated.id ? updated : x))
+          xs.map((x) => (x.id === updated.id ? updated : x)),
         );
-        if (this.selected()?.id === updated.id) this.selected.set(updated);
+
+        if (this.selected()?.id === updated.id) {
+          this.selected.set(updated);
+        }
       },
     });
   }
 
   delete(item: ContactItem) {
     if (!confirm('Delete this message?')) return;
+
     this.api.softDelete(item.id).subscribe({
       next: () => {
         this.items.update((xs) => xs.filter((x) => x.id !== item.id));
         this.total.update((n) => Math.max(0, n - 1));
-        if (this.selected()?.id === item.id) this.closeModal();
+
+        if (this.selected()?.id === item.id) {
+          this.closeModal();
+        }
       },
     });
   }

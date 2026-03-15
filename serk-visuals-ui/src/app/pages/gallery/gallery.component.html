@@ -6,6 +6,7 @@
     class="tabs tabs--frosted"
     [class.can-left]="canScrollLeft()"
     [class.can-right]="canScrollRight()"
+    [class.is-centered]="!(canScrollLeft() || canScrollRight())"
   >
     <button
       class="tabs__chev tabs__chev--left"

@@ -6,7 +6,12 @@ import {
   NonNullableFormBuilder,
   Validators,
 } from '@angular/forms';
-import { ProjectsService, Project, ProjectStatus } from './projects.service';
+import {
+  ProjectsService,
+  Project,
+  ProjectStatus,
+} from './projects.service';
+import { UploadService } from '../../shared/services/upload.service';
 
 @Component({
   selector: 'app-projects',
@@ -18,6 +23,7 @@ import { ProjectsService, Project, ProjectStatus } from './projects.service';
 export class ProjectsComponent {
   private fb = inject(NonNullableFormBuilder);
   private api = inject(ProjectsService);
+  private uploadService = inject(UploadService);
 
   // Filters / paging
   q = signal<string>('');
@@ -34,6 +40,7 @@ export class ProjectsComponent {
     Math.max(1, Math.ceil(this.total() / this.pageSize()))
   );
   loading = signal(false);
+  uploading = signal(false);
   error = signal<string | null>(null);
 
   // Create/Edit form
@@ -43,7 +50,7 @@ export class ProjectsComponent {
     status: this.fb.control<ProjectStatus>('new', {
       validators: [Validators.required],
     }),
-    createdAt: this.fb.control<string>(''), // yyyy-MM-dd from <input type="date">
+    createdAt: this.fb.control<string>(''),
     tagsCsv: this.fb.control<string>(''),
     notes: this.fb.control<string>(''),
   });
@@ -146,7 +153,6 @@ export class ProjectsComponent {
     return `${Math.floor(mo / 12)}y ago`;
   }
 
-  // Normalize date-only 'YYYY-MM-DD' to ISO midnight UTC
   private toISODate(dateStr: string): string {
     if (!dateStr) return '';
     if (/\d{4}-\d{2}-\d{2}T/.test(dateStr))
@@ -199,55 +205,94 @@ export class ProjectsComponent {
     this.coverPreview.set(null);
   }
 
-  buildFormData(): FormData {
-    const v = this.form.getRawValue();
-    const fd = new FormData();
-    fd.set('title', v.title.trim());
-    fd.set('status', v.status);
-    if (v.createdAt) fd.set('createdAt', this.toISODate(v.createdAt));
-    if (v.tagsCsv) fd.set('tags', v.tagsCsv);
-    if (v.notes) fd.set('notes', v.notes);
-    if (this.coverFile()) fd.set('cover', this.coverFile()!);
-    if (this.thumbFile()) fd.set('thumb', this.thumbFile()!);
-    return fd;
-  }
-
-  submit() {
+  async submit() {
     if (this.form.invalid) return;
-    const id = this.editingId();
-    const fd = this.buildFormData();
 
-    if (!id) {
-      if (!this.coverFile()) {
-        this.error.set('Please select a cover image.');
-        return;
+    const id = this.editingId();
+    const v = this.form.getRawValue();
+
+    if (!id && !this.coverFile()) {
+      this.error.set('Please select a cover image.');
+      return;
+    }
+
+    this.uploading.set(true);
+    this.error.set(null);
+
+    try {
+      // Upload files to S3 first
+      let coverKey: string | undefined;
+      let thumbKey: string | undefined;
+
+      if (this.coverFile()) {
+        coverKey = await this.uploadService.upload(
+          this.coverFile()!,
+          'uploads/projects'
+        );
       }
-      this.api.create(fd).subscribe({
-        next: () => {
-          this.cancelEdit();
-          this.page.set(1);
-        },
-        error: (e) => {
-          this.error.set(e?.error?.message || 'Failed to create.');
-        },
-      });
-    } else {
-      this.api.update(id, fd).subscribe({
-        next: () => {
-          this.cancelEdit();
-          this.fetch({
-            page: this.page(),
-            pageSize: this.pageSize(),
-            q: this.q() || undefined,
-            status: this.status() || undefined,
-            year: this.year() || undefined,
-            month: this.month() || undefined,
+      if (this.thumbFile()) {
+        thumbKey = await this.uploadService.upload(
+          this.thumbFile()!,
+          'uploads/projects'
+        );
+      }
+
+      if (!id) {
+        this.api
+          .create({
+            title: v.title.trim(),
+            status: v.status,
+            coverKey: coverKey!,
+            thumbKey,
+            tags: v.tagsCsv || undefined,
+            notes: v.notes || undefined,
+            createdAt: v.createdAt ? this.toISODate(v.createdAt) : undefined,
+          })
+          .subscribe({
+            next: () => {
+              this.cancelEdit();
+              this.page.set(1);
+              this.uploading.set(false);
+            },
+            error: (e) => {
+              this.error.set(e?.error?.message || 'Failed to create.');
+              this.uploading.set(false);
+            },
           });
-        },
-        error: (e) => {
-          this.error.set(e?.error?.message || 'Failed to update.');
-        },
-      });
+      } else {
+        this.api
+          .update(id, {
+            title: v.title.trim(),
+            status: v.status,
+            coverKey,
+            thumbKey,
+            tags: v.tagsCsv || undefined,
+            notes: v.notes || undefined,
+            createdAt: v.createdAt ? this.toISODate(v.createdAt) : undefined,
+          })
+          .subscribe({
+            next: () => {
+              this.cancelEdit();
+              this.fetch({
+                page: this.page(),
+                pageSize: this.pageSize(),
+                q: this.q() || undefined,
+                status: this.status() || undefined,
+                year: this.year() || undefined,
+                month: this.month() || undefined,
+              });
+              this.uploading.set(false);
+            },
+            error: (e) => {
+              this.error.set(e?.error?.message || 'Failed to update.');
+              this.uploading.set(false);
+            },
+          });
+      }
+    } catch (e: any) {
+      console.error(e);
+      this.error.set(e?.message || 'Upload failed.');
+      this.uploading.set(false);
     }
   }
 
@@ -279,7 +324,6 @@ export class ProjectsComponent {
     this.page.set(1);
   }
 
-  /** Opens the native date picker (Chrome/Safari) or focuses input elsewhere */
   openDate(inputEl: HTMLInputElement) {
     const anyEl = inputEl as any;
     if (typeof anyEl.showPicker === 'function') {

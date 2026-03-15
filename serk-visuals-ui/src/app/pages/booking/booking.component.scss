@@ -1,90 +1,74 @@
+// ============================================================
+// Public Booking — component-specific styles only.
+// Background was rgb(58,55,55) — corrected to var(--color-bg).
+// ============================================================
+
 :host {
   display: block;
-  color: #e9e9ef;
-  background: rgb(58, 55, 55);
+  color: var(--color-text);
+  background: var(--color-bg);
   padding-block: 2rem;
 }
 
 .wrap {
   max-width: 720px;
   margin-inline: auto;
-  padding: 0 1rem;
+  padding: 0 var(--spacing-md);
 
   h2 {
-    margin-bottom: 1rem;
-    font-size: 1.75rem;
+    margin-bottom: var(--spacing-md);
+    font-size: var(--text-2xl);
     text-align: center;
   }
 }
 
-.card {
-  background: #111;
-  border: 1px solid #2a2a2a;
-  border-radius: 14px;
-  padding: 1rem;
-}
-
+// Booking form grid (2 cols → 1 col on mobile)
 .grid {
   display: grid;
-  gap: 1rem;
+  gap: var(--spacing-md);
   grid-template-columns: 1fr 1fr;
 
   label {
-    display: grid;
-    gap: 0.35rem;
-    font-size: 0.9rem;
-    color: #ccc;
+    display: grid; gap: .35rem;
+    font-size: var(--text-sm); color: var(--color-text-label);
   }
 
   .full { grid-column: 1 / -1; }
 
   input, select, textarea {
-    background: #1a1a1a;
-    color: #fff;
-    border: 1px solid #333;
-    border-radius: 10px;
-    padding: 0.65rem 0.75rem;
+    background: var(--color-surface-input);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: .65rem .75rem;
     outline: none;
-    transition: border-color 0.3s ease;
-
-    &:focus { border-color: #6ab3ff; }
+    transition: border-color var(--t-slow), box-shadow var(--t-base);
+    &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(74, 127, 255, .18); }
   }
 
-  input[type="date"] {
-    color-scheme: light;
-    &::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-      cursor: pointer;
-    }
-  }
-
+  input[type="date"],
   input[type="time"] {
     color-scheme: light;
-    &::-webkit-calendar-picker-indicator {
-      filter: invert(1);
-      cursor: pointer;
-    }
+    &::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
   }
 }
 
+// Submit button by tag (no .btn class on element in this form)
 button {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
-  border: 1px solid #2a2a2a;
-  background: #2c68ff;
+  margin-top: var(--spacing-md);
+  padding: .75rem 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-accent);
   color: #fff;
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
   cursor: pointer;
-  transition: background 0.2s ease;
-
-  &:hover:not(:disabled) { background: #1d4ed8; }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  transition: background var(--t-base);
+  &:hover:not(:disabled) { background: var(--color-accent-dark); }
+  &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
-.ok { color: #69db7c; margin-top: 0.75rem; font-size: 0.95rem; }
-.err { color: #ff6b6b; margin-top: 0.75rem; font-size: 0.95rem; }
+.ok  { color: #69db7c; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
+.err { color: #ff6b6b; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
 
-@media (max-width: 600px) {
-  .grid { grid-template-columns: 1fr; }
-}
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }

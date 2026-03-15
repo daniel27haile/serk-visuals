@@ -1,50 +1,135 @@
-:host { display:block; color:#e9e9ef; background:rgb(58,55,55); }
+// ============================================================
+// Contact Us — component-specific styles.
+// ============================================================
 
-.contact.container { max-width: 900px; margin: 0 auto; padding: clamp(1rem, 2vw, 1.5rem); }
-
-.section-heading { font-size: clamp(1.6rem, 2.2vw, 2.2rem); font-weight: 800; margin-bottom:.5rem; }
-.lead { color:#b8bcc9; margin-bottom:1rem; }
-
-.alert {
-  border-radius: .75rem; padding: .75rem 1rem; margin: 1rem 0; font-weight: 600;
+:host {
+  display: block;
+  color: var(--color-text);
+  background: var(--color-bg);
 }
-.alert--success { background:#0d1f12; border:1px solid #1e833f; color:#c3f0d0; }
-.alert--error { background:#2a1212; border:1px solid #a63a3a; color:#f5c5c5; }
 
+*, *::before, *::after { box-sizing: border-box; }
+
+.contact.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(1rem, 2vw, 1.5rem);
+}
+
+.contact,
+.form,
+.form-grid,
+.field,
+.form-actions,
+.contact__sidebar { min-width: 0; }
+
+.section-heading {
+  font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+  font-weight: var(--weight-extrabold);
+  margin-bottom: .5rem;
+}
+
+.lead { color: var(--color-text-muted); margin-bottom: var(--spacing-md); line-height: var(--leading-normal); }
+
+// Form container card
 .form {
-  background:#10141b; border:1px solid #1f2430; border-radius:1rem;
-  padding: clamp(1rem, 2.5vw, 1.5rem); box-shadow:0 10px 30px rgba(0,0,0,.25);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  box-shadow: var(--shadow-md), var(--shadow-inset-top);
+  width: 100%; max-width: 100%;
 }
-.form-grid { display:grid; gap:1rem; grid-template-columns: 1fr; }
-.field { display:flex; flex-direction:column; gap:.4rem; }
-.field label { font-weight:700; }
-.field input, .field textarea {
-  background:#0e131a; color:#e9e9ef; border:1px solid #2a2f3a;
-  border-radius:.6rem; padding:.7rem .85rem; font:inherit; width:100%;
+
+.form-grid {
+  display: grid;
+  gap: var(--spacing-md);
+  grid-template-columns: 1fr;
 }
-.field textarea { resize: vertical; min-height: 140px; }
-.error { color:#ffb4a6; font-size:.9rem; }
 
-.form-actions { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.75rem; margin-top:1rem; }
+.field {
+  display: flex; flex-direction: column; gap: .4rem;
+  label { font-weight: var(--weight-bold); color: var(--color-text-label); }
 
-.checkbox { display:flex; gap:.5rem; align-items:center; }
-.checkbox input { accent-color:#ff5722; }
+  input, textarea {
+    background: var(--color-surface-input);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: .75rem .9rem;
+    font: inherit;
+    width: 100%; max-width: 100%; min-width: 0;
+    display: block; line-height: 1.2;
+    transition: border-color var(--t-base), box-shadow var(--t-base);
 
-.btn { padding:.7rem 1rem; border-radius:.7rem; border:1px solid #2a2f3a; }
-.btn--accent { background:#ff5722; color:#111; font-weight:800; }
+    &::placeholder { color: var(--color-text-dim); }
+    &:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(255, 106, 0, .20); }
+  }
 
-.hp { position:absolute; left:-9999px; opacity:0; }
-
-.contact__sidebar { margin-top:1.5rem; }
-.card { background:#0f131a; border:1px solid #1f2430; border-radius:.9rem; padding:1rem; }
-
-/* Breakpoints */
-@media (min-width:600px){
-  .form-grid { grid-template-columns: repeat(2,1fr); }
-  .field:nth-child(3), .field:nth-child(4){ grid-column:1/-1; }
+  textarea { resize: vertical; min-height: 140px; }
 }
-@media (min-width:900px){
-  .contact.container { max-width:1100px; }
-  .contact { display:grid; grid-template-columns:2fr 1fr; gap:1.25rem; }
-  .contact__header { grid-column:1/-1; }
+
+.error { color: var(--color-danger); font-size: var(--text-sm); }
+
+.form-actions {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: var(--spacing-sm);
+  margin-top: var(--spacing-md); min-width: 0;
+}
+
+.checkbox {
+  display: inline-flex; gap: .5rem; align-items: center; min-width: 0;
+  input { accent-color: var(--color-primary); flex: 0 0 auto; }
+  span { line-height: var(--leading-tight); color: var(--color-text-muted); }
+}
+
+// Honeypot
+.hp { position: absolute; left: -9999px; opacity: 0; }
+
+// ── Sidebar info card ────────────────────────────────────
+// Was: background: var(--color-primary) — bright orange (unusable design)
+// Now: dark card with orange accent border for brand presence
+.contact__sidebar { margin-top: var(--spacing-lg); }
+
+.card {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary);  // orange left accent
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  min-width: 0;
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top);
+}
+
+// Links inside sidebar card — readable on dark bg
+a {
+  color: var(--color-primary);    // orange links — 6.6:1 on dark surface
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 106, 0, .4);
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  transition: color var(--t-base);
+  &:hover { color: var(--color-primary-dark); }
+}
+
+// ── Breakpoints ───────────────────────────────────────────
+@media (min-width: 600px) {
+  .form-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 900px) {
+  .contact.container { max-width: 1100px; }
+  .contact {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--spacing-lg);
+    align-items: start;
+  }
+  .contact__header { grid-column: 1 / -1; }
+  .contact__sidebar { margin-top: 0; }
+}
+
+@media (max-width: 420px) {
+  .form-actions { flex-direction: column; align-items: stretch; }
+  .btn { width: 100%; }
 }

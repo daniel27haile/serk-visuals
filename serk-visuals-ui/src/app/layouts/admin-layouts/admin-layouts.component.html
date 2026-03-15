@@ -1,35 +1,57 @@
+<!-- layouts/admin-layouts/admin-layouts.component.html -->
 <div class="admin-layout" [class.drawer-open]="sideOpen">
-  <!-- Off‑canvas sidebar -->
+  <!-- Off-canvas sidebar -->
   <aside
     class="sidebar"
     [class.sidebar--open]="sideOpen"
     role="navigation"
     aria-label="Admin navigation"
+    id="sidebar"
   >
     <h2 class="logo">Admin Panel</h2>
+
     <nav class="sidebar__nav">
-      <a [routerLink]="['/admin/dashboard']" routerLinkActive="is-active"
-        >Dashboard</a
-      >
-      <a [routerLink]="['/admin/bookings']" routerLinkActive="is-active"
-        >Bookings</a
-      >
-      <a [routerLink]="['/admin/contact']" routerLinkActive="is-active"
-        >User Contacts</a
-      >
-      <a [routerLink]="['/admin/projects']" routerLinkActive="is-active"
-        >Projects</a
-      >
-      <a [routerLink]="['/admin/settings']" routerLinkActive="is-active"
-        >Settings</a
-      >
-      <a [routerLink]="['/admin/gallery']" routerLinkActive="is-active"
-        >Gallery</a
-      >
-    
-      <a [routerLink]="['/admin/testimonials']" routerLinkActive="is-active"
-        >Testimonials</a
-      >
+      <a
+        [routerLink]="['/admin/dashboard']"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >Dashboard</a>
+
+      <a
+        [routerLink]="['/admin/bookings']"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >Bookings</a>
+
+      <a
+        [routerLink]="['/admin/contact']"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >User Contacts</a>
+
+      <a
+        [routerLink]="['/admin/projects']"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >Projects</a>
+
+      <a
+        [routerLink]="['/admin/settings']"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >Settings</a>
+
+      <a
+        [routerLink]="['/admin/gallery']"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >Gallery</a>
+
+      <a
+        [routerLink]="['/admin/testimonials']"
+        routerLinkActive="is-active"
+        [routerLinkActiveOptions]="{ exact: false }"
+      >Testimonials</a>
     </nav>
   </aside>
 
@@ -54,8 +76,6 @@
       </button>
 
       <p class="welcome">Welcome, Admin</p>
-
-      <!-- layouts/admin-layouts/admin-layouts.component.html -->
 
       <button class="logout-btn" (click)="logout()">Logout</button>
     </header>

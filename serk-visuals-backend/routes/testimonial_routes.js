@@ -1,7 +1,8 @@
+// routes/testimonial_routes.js
 const router = require("express").Router();
 const mongoose = require("mongoose");
 const ctrl = require("../controller/testimonial_controller");
-const { uploadTestimonial } = require("../config/upload_testimonials");
+const { requireAuth, requireRole } = require("../middleware/auth");
 
 const validateId = (req, res, next) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
@@ -13,16 +14,22 @@ const validateId = (req, res, next) => {
 router.get("/", ctrl.list);
 router.get("/:id", validateId, ctrl.getOne);
 
-router.post("/", uploadTestimonial.single("avatar"), ctrl.create);
-
+// Admin-only mutations
+router.post("/", requireAuth, requireRole(["admin"]), ctrl.create);
 router.patch(
   "/:id",
+  requireAuth,
+  requireRole(["admin"]),
   validateId,
-  uploadTestimonial.single("avatar"),
   ctrl.update
 );
-
-router.delete("/:id", validateId, ctrl.remove);
-router.delete("/", ctrl.removeAll);
+router.delete(
+  "/:id",
+  requireAuth,
+  requireRole(["admin"]),
+  validateId,
+  ctrl.remove
+);
+router.delete("/", requireAuth, requireRole(["admin"]), ctrl.removeAll);
 
 module.exports = router;

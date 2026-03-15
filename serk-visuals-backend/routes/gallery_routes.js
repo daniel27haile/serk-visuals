@@ -1,33 +1,18 @@
 // routes/gallery_routes.js
 const express = require("express");
-const { upload } = require("../config/upload");
 const ctrl = require("../controller/gallery_controller");
+const { requireAuth, requireRole } = require("../middleware/auth");
 
 const router = express.Router();
 
 router.get("/", ctrl.list);
 router.get("/:id", ctrl.getOne);
 
-router.post(
-  "/",
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "thumb", maxCount: 1 },
-  ]),
-  ctrl.create
-);
-
-router.patch(
-  "/:id",
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "thumb", maxCount: 1 },
-  ]),
-  ctrl.update
-);
-
-router.delete("/:id", ctrl.remove);
-router.delete("/", ctrl.removeAll);
-router.post("/reorder", ctrl.reorder);
+// Admin-only for mutations
+router.post("/", requireAuth, requireRole(["admin"]), ctrl.create);
+router.patch("/:id", requireAuth, requireRole(["admin"]), ctrl.update);
+router.delete("/:id", requireAuth, requireRole(["admin"]), ctrl.remove);
+router.delete("/", requireAuth, requireRole(["admin"]), ctrl.removeAll);
+router.post("/reorder", requireAuth, requireRole(["admin"]), ctrl.reorder);
 
 module.exports = router;

@@ -1,15 +1,32 @@
-/* You can add global styles to this file, and also import other style files */
-@import "./sass/main";
+// ============================================================
+// SERK VISUALS — Global stylesheet entry point
+//
+// Load order: abstracts (no output) → theme → base → layout → components
+// Edit  src/styles/theme/_tokens.scss  to retheme everything.
+// ============================================================
 
-// Layout container (center + side padding)
-$container-max: 1600px;
-$container-pad: clamp(1rem, 2.5vw, 24px);
+// 1. Abstracts — SCSS tools only, zero CSS output
+@use 'abstracts/variables';
+@use 'abstracts/breakpoints';
+@use 'abstracts/mixins';
 
-.container {
-  max-width: $container-max;
-  margin-inline: auto;          // center
-  padding-inline: $container-pad; // left/right space
-  width: 100%;
-}
+// 2. Theme — CSS custom properties on :root
+@use 'theme/tokens';
 
+// 3. Base — reset, html/body defaults, utilities
+@use 'base/reset';
+@use 'base/base';
+@use 'base/globals';
 
+// 4. Layout — container, grid helpers, tiles, pagination
+@use 'layout/container';
+@use 'layout/grid';
+@use 'layout/tiles';
+@use 'layout/pager';
+
+// 5. Components — global reusable UI classes
+@use 'components/buttons';
+@use 'components/forms';
+@use 'components/cards';
+@use 'components/chips';
+@use 'components/feedback';

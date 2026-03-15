@@ -1,0 +1,107 @@
+// ============================================================
+// SERK VISUALS — Button system
+// ============================================================
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+
+  height: 44px;
+  padding: 0 var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+
+  // Warm mid-surface — clearly distinct from any bg or surface token
+  background: linear-gradient(180deg, #2a2438, #1e192a);
+  color: var(--color-text);
+
+  cursor: pointer;
+  font: inherit;
+  font-family: var(--font-display);
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  white-space: nowrap;
+  letter-spacing: .02em;
+
+  transition:
+    transform      var(--t-fast),
+    box-shadow     var(--t-base),
+    background     var(--t-base),
+    border-color   var(--t-base),
+    opacity        var(--t-base);
+
+  &:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(180deg, #342d46, #271f38);
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-sm);
+  }
+  &:active  { transform: translateY(0); }
+  &:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  &:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
+
+  // ── Variants ──────────────────────────────────────────────
+
+  // Primary (indigo — CTA)
+  &.primary {
+    background: linear-gradient(180deg, var(--color-accent), var(--color-accent-dark));
+    border-color: var(--color-accent);
+    color: #fff;
+    box-shadow: 0 6px 22px rgba(124, 106, 255, .28), var(--shadow-inset-top);
+    &:hover {
+      filter: brightness(1.10);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px rgba(124, 106, 255, .38), var(--shadow-inset-top);
+    }
+  }
+
+  // Ghost (transparent, outline only)
+  &.ghost {
+    background: transparent;
+    border-color: var(--color-border-strong);
+    color: var(--color-text-muted);
+    &:hover {
+      background: rgba(255, 255, 255, .05);
+      border-color: var(--color-border-strong);
+      color: var(--color-text);
+    }
+  }
+
+  // Danger
+  &.danger {
+    background: linear-gradient(180deg, rgba(120, 40, 40, .6), rgba(80, 20, 20, .6));
+    border-color: rgba(248, 113, 113, .45);
+    color: #ffb3b3;
+    box-shadow: 0 4px 16px rgba(248, 113, 113, .15);
+    &:hover {
+      border-color: var(--color-danger);
+      background: linear-gradient(180deg, rgba(140, 50, 50, .7), rgba(100, 25, 25, .7));
+      box-shadow: 0 6px 20px rgba(248, 113, 113, .25);
+    }
+  }
+
+  // Small size
+  &.sm {
+    height: 36px;
+    padding: 0 .75rem;
+    font-size: var(--text-xs);
+    border-radius: var(--radius-sm);
+  }
+}
+
+// ── Brand CTA (orange) — public site hero buttons ──────────
+.btn.accent {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-primary-ink);
+  font-weight: var(--weight-extrabold);
+  box-shadow: 0 6px 20px rgba(255, 106, 0, .22);
+  &:hover {
+    filter: brightness(1.08);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(255, 106, 0, .32);
+  }
+}

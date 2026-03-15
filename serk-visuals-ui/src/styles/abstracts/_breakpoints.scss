@@ -1,0 +1,42 @@
+// ============================================================
+// SERK VISUALS — Breakpoints
+// Usage:  @include bp-up(md)  { … }   → min-width: 768px
+//         @include bp-down(md){ … }   → max-width: 767px
+// ============================================================
+
+$breakpoints: (
+  'sm':  640px,
+  'md':  768px,
+  'lg':  1024px,
+  'xl':  1280px,
+  '2xl': 1536px,
+) !default;
+
+// min-width (mobile-first)
+@mixin bp-up($name) {
+  $bp: map-get($breakpoints, $name);
+  @if $bp {
+    @media (min-width: #{$bp}) { @content; }
+  } @else {
+    @warn "Unknown breakpoint: `#{$name}`. Available: #{map-keys($breakpoints)}";
+  }
+}
+
+// max-width (desktop-first)
+@mixin bp-down($name) {
+  $bp: map-get($breakpoints, $name);
+  @if $bp {
+    @media (max-width: calc(#{$bp} - 1px)) { @content; }
+  } @else {
+    @warn "Unknown breakpoint: `#{$name}`. Available: #{map-keys($breakpoints)}";
+  }
+}
+
+// Between two breakpoints
+@mixin bp-between($lower, $upper) {
+  $lo: map-get($breakpoints, $lower);
+  $hi: map-get($breakpoints, $upper);
+  @if $lo and $hi {
+    @media (min-width: #{$lo}) and (max-width: calc(#{$hi} - 1px)) { @content; }
+  }
+}

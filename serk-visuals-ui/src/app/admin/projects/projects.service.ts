@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export type ProjectStatus = 'new' | 'in-progress' | 'completed' | 'delivered';
 
@@ -24,15 +25,31 @@ export interface ProjectListResponse {
   pages: number;
 }
 
+export interface ProjectCreatePayload {
+  title: string;
+  status?: ProjectStatus;
+  coverKey: string; // S3 key from UploadService
+  thumbKey?: string; // S3 key from UploadService
+  tags?: string;
+  notes?: string;
+  createdAt?: string;
+}
+
+export interface ProjectUpdatePayload {
+  title?: string;
+  status?: ProjectStatus;
+  coverKey?: string; // S3 key from UploadService (only when replacing image)
+  thumbKey?: string; // S3 key from UploadService (only when replacing thumb)
+  tags?: string;
+  notes?: string;
+  createdAt?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProjectsService {
   private http = inject(HttpClient);
 
-  // Prefer env; fallback to localhost
-  private readonly BASE =
-    (typeof window !== 'undefined' &&
-      (window as any).__env?.API_URL?.replace(/\/$/, '')) ||
-    'http://localhost:3500/api/projects';
+  private readonly BASE = `${environment.apiUrl}/api/projects`;
 
   list(params: {
     page?: number;
@@ -48,16 +65,20 @@ export class ProjectsService {
     }
     return this.http.get<ProjectListResponse>(this.BASE, {
       params: hp,
-      withCredentials: true, // send auth cookie
+      withCredentials: true,
     });
   }
 
-  create(fd: FormData): Observable<Project> {
-    return this.http.post<Project>(this.BASE, fd, { withCredentials: true });
+  /** Create: pass S3 keys obtained from UploadService */
+  create(payload: ProjectCreatePayload): Observable<Project> {
+    return this.http.post<Project>(this.BASE, payload, {
+      withCredentials: true,
+    });
   }
 
-  update(id: string, fd: FormData): Observable<Project> {
-    return this.http.patch<Project>(`${this.BASE}/${id}`, fd, {
+  /** Update: pass S3 keys only when replacing images */
+  update(id: string, payload: ProjectUpdatePayload): Observable<Project> {
+    return this.http.patch<Project>(`${this.BASE}/${id}`, payload, {
       withCredentials: true,
     });
   }

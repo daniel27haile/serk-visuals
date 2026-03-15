@@ -1,0 +1,13 @@
+// ============================================================
+// SERK VISUALS — Base grid utilities
+// ============================================================
+
+// Generic display:grid with standard gap
+.grid { display: grid; gap: var(--spacing-md); }
+
+// Within grid, labels stack label + input with a gap
+.grid label {
+  display: grid;
+  gap: .35rem;
+  min-width: 0;
+}

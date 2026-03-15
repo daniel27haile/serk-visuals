@@ -9,8 +9,9 @@ import {
   ProjectUpdateDto,
   ProjectStatus,
 } from '../models/project.model';
+import { environment } from '../../../environments/environment';
 
-const BASE = 'http://localhost:3500/api/projects';
+const BASE = `${environment.apiUrl}/api/projects`;
 
 @Injectable({ providedIn: 'root' })
 export class ProjectsService {

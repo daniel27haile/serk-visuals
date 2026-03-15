@@ -1,27 +1,162 @@
-  :host {
-        display: block;
-        color: #e9e9ef;
-        background: #0b0d12;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 1rem;
-      }
-      .section {
-        padding: 1.25rem 0;
-      }
-      h1 {
-        margin: 0 0 1rem;
-        font-size: clamp(1.4rem, 2.5vw, 2rem);
-        font-weight: 800;
-      }
-      .card {
-        background: #10141b;
-        border: 1px solid #1f2430;
-        border-radius: 1rem;
-        padding: 1rem;
-      }
-      .muted {
-        color: #9aa3b5;
-      }
+// ============================================================
+// Admin Settings — component-specific styles only.
+// ============================================================
+
+:host {
+  display: block;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+// ── Page header ──────────────────────────────────────────
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin: 0 0 var(--spacing-md);
+
+  @media (max-width: 860px) { flex-direction: column; align-items: stretch; }
+}
+
+h1 {
+  margin: 0 0 .25rem;
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: var(--weight-extrabold);
+}
+
+.subtle { margin: 0; color: var(--color-text-muted); }
+
+// Banner / info box
+.banner {
+  margin: 0 0 var(--spacing-sm);
+  padding: .65rem .8rem;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-muted);
+  border: 1px solid rgba(74, 127, 255, .30);
+  color: #c8d9ff;
+}
+
+// ── Settings section block ────────────────────────────────
+.block { padding: .25rem 0 .75rem; }
+
+.block-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+
+  h2 { margin: 0; font-size: var(--text-base); font-weight: var(--weight-extrabold); letter-spacing: .2px; }
+  p  { margin: 0; font-size: var(--text-sm); }
+}
+
+// ── Twelve-column field grid ──────────────────────────────
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.field {
+  grid-column: span 6;
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+
+  label { font-weight: var(--weight-bold); font-size: var(--text-sm); }
+  small { font-size: var(--text-xs); }
+  .error { color: var(--color-danger); }
+
+  input, select {
+    width: 100%;
+    padding: .6rem .7rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-input);
+    color: var(--color-text);
+    outline: none;
+    &:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(74, 127, 255, .18);
+    }
+  }
+
+  @media (max-width: 860px) { grid-column: span 12; }
+}
+
+.field.toggle { grid-column: span 6; @media (max-width: 860px) { grid-column: span 12; } }
+
+// ── Toggle row (switch label + control) ──────────────────
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: .65rem .75rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-input);
+}
+
+.toggle-label { display: block; font-weight: var(--weight-extrabold); }
+
+// Switch (custom checkbox)
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px; height: 26px;
+
+  input { opacity: 0; width: 0; height: 0; }
+
+  .slider {
+    position: absolute; inset: 0;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    transition: var(--t-base);
+
+    &::before {
+      content: "";
+      position: absolute;
+      height: 20px; width: 20px;
+      left: 3px; top: 2px;
+      background: var(--color-text);
+      border-radius: var(--radius-full);
+      transition: var(--t-base);
+    }
+  }
+
+  input:checked + .slider {
+    background: var(--color-accent-muted);
+    border-color: var(--color-accent);
+    &::before { transform: translateX(18px); }
+  }
+}
+
+// ── Color swatch row ─────────────────────────────────────
+.color-row {
+  display: flex; align-items: center; gap: .6rem;
+
+  .swatch {
+    width: 34px; height: 34px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    background: var(--color-accent);
+  }
+}
+
+// ── Footer row ───────────────────────────────────────────
+.footer {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+
+  @media (max-width: 860px) { flex-direction: column; align-items: stretch; }
+}
+
+.footer-actions { display: flex; gap: .5rem; justify-content: flex-end; }

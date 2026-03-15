@@ -1,0 +1,34 @@
+// ============================================================
+// SERK VISUALS — Reset
+// Conservative reset that normalises defaults without
+// destroying browser behaviours the app relies on.
+// ============================================================
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+img,
+picture,
+video,
+svg { display: block; max-width: 100%; }
+
+// Form controls inherit from body so font-size never drifts
+input,
+button,
+textarea,
+select { font: inherit; color: inherit; }
+
+// Remove list decoration only when list is used semantically in nav
+nav ul,
+nav ol { list-style: none; margin: 0; padding: 0; }
+
+// Tap highlight removed everywhere (individual states handle focus)
+a,
+button,
+[role="button"] { -webkit-tap-highlight-color: transparent; }
+
+// Sensible paragraph / heading defaults
+p, h1, h2, h3, h4, h5, h6 { overflow-wrap: break-word; }

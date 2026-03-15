@@ -1,0 +1,12 @@
+// ============================================================
+// SERK VISUALS — Container & section wrappers
+// ============================================================
+
+.container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+  width: 100%;
+}
+
+.section { padding-block: var(--spacing-lg); }

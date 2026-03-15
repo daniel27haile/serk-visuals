@@ -18,7 +18,6 @@ export class HeaderComponent {
   isMenuOpen = false;
 
   constructor(private router: Router) {
-    // Close mobile menu on navigation
     this.router.events
       .pipe(filter((e) => e instanceof NavigationEnd))
       .subscribe(() => (this.isMenuOpen = false));
@@ -27,7 +26,6 @@ export class HeaderComponent {
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;
   }
-
   closeMenu(): void {
     this.isMenuOpen = false;
   }

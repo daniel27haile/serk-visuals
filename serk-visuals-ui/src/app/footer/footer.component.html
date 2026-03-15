@@ -6,7 +6,18 @@
   <div class="wrap">
     <!-- Brand/About -->
     <div class="footer-col footer-brand">
-      <h2 id="footer-title" class="brand" aria-label="Serk Visuals">Serk <span>Visuals</span></h2>
+      <!-- <h2 id="footer-title" class="brand" aria-label="Serk Visuals">Serk <span>Visuals</span></h2> -->
+        <a [routerLink]="['/home']" class="logo" aria-label="Serk Visuals — Home">
+      <span class="logo__img-wrap">
+        <img
+          class="logo__img"
+          src="images/serkvisuals_logo.png"
+          alt="Serk Visuals logo"
+          width="150"
+          height="80"
+        />
+      </span>
+    </a>
       <p class="muted">
         Photography &amp; Videography — capturing stories, emotions, and timeless moments
         through creative visuals.
@@ -64,10 +75,15 @@
   <div class="wrap copy">
     <p>&copy; {{ year }} <strong>Serk Visuals</strong>. All rights reserved.</p>
     <p class="muted small">
-      Developed by
-      <a [routerLink]="['/home']" rel="noopener noreferrer" class="credit-link">
-        Serk Visuals
-      </a>
-    </p>
+  Developed by
+  <a
+    href="https://serktech.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="credit-link"
+  >
+    Serk Technologies
+  </a>
+</p>
   </div>
 </footer>

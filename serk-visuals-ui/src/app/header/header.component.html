@@ -2,8 +2,15 @@
   <div class="container header__row">
     <!-- Brand -->
     <a [routerLink]="['/home']" class="logo" aria-label="Serk Visuals — Home">
-      <span class="logo__mark">SV</span>
-      <span class="logo__text">Serk Visuals</span>
+      <span class="logo__img-wrap">
+        <img
+          class="logo__img"
+          src="images/serkvisuals_logo.png"
+          alt="Serk Visuals logo"
+          width="220"
+          height="220"
+        />
+      </span>
     </a>
 
     <!-- Mobile toggle -->
@@ -28,13 +35,7 @@
       <a [routerLink]="['/contact']" routerLinkActive="is-active" (click)="closeMenu()">Contact</a>
       <a [routerLink]="['/about-us']" routerLinkActive="is-active" (click)="closeMenu()">About</a>
 
-      <!-- CTA visible on desktop; in mobile it sits inside dropdown -->
-      <a
-        class="btn btn--accent nav__cta"
-        [routerLink]="['/bookings']"
-        (click)="closeMenu()"
-        aria-label="Book a session"
-      >
+      <a class="btn btn--accent nav__cta" [routerLink]="['/bookings']" (click)="closeMenu()" aria-label="Book a session">
         Book Now
       </a>
     </nav>

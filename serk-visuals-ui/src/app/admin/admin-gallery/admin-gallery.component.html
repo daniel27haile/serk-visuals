@@ -88,8 +88,8 @@
     </div>
 
     <div class="actions">
-      <button class="btn primary" type="submit">
-        {{ editingId() ? 'Update' : 'Create' }}
+      <button class="btn primary" type="submit" [disabled]="uploading()">
+        {{ uploading() ? 'Uploading…' : (editingId() ? 'Update' : 'Create') }}
       </button>
       <button class="btn ghost" type="button" (click)="cancelEdit()" *ngIf="editingId()">Cancel</button>
     </div>
@@ -100,7 +100,7 @@
     Loading…
   </div>
 
-  <div class="alert alert--error" *ngIf="!loading() && error()">{{ error() }}</div>
+  <div class="alert alert--error" *ngIf="error()">{{ error() }}</div>
 
   <div class="grid-list" *ngIf="!loading() && !error()">
     <article class="tile" *ngFor="let it of items(); trackBy: trackById">

@@ -1,3 +1,14 @@
 guides.md
 admin-guides.md
 reference.md
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md
+
+# Environment files (contain secrets — never commit)
+.env
+**/.env
+**/config/.env
+**/*.env.local
+
+final.md

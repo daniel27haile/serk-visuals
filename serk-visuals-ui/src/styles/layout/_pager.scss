@@ -1,0 +1,20 @@
+// ============================================================
+// SERK VISUALS — Pagination bar
+// ============================================================
+
+.pager {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+  flex-wrap: wrap;
+
+  span { color: var(--color-text-label); }
+}
+
+.pager__info {
+  min-width: 140px;
+  text-align: center;
+  color: var(--color-text-muted);
+}

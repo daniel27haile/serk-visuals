@@ -10,9 +10,11 @@ const ProjectSchema = new Schema(
       default: "new",
       index: true,
     },
-    // file paths (served from /uploads)
-    cover: { type: String, required: true }, // e.g. /uploads/projects/xxxx.jpg
-    thumbnail: { type: String, default: null }, // e.g. /uploads/projects/thumb-xxxx.jpg
+
+    // With presigned S3 we store absolute URLs (S3 or CDN)
+    cover: { type: String, required: true }, // e.g. https://bucket.s3.amazonaws.com/uploads/projects/uuid.jpg
+    thumbnail: { type: String, default: null }, // optional absolute URL
+
     tags: { type: [String], default: [] },
     notes: { type: String, trim: true, maxlength: 2000 },
 
@@ -20,7 +22,7 @@ const ProjectSchema = new Schema(
     deletedAt: { type: Date, default: null, index: true },
   },
   {
-    timestamps: true, // createdAt / updatedAt
+    timestamps: true,
     versionKey: false,
     toJSON: {
       transform(_doc, ret) {
@@ -40,7 +42,6 @@ const ProjectSchema = new Schema(
   }
 );
 
-// Helpful indexes
 ProjectSchema.index({ createdAt: -1 });
 ProjectSchema.index({ status: 1, createdAt: -1 });
 

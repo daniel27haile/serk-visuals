@@ -2,12 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { ContactItem, ContactListResponse } from './contact-us.types';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ContactUsService {
   private http = inject(HttpClient);
-  // Keep your base URL as-is; change to '/api/contact' if you reverse-proxy
-  private baseUrl = 'http://localhost:3500/api/contact';
+  private baseUrl = `${environment.apiUrl}/api/contact`;
 
   list(params: {
     page?: number;

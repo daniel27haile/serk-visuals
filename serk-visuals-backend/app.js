@@ -5,38 +5,44 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+
+// Load env FIRST
 require("dotenv").config({ path: path.join(__dirname, "./config/.env") });
-const projectRoutes = require("./routes/project_routes");
 
-
+// DB connect function
 const connectMongo = require("./config/database");
 
 // Routers
+const projectRoutes = require("./routes/project_routes");
 const bookingRoutes = require("./routes/booking_routes");
 const galleryRoutes = require("./routes/gallery_routes");
 const contactUsRoutes = require("./routes/contactus_routes");
 const authRoutes = require("./routes/auth_routes");
 const testimonialRoutes = require("./routes/testimonial_routes");
+const uploadSignRoutes = require("./routes/upload_sign_routes");
 
 const app = express();
 
-//CORS
+/** CORS */
 const rawOrigins = process.env.FRONTEND_ORIGIN || "http://localhost:4200";
-const ALLOWLIST = rawOrigins.split(",").map(s => s.trim());
-app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin || ALLOWLIST.includes(origin)) return cb(null, true);
-    return cb(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-}));
+const ALLOWLIST = rawOrigins.split(",").map((s) => s.trim());
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin || ALLOWLIST.includes(origin)) return cb(null, true);
+      return cb(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cookieParser());
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan("dev"));
 
-// static files
+/** Static files */
 app.use(
   "/uploads",
   express.static(path.join(__dirname, "uploads"), {
@@ -45,27 +51,30 @@ app.use(
   })
 );
 
-// Mount routes
+/** Routes */
 app.use("/api/auth", authRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/gallery", galleryRoutes);
 app.use("/api/contact", contactUsRoutes);
-app.use("/api/testimonials", testimonialRoutes); // 👈 mount here
+app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/uploads", uploadSignRoutes);
 
-//check health
-// put above 404 handler:
-app.get('/health', (_req, res) => res.status(200).send('OK'));
+/** Health */
+app.get("/health", (_req, res) => res.status(200).send("OK"));
 
-// 404 + error
+/** 404 */
 app.use((req, res) => res.status(404).json({ error: "Not found" }));
+
+/** Error handler */
 app.use((err, _req, res, _next) => {
   console.error(err);
   const isZod = err?.name === "ZodError";
-  if (isZod)
+  if (isZod) {
     return res
       .status(400)
       .json({ error: "Invalid input", details: err.errors });
+  }
   res.status(500).json({ error: "Internal server error" });
 });
 
@@ -73,11 +82,13 @@ const PORT = process.env.PORT || 3500;
 
 (async () => {
   try {
+    // ✅ This REALLY waits now
     await connectMongo();
 
-    // optional: seed admin
+    // Optional: seed admin AFTER DB connected
     const User = require("./models/user");
     const argon2 = require("argon2");
+
     const email = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
     const password = process.env.ADMIN_PASSWORD;
 
@@ -96,11 +107,11 @@ const PORT = process.env.PORT || 3500;
       );
     }
 
-    app.listen(PORT, () =>
-      console.log(`✅ API running at http://localhost:${PORT}`)
-    );
+    app.listen(PORT, () => {
+      console.log(`✅ API running at http://localhost:${PORT}`);
+    });
   } catch (err) {
-    console.error("❌ Failed to start server:", err);
+    console.error("❌ Failed to start server:", err.message || err);
     process.exit(1);
   }
 })();

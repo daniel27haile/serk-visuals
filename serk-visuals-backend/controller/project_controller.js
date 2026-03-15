@@ -1,20 +1,13 @@
 // controller/project_controller.js
 const Project = require("../models/project_model");
+const { publicUrlFromKey, headObject, deleteByUrl } = require("../config/s3");
 
 const pick = (obj, keys) =>
   Object.fromEntries(
     Object.entries(obj || {}).filter(([k]) => keys.includes(k))
   );
 
-const absolutize = (req, item) => {
-  if (!item) return item;
-  const host = `${req.protocol}://${req.get("host")}`;
-  const out = { ...item };
-  ["cover", "thumbnail"].forEach((k) => {
-    if (out[k] && !/^https?:\/\//i.test(out[k])) out[k] = host + out[k];
-  });
-  return out;
-};
+const absolutize = (_req, item) => item; // already storing absolute URLs
 
 /** LIST: GET /api/projects */
 exports.getAll = async (req, res, next) => {
@@ -40,16 +33,7 @@ exports.getAll = async (req, res, next) => {
     }
 
     if (year || month) {
-      // Filter by createdAt
-      const start = new Date(
-        year || 1970,
-        month ? month - 1 : 0,
-        1,
-        0,
-        0,
-        0,
-        0
-      );
+      const start = new Date(year || 1970, month ? month - 1 : 0, 1);
       const end = month
         ? new Date(start.getFullYear(), start.getMonth() + 1, 1)
         : new Date((year || 3000) + 1, 0, 1);
@@ -90,21 +74,30 @@ exports.getOne = async (req, res, next) => {
   }
 };
 
-/** CREATE (multipart) – expects fields + files: cover (required), thumb (optional) */
+/**
+ * CREATE (JSON)
+ * body: { title, status?, tags?, notes?, createdAt?, coverKey, thumbKey? }
+ */
 exports.create = async (req, res, next) => {
   try {
-    const cover = req.files?.cover?.[0];
-    if (!cover)
-      return res.status(400).json({ message: "Cover image is required" });
-
-    const thumb = req.files?.thumb?.[0];
     const body = pick(req.body, [
       "title",
       "status",
       "tags",
       "notes",
       "createdAt",
+      "coverKey",
+      "thumbKey",
     ]);
+    if (!body.title || !body.coverKey) {
+      return res
+        .status(400)
+        .json({ message: "title and coverKey are required" });
+    }
+
+    // (Optional) verify S3 objects exist
+    await headObject(body.coverKey);
+    if (body.thumbKey) await headObject(body.thumbKey);
 
     const tags =
       typeof body.tags === "string"
@@ -119,11 +112,10 @@ exports.create = async (req, res, next) => {
     const doc = await Project.create({
       title: body.title,
       status: body.status || "new",
-      cover: `/uploads/projects/${cover.filename}`,
-      thumbnail: thumb ? `/uploads/projects/${thumb.filename}` : undefined,
+      cover: publicUrlFromKey(body.coverKey),
+      thumbnail: body.thumbKey ? publicUrlFromKey(body.thumbKey) : undefined,
       tags,
       notes: body.notes || undefined,
-      // allow overriding createdAt if passed
       ...(body.createdAt ? { createdAt: new Date(body.createdAt) } : {}),
     });
 
@@ -133,22 +125,31 @@ exports.create = async (req, res, next) => {
   }
 };
 
-/** UPDATE (multipart optional) */
+/**
+ * UPDATE (JSON)
+ * body: { title?, status?, tags?, notes?, createdAt?, coverKey?, thumbKey? }
+ */
 exports.update = async (req, res, next) => {
   try {
-    const cover = req.files?.cover?.[0];
-    const thumb = req.files?.thumb?.[0];
+    const before = await Project.findOne({
+      _id: req.params.id,
+      deletedAt: null,
+    }).lean();
+    if (!before) return res.status(404).json({ message: "Project not found" });
+
     const body = pick(req.body, [
       "title",
       "status",
       "tags",
       "notes",
       "createdAt",
+      "coverKey",
+      "thumbKey",
     ]);
-
     const patch = {};
-    if (body.title) patch.title = body.title;
-    if (body.status) patch.status = body.status;
+
+    if (typeof body.title !== "undefined") patch.title = body.title;
+    if (typeof body.status !== "undefined") patch.status = body.status;
     if (typeof body.notes !== "undefined") patch.notes = body.notes;
 
     if (typeof body.tags !== "undefined") {
@@ -162,9 +163,19 @@ exports.update = async (req, res, next) => {
           ? body.tags
           : [];
     }
-    if (cover) patch.cover = `/uploads/projects/${cover.filename}`;
-    if (thumb) patch.thumbnail = `/uploads/projects/${thumb.filename}`;
     if (body.createdAt) patch.createdAt = new Date(body.createdAt);
+
+    let newCoverUrl, newThumbUrl;
+    if (body.coverKey) {
+      await headObject(body.coverKey);
+      newCoverUrl = publicUrlFromKey(body.coverKey);
+      patch.cover = newCoverUrl;
+    }
+    if (body.thumbKey) {
+      await headObject(body.thumbKey);
+      newThumbUrl = publicUrlFromKey(body.thumbKey);
+      patch.thumbnail = newThumbUrl;
+    }
 
     const doc = await Project.findOneAndUpdate(
       { _id: req.params.id, deletedAt: null },
@@ -172,7 +183,12 @@ exports.update = async (req, res, next) => {
       { new: true, runValidators: true }
     ).lean();
 
-    if (!doc) return res.status(404).json({ message: "Project not found" });
+    // best-effort cleanup of replaced media
+    if (newCoverUrl && before.cover && before.cover !== newCoverUrl)
+      await deleteByUrl(before.cover);
+    if (newThumbUrl && before.thumbnail && before.thumbnail !== newThumbUrl)
+      await deleteByUrl(before.thumbnail);
+
     res.json(absolutize(req, doc));
   } catch (err) {
     next(err);
@@ -216,11 +232,14 @@ exports.softDelete = async (req, res, next) => {
   }
 };
 
-/** HARD DELETE (optional) */
+/** HARD DELETE */
 exports.hardDelete = async (req, res, next) => {
   try {
     const doc = await Project.findByIdAndDelete(req.params.id);
     if (!doc) return res.status(404).json({ message: "Project not found" });
+    // best-effort cleanup
+    if (doc.cover) await deleteByUrl(doc.cover);
+    if (doc.thumbnail) await deleteByUrl(doc.thumbnail);
     res.json({ message: "Permanently removed", id: doc._id });
   } catch (err) {
     next(err);

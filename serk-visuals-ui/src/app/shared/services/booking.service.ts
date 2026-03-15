@@ -6,8 +6,9 @@ import {
   BookingCreateDto,
   BookingStatus,
 } from '../models/booking.model';
+import { environment } from '../../../environments/environment';
 
-const BASE = 'http://localhost:3500/api/bookings';
+const BASE = `${environment.apiUrl}/api/bookings`;
 
 @Injectable({ providedIn: 'root' })
 export class BookingsService {

@@ -1,35 +1,39 @@
+// ============================================================
+// Admin Login — component-specific styles only.
+// ============================================================
+
 .login {
   max-width: 420px;
   margin: 10vh auto;
-  background: #111;
-  color: #e9e9ef;
-  border: 1px solid #2a2a2a;
-  border-radius: .75rem;
-  padding: 1rem 1.2rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
 
-  h1 { margin: 0 0 1rem; font-size: 1.25rem; }
+  h1 { margin: 0 0 var(--spacing-md); font-size: var(--text-xl); }
 
-  label { display: block; margin: .8rem 0 .35rem; font-weight: 600; }
+  label { display: block; margin: .8rem 0 .35rem; font-weight: var(--weight-semibold); }
 
   input {
-    width: 100%;
-    padding: .6rem .7rem;
-    border: 1px solid #2a2a2a;
-    border-radius: .5rem;
-    background: #111;
-    color: #e9e9ef;
+    width: 100%; padding: .6rem .7rem;
+    border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+    background: var(--color-surface-input); color: var(--color-text);
+    outline: none;
+    transition: border-color var(--t-base), box-shadow var(--t-base);
+    &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(74, 127, 255, .18); }
   }
 
   button {
-    margin-top: 1rem;
-    padding: .55rem .9rem;
-    border-radius: .5rem;
-    border: 1px solid #2a2a2a;
-    background: #ff5722;
-    color: #111;
-    font-weight: 800;
-    cursor: pointer;
+    margin-top: var(--spacing-md);
+    padding: .55rem .9rem; border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border);
+    background: var(--color-admin-accent);
+    color: var(--color-primary-ink);
+    font-weight: var(--weight-extrabold); cursor: pointer;
+    transition: filter var(--t-base);
+    &:hover { filter: brightness(1.1); }
   }
 
-  .error { color: #ff6b6b; margin-top: .75rem; }
+  .error { color: var(--color-danger); margin-top: var(--spacing-sm); }
 }

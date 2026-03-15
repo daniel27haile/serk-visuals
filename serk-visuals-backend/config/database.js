@@ -1,25 +1,42 @@
+// config/database.js
 const mongoose = require("mongoose");
-// require("dotenv").config();              // not needed if you keep it in app.js
 
-const myDatabaseMongoServer = () => {
+async function connectMongo() {
   const uri =
     process.env.DATABASE_URL ||
-    process.env.MONGODB_URI || // support common names
+    process.env.MONGODB_URI ||
     process.env.MONGO_URI;
 
   if (!uri) {
-    console.error(
-      "❌ No MongoDB URI found. Set DATABASE_URL or MONGODB_URI in .env"
+    throw new Error(
+      "No MongoDB URI found. Set DATABASE_URL or MONGODB_URI or MONGO_URI in config/.env"
     );
-    return;
   }
 
-  mongoose
-    .connect(uri /* , { useNewUrlParser: true, useUnifiedTopology: true } */)
-    .then(() => console.log("✅ Database is successfully connected..."))
-    .catch((err) => {
-      console.log("❌ Database is NOT connected...", err.message);
-    });
-};
+  // Optional: makes errors show immediately instead of buffering timeouts
+  mongoose.set("bufferCommands", false);
 
-module.exports = myDatabaseMongoServer;
+  // Optional: extra logging while debugging
+  mongoose.connection.on("connected", () =>
+    console.log("🟢 Mongoose connected")
+  );
+  mongoose.connection.on("error", (err) =>
+    console.log("🔴 Mongoose error:", err.message)
+  );
+  mongoose.connection.on("disconnected", () =>
+    console.log("🟠 Mongoose disconnected")
+  );
+
+  await mongoose.connect(uri, {
+    serverSelectionTimeoutMS: 5000,
+    connectTimeoutMS: 10000,
+  });
+
+  console.log(
+    "✅ Database is successfully connected:",
+    mongoose.connection.name
+  );
+  return mongoose.connection;
+}
+
+module.exports = connectMongo;

@@ -3,9 +3,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { Booking, ContactMessage, PagedResult } from './models';
 import { BookingStatus } from './models';
+import { environment } from '../../../../environments/environment';
 
-// Angular dev proxy: /api -> http://localhost:3500
-const API_BASE = 'http://localhost:3500/api';
+const API_BASE = `${environment.apiUrl}/api`;
 
 @Injectable({ providedIn: 'root' })
 export class AdminApiService {

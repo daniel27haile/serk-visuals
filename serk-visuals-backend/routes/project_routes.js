@@ -2,7 +2,6 @@
 const router = require("express").Router();
 const mongoose = require("mongoose");
 const ctrl = require("../controller/project_controller");
-const  uploadProjects  = require("../config/upload_projects");
 const { requireAuth, requireRole } = require("../middleware/auth");
 
 // Admin-only
@@ -19,26 +18,9 @@ const validateId = (req, res, next) => {
 router.get("/", ctrl.getAll);
 router.get("/:id", validateId, ctrl.getOne);
 
-// Create (multipart)
-router.post(
-  "/",
-  uploadProjects.fields([
-    { name: "cover", maxCount: 1 }, // required
-    { name: "thumb", maxCount: 1 }, // optional
-  ]),
-  ctrl.create
-);
-
-// Update (multipart optional)
-router.patch(
-  "/:id",
-  validateId,
-  uploadProjects.fields([
-    { name: "cover", maxCount: 1 },
-    { name: "thumb", maxCount: 1 },
-  ]),
-  ctrl.update
-);
+// Create/Update now expect JSON with S3 keys
+router.post("/", ctrl.create);
+router.patch("/:id", validateId, ctrl.update);
 
 // Status + delete
 router.patch("/:id/status", validateId, ctrl.updateStatus);

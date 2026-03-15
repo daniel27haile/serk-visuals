@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map, of, tap } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface AuthUser {
   id: string;
@@ -11,7 +12,7 @@ export interface AuthUser {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
-  private base = 'http://localhost:3500/api/auth';
+  private base = `${environment.apiUrl}/api/auth`;
 
   readonly user = signal<AuthUser | null>(null);
   readonly loaded = signal(false);

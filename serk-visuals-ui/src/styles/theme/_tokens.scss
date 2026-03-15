@@ -1,0 +1,153 @@
+// ============================================================
+// SERK VISUALS — Design Tokens  ← EDIT THIS FILE TO RETHEME
+//
+// Palette: Warm Obsidian — 2026
+//  • Surfaces have a warm purple-tinted dark base (not cold blue-black)
+//    — photos look warmer and richer against these surfaces
+//  • Single brand color: orange (#ff6a00) for all CTAs and brand moments
+//  • Single interactive accent: indigo (#7c6aff) for buttons, focus, links
+//    — orange + indigo is a classic editorial/photography complementary pair
+//  • Cyan (#06b6d4) fully removed — was competing with orange and blue
+//  • Admin accent unified with brand orange (was #ff5722 — now #ff6a00)
+//  • All text passes WCAG AA: primary 14:1+, muted 5:1+, label 7:1+
+// ============================================================
+
+:root {
+  // ── Background layers ─────────────────────────────────────
+  //    Warm purple-tinted darks — photos look warmer against these
+  --color-bg:            #0b0a10;   // page bg — deep warm near-black
+  --color-surface:       #151320;   // cards / panels — warm dark
+  --color-surface-2:     #1e1b2a;   // elevated card / modal
+  --color-surface-input: #110f19;   // form input fields (darkest surface)
+  --color-surface-hover: #262336;   // hover state
+
+  // ── Borders ───────────────────────────────────────────────
+  //    Warm-tinted — coherent with the surface palette
+  --color-border:        #302c44;   // structural borders
+  --color-border-subtle: #221f30;   // lighter dividers inside surfaces
+  --color-border-strong: #463f5f;   // emphasis border (focus-adjacent, modals)
+
+  // ── Text ──────────────────────────────────────────────────
+  //    Warm whites — imperceptible lilac tint, softer than stark #fff
+  --color-text:          #f0eef8;   // primary — 15:1 on bg
+  --color-text-muted:    #9b98b5;   // secondary — 5.5:1 on bg
+  --color-text-dim:      #554f6a;   // placeholder / disabled
+  --color-text-label:    #c5c1da;   // form labels — 8:1 on surface
+  --color-text-inverse:  #0b0a10;   // text on bright/colored backgrounds
+
+  // ── Brand — Orange (public CTAs, brand moments, nav hover) ─
+  --color-primary:       #ff6a00;
+  --color-primary-dark:  #e05e00;
+  --color-primary-ink:   #0b0a10;   // dark text on orange (7:1 contrast)
+
+  // ── Interactive accent — Indigo/Purple ────────────────────
+  //    Replaces both old cyan (#06b6d4) and old blue (#4a7fff)
+  //    Orange + Indigo = editorial/photography complementary pair
+  --color-secondary:     #7c6aff;   // primary interactive (was cyan #06b6d4)
+  --color-secondary-dark:#6655e8;
+  --color-accent:        #7c6aff;   // alias — links, focus rings, buttons
+  --color-accent-dark:   #6655e8;
+  --color-accent-muted:  rgba(124, 106, 255, .18);
+
+  // ── Semantic status colours ───────────────────────────────
+  --color-success:       #34d399;
+  --color-success-bg:    rgba(52, 211, 153, .10);
+  --color-success-border: rgba(52, 211, 153, .35);
+
+  --color-warning:       #fbbf24;
+  --color-warning-bg:    rgba(251, 191, 36, .10);
+
+  --color-danger:        #f87171;
+  --color-danger-bg:     rgba(248, 113, 113, .12);
+  --color-danger-border: rgba(248, 113, 113, .40);
+
+  // ── Admin shell — fully dark, unified orange accent ───────
+  --color-admin-bg:             #09080e;   // sidebar background
+  --color-admin-deeper:         #060509;   // sidebar pressed / deeper
+  --color-admin-border:         #221f30;   // sidebar divider
+  --color-admin-text:           #f0eef8;   // sidebar text
+  --color-admin-muted:          #8e8aab;   // sidebar muted
+  --color-admin-accent:         #ff6a00;   // orange rail — unified with brand (was #ff5722)
+
+  --color-admin-surface:        #151320;   // topbar + main area (matches --color-surface)
+  --color-admin-surface-border: #302c44;   // topbar border (matches --color-border)
+
+  // ── Utility ───────────────────────────────────────────────
+  --color-glass:   rgba(255, 255, 255, .05);
+  --color-overlay: rgba(0, 0, 0, .60);
+
+  // ── Spacing (4 pt base) ───────────────────────────────────
+  --space-1:  .25rem;
+  --space-2:  .5rem;
+  --space-3:  .75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  --spacing-xs:  var(--space-2);
+  --spacing-sm:  var(--space-3);
+  --spacing-md:  var(--space-4);
+  --spacing-lg:  var(--space-6);
+  --spacing-xl:  var(--space-8);
+  --spacing-2xl: var(--space-12);
+
+  // ── Border radius ─────────────────────────────────────────
+  --radius-sm:   .5rem;
+  --radius-md:   .65rem;
+  --radius-lg:   1rem;
+  --radius-xl:   1.25rem;
+  --radius-full: 999px;
+
+  // ── Shadows ───────────────────────────────────────────────
+  --shadow-xs: 0 1px 4px rgba(0, 0, 0, .40);
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, .45);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, .52);
+  --shadow-lg: 0 16px 50px rgba(0, 0, 0, .58);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, .65);
+
+  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, .05);
+
+  // ── Typography ────────────────────────────────────────────
+  --font-sans:      system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display:   'Josefin Sans', system-ui, sans-serif;
+  --font-editorial: 'Cormorant Garant', Georgia, serif;
+
+  --text-xs:   .75rem;
+  --text-sm:   .875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  clamp(1.75rem, 3vw + .5rem, 2.5rem);
+
+  --weight-normal:    400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+  --weight-extrabold: 800;
+  --weight-black:     900;
+
+  --leading-tight:   1.25;
+  --leading-normal:  1.5;
+  --leading-relaxed: 1.7;
+
+  // ── Transitions ───────────────────────────────────────────
+  --t-fast: .12s ease;
+  --t-base: .2s ease;
+  --t-slow: .35s ease;
+
+  // ── Layout ────────────────────────────────────────────────
+  --container-max: 1200px;
+  --container-pad: clamp(1rem, 2.4vw, 1.5rem);
+  --sidebar-w:     260px;
+
+  // ── Z-index scale ─────────────────────────────────────────
+  --z-header:  1000;
+  --z-sidebar:   40;
+  --z-topbar:    30;
+  --z-backdrop:  80;
+  --z-modal:     90;
+}

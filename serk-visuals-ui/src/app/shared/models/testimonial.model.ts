@@ -19,15 +19,14 @@ export interface Paged<T> {
   pages: number;
 }
 
-// DTOs (what we send to the server)
-// Keep avatar as File | null here so it never conflicts with the model's string URL.
+// DTOs (what we send to the server — pass avatarKey from S3, not the raw File)
 export interface TestimonialCreateDTO {
   author: string;
   quote: string;
   role?: string;
   published?: boolean;
   order?: number;
-  avatar?: File | null;
+  avatarKey?: string; // S3 key obtained via UploadService
 }
 
 export interface TestimonialUpdateDTO {
@@ -36,5 +35,5 @@ export interface TestimonialUpdateDTO {
   role?: string;
   published?: boolean;
   order?: number;
-  avatar?: File | null;
+  avatarKey?: string; // S3 key obtained via UploadService
 }

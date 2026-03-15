@@ -3,14 +3,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ContactRequest, ContactResponse } from '../models/contact-us.model';
 import { Observable } from 'rxjs';
-// import { environment } from '../../../../environment/environment.prod';
-// If you have environments, swap this for environment.apiBase
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ContactUsService {
   private http = inject(HttpClient);
 
-  private base = `http://localhost:3500/api/contact`;
+  private base = `${environment.apiUrl}/api/contact`;
 
   /**
    * Posts a contact request to your backend.

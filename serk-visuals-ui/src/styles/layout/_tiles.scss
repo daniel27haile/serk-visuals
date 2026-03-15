@@ -1,0 +1,103 @@
+// ============================================================
+// SERK VISUALS — Tile / media-card layout
+// Shared by admin-gallery, admin-projects, public gallery
+// ============================================================
+
+// ── Responsive tile grid ─────────────────────────────────
+.grid-list {
+  display: grid;
+  gap: var(--spacing-md);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+  @media (min-width: 1024px) {
+    gap: var(--spacing-lg);
+  }
+}
+
+// ── Tile card shell ──────────────────────────────────────
+.tile {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  transition:
+    border-color var(--t-base),
+    transform    var(--t-fast),
+    box-shadow   var(--t-base);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #2b3950;
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+// ── Media (image wrapper + hover overlay) ────────────────
+.media {
+  position: relative;
+  overflow: hidden;
+  background: #0b0f17;
+
+  img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--t-slow);
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, .55));
+    opacity: 0;
+    transition: opacity var(--t-base);
+    display: grid;
+    place-items: end center;
+    padding: var(--spacing-xs);
+
+    &__actions {
+      display: flex;
+      gap: .45rem;
+      padding: .4rem;
+      border-radius: var(--radius-md);
+      background: rgba(15, 20, 32, .6);
+      border: 1px solid rgba(255, 255, 255, .06);
+      backdrop-filter: blur(4px);
+    }
+  }
+
+  &:hover img     { transform: scale(1.04); }
+  &:hover .overlay { opacity: 1; }
+}
+
+// ── Tile body ────────────────────────────────────────────
+.tile__body {
+  padding: var(--spacing-sm);
+  display: grid;
+  gap: .5rem;
+}
+
+.tile__title {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-extrabold);
+}
+
+.tile__actions {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+
+  @media (max-width: 420px) {
+    flex-direction: column;
+    align-items: stretch;
+    .btn { width: 100%; text-align: center; }
+  }
+}

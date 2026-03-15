@@ -1,9 +1,206 @@
-   <section class="container section">
+<section class="container section">
+  <header class="header">
+    <div>
       <h1>Settings</h1>
-      <div class="card">
-        <p>Configure API base URL, theme, and notifications here.</p>
-        <p class="muted">
-          Tip: use Angular environments for separate dev/prod URLs.
-        </p>
+      <p class="subtle">Manage environment, appearance, notifications, and privacy.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn ghost" type="button" (click)="reset()">Reset</button>
+      <button class="btn primary" type="button" [disabled]="saving" (click)="save()">
+        {{ saving ? 'Saving…' : 'Save changes' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="banner" *ngIf="savedBanner">{{ savedBanner }}</div>
+
+  <form class="card" [formGroup]="form" (ngSubmit)="save()">
+    <!-- Environment -->
+    <div class="block">
+      <div class="block-title">
+        <h2>Environment</h2>
+        <p class="muted">Tip: prefer Angular environments for dev/prod URLs.</p>
       </div>
-    </section>
+
+      <div class="grid">
+        <div class="field">
+          <label for="apiBaseUrl">API Base URL</label>
+          <input
+            id="apiBaseUrl"
+            type="text"
+            formControlName="apiBaseUrl"
+            placeholder="https://api.yourapp.com"
+          />
+          <small class="error" *ngIf="form.controls.apiBaseUrl.touched && form.controls.apiBaseUrl.invalid">
+            API Base URL is required.
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="timeoutMs">Request timeout (ms)</label>
+          <input id="timeoutMs" type="number" formControlName="timeoutMs" min="1000" max="120000" />
+          <small class="muted">Allowed: 1,000 – 120,000</small>
+        </div>
+
+        <div class="field toggle">
+          <div class="toggle-row">
+            <div>
+              <label class="toggle-label" for="useMockApi">Use mock API</label>
+              <small class="muted">Helpful for local dev & UI testing</small>
+            </div>
+            <label class="switch">
+              <input id="useMockApi" type="checkbox" formControlName="useMockApi" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Appearance -->
+    <div class="block">
+      <div class="block-title">
+        <h2>Appearance</h2>
+        <p class="muted">Theme & layout preferences.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field">
+          <label for="themeMode">Theme</label>
+          <select id="themeMode" formControlName="themeMode">
+            <option value="system">System</option>
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="accentColor">Accent color</label>
+          <div class="color-row">
+            <input id="accentColor" type="text" formControlName="accentColor" placeholder="#6ea8fe" />
+            <span class="swatch" [style.background]="form.controls.accentColor.value || '#6ea8fe'"></span>
+          </div>
+          <small class="muted">Used for buttons/links highlights (placeholder).</small>
+        </div>
+
+        <div class="field toggle">
+          <div class="toggle-row">
+            <div>
+              <label class="toggle-label" for="compactMode">Compact mode</label>
+              <small class="muted">Denser UI spacing</small>
+            </div>
+            <label class="switch">
+              <input id="compactMode" type="checkbox" formControlName="compactMode" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Notifications -->
+    <div class="block">
+      <div class="block-title">
+        <h2>Notifications</h2>
+        <p class="muted">Choose what you want to receive.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field toggle">
+          <div class="toggle-row">
+            <div>
+              <label class="toggle-label" for="emailAlerts">Email alerts</label>
+              <small class="muted">Important account and activity updates</small>
+            </div>
+            <label class="switch">
+              <input id="emailAlerts" type="checkbox" formControlName="emailAlerts" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field toggle">
+          <div class="toggle-row">
+            <div>
+              <label class="toggle-label" for="pushAlerts">Push notifications</label>
+              <small class="muted">Placeholder (needs browser permission)</small>
+            </div>
+            <label class="switch">
+              <input id="pushAlerts" type="checkbox" formControlName="pushAlerts" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field toggle">
+          <div class="toggle-row">
+            <div>
+              <label class="toggle-label" for="weeklyDigest">Weekly digest</label>
+              <small class="muted">Summary email every week</small>
+            </div>
+            <label class="switch">
+              <input id="weeklyDigest" type="checkbox" formControlName="weeklyDigest" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Privacy -->
+    <div class="block">
+      <div class="block-title">
+        <h2>Privacy</h2>
+        <p class="muted">Control diagnostics and data sharing.</p>
+      </div>
+
+      <div class="grid">
+        <div class="field toggle">
+          <div class="toggle-row">
+            <div>
+              <label class="toggle-label" for="telemetry">Usage analytics</label>
+              <small class="muted">Improve product based on anonymous usage</small>
+            </div>
+            <label class="switch">
+              <input id="telemetry" type="checkbox" formControlName="telemetry" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field toggle">
+          <div class="toggle-row">
+            <div>
+              <label class="toggle-label" for="crashReports">Crash reports</label>
+              <small class="muted">Send errors to help fix issues faster</small>
+            </div>
+            <label class="switch">
+              <input id="crashReports" type="checkbox" formControlName="crashReports" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <span class="muted">
+        Status: <b>{{ dirty ? 'Unsaved changes' : 'All changes saved' }}</b>
+      </span>
+
+      <div class="footer-actions">
+        <button class="btn ghost" type="button" (click)="load()">Reload</button>
+        <button class="btn primary" type="button" [disabled]="saving" (click)="save()">
+          {{ saving ? 'Saving…' : 'Save changes' }}
+        </button>
+      </div>
+    </footer>
+  </form>
+</section>

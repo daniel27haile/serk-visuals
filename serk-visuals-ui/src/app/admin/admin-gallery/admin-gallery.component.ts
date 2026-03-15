@@ -2,6 +2,7 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GalleryService } from '../../shared/services/gallery.service';
+import { UploadService } from '../../shared/services/upload.service';
 import {
   Album,
   GalleryItem,
@@ -24,6 +25,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class AdminGalleryComponent implements OnInit {
   private api = inject(GalleryService);
+  private uploadService = inject(UploadService);
   private fb = inject(FormBuilder);
 
   albums: Album[] = [
@@ -34,19 +36,19 @@ export class AdminGalleryComponent implements OnInit {
     'Personal',
     'Other',
   ];
-  placements: Placement[] = ['gallery', 'slider', 'featured']; // 👈 new
+  placements: Placement[] = ['gallery', 'slider', 'featured'];
 
   album = signal<Album | ''>('');
   page = signal(1);
   limit = signal(20);
   loading = signal(true);
+  uploading = signal(false);
   error = signal<string | null>(null);
 
   items = signal<GalleryItem[]>([]);
   total = signal(0);
   pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit())));
 
-  // Form (now includes placement + order)
   form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(2)]],
     album: ['Wedding' as Album, Validators.required],
@@ -54,8 +56,8 @@ export class AdminGalleryComponent implements OnInit {
     published: [true],
     image: [null as File | null],
     thumb: [null as File | null],
-    placement: ['gallery' as Placement, Validators.required], // 👈 new
-    order: [0, [Validators.min(0)]], // 👈 new
+    placement: ['gallery' as Placement, Validators.required],
+    order: [0, [Validators.min(0)]],
   });
 
   editingId = signal<string | null>(null);
@@ -73,7 +75,6 @@ export class AdminGalleryComponent implements OnInit {
           album: (this.album() || undefined) as Album | undefined,
           page: this.page(),
           limit: this.limit(),
-          // you could also pass placement filter here if desired
         })
       );
       this.items.set(res.items);
@@ -127,8 +128,28 @@ export class AdminGalleryComponent implements OnInit {
           .filter(Boolean)
       : [];
 
+    const id = this.editingId();
+
+    // Require image for new items
+    if (!id && !v.image) {
+      alert('Image is required');
+      return;
+    }
+
+    this.uploading.set(true);
+    this.error.set(null);
+
     try {
-      const id = this.editingId();
+      // Upload files to S3 first
+      let imageKey: string | undefined;
+      let thumbKey: string | undefined;
+
+      if (v.image) {
+        imageKey = await this.uploadService.upload(v.image, 'uploads/gallery');
+      }
+      if (v.thumb) {
+        thumbKey = await this.uploadService.upload(v.thumb, 'uploads/gallery');
+      }
 
       if (id) {
         await firstValueFrom(
@@ -137,36 +158,34 @@ export class AdminGalleryComponent implements OnInit {
             album: v.album,
             tags,
             published: !!v.published,
-            image: v.image ?? undefined,
-            thumb: v.thumb ?? undefined,
-            placement: v.placement, // 👈 include
-            order: Number(v.order ?? 0), // 👈 include
+            imageKey,
+            thumbKey,
+            placement: v.placement,
+            order: Number(v.order ?? 0),
           })
         );
       } else {
-        if (!v.image) {
-          alert('Image is required');
-          return;
-        }
         await firstValueFrom(
           this.api.create({
             title: v.title,
             album: v.album,
             tags,
             published: !!v.published,
-            image: v.image,
-            thumb: v.thumb ?? undefined,
-            placement: v.placement, // 👈 include
-            order: Number(v.order ?? 0), // 👈 include
+            imageKey: imageKey!,
+            thumbKey,
+            placement: v.placement,
+            order: Number(v.order ?? 0),
           })
         );
       }
 
       this.cancelEdit();
       await this.fetch();
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      alert('Failed to save.');
+      this.error.set(e?.error?.message || e?.message || 'Failed to save.');
+    } finally {
+      this.uploading.set(false);
     }
   }
 

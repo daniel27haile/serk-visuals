@@ -1,23 +1,14 @@
 // controller/gallery_controller.js
 const GalleryItem = require("../models/gallery_model");
 const { PLACEMENTS } = require("../models/gallery_model");
-const { uploadBufferToS3, deleteByUrl } = require("../config/s3");
+const { publicUrlFromKey, deleteByUrl, headObject } = require("../config/s3");
 
 const pick = (obj, keys) =>
   Object.fromEntries(
     Object.entries(obj || {}).filter(([k]) => keys.includes(k))
   );
 
-const absolutize = (req, item) => {
-  if (!item) return item;
-  // If already http(s), return as-is; legacy relative URLs get prefix.
-  const host = `${req.protocol}://${req.get("host")}`;
-  const out = { ...item };
-  if (out.url && !/^https?:\/\//i.test(out.url)) out.url = host + out.url;
-  if (out.thumbnail && !/^https?:\/\//i.test(out.thumbnail))
-    out.thumbnail = host + out.thumbnail;
-  return out;
-};
+const absolutize = (_req, item) => item; // now storing absolute URLs already
 
 exports.list = async (req, res) => {
   try {
@@ -81,12 +72,12 @@ exports.getOne = async (req, res) => {
   }
 };
 
+/**
+ * CREATE (JSON)
+ * body: { title, album, tags?, published?, placement?, order?, imageKey, thumbKey? }
+ */
 exports.create = async (req, res) => {
   try {
-    const image = req.files?.image?.[0];
-    if (!image) return res.status(400).json({ message: "Image is required" });
-
-    const thumb = req.files?.thumb?.[0];
     const body = pick(req.body, [
       "title",
       "album",
@@ -94,51 +85,43 @@ exports.create = async (req, res) => {
       "published",
       "placement",
       "order",
+      "imageKey",
+      "thumbKey",
     ]);
+    if (!body.title || !body.album || !body.imageKey) {
+      return res
+        .status(400)
+        .json({ message: "title, album, and imageKey are required" });
+    }
 
-    const tags =
-      typeof body.tags === "string"
-        ? body.tags
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : Array.isArray(body.tags)
-        ? body.tags
-        : [];
+    // (Optional) verify the objects exist
+    await headObject(body.imageKey);
+    if (body.thumbKey) await headObject(body.thumbKey);
+
+    const tags = Array.isArray(body.tags)
+      ? body.tags
+      : typeof body.tags === "string"
+      ? body.tags
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
 
     const placement = PLACEMENTS.includes(body.placement)
       ? body.placement
       : "gallery";
     const order = Number.isFinite(Number(body.order)) ? Number(body.order) : 0;
 
-    // Upload to S3
-    const mainUp = await uploadBufferToS3({
-      buffer: image.buffer,
-      mimetype: image.mimetype,
-      originalname: image.originalname,
-      folder: "uploads/gallery",
-    });
-
-    let thumbUrl;
-    if (thumb) {
-      const t = await uploadBufferToS3({
-        buffer: thumb.buffer,
-        mimetype: thumb.mimetype,
-        originalname: thumb.originalname,
-        folder: "uploads/gallery",
-      });
-      thumbUrl = t.url;
-    }
-
     const doc = await GalleryItem.create({
       title: body.title,
       album: body.album,
       placement,
       order,
-      url: mainUp.url,
-      thumbnail: thumbUrl,
+      url: publicUrlFromKey(body.imageKey),
+      thumbnail: body.thumbKey ? publicUrlFromKey(body.thumbKey) : undefined,
       tags,
-      published: body.published === "false" ? false : true,
+      published:
+        body.published === false || body.published === "false" ? false : true,
     });
 
     res.status(201).json(absolutize(req, doc.toObject()));
@@ -147,13 +130,16 @@ exports.create = async (req, res) => {
   }
 };
 
+/**
+ * UPDATE (JSON)
+ * body: fields + optional imageKey/thumbKey to replace media
+ */
+
 exports.update = async (req, res) => {
   try {
     const before = await GalleryItem.findById(req.params.id).lean();
     if (!before) return res.status(404).json({ message: "Not found" });
 
-    const image = req.files?.image?.[0];
-    const thumb = req.files?.thumb?.[0];
     const body = pick(req.body, [
       "title",
       "album",
@@ -161,56 +147,42 @@ exports.update = async (req, res) => {
       "published",
       "placement",
       "order",
+      "imageKey",
+      "thumbKey",
     ]);
-
     const patch = {};
-    if (body.title) patch.title = body.title;
-    if (body.album) patch.album = body.album;
-    if (typeof body.published !== "undefined")
-      patch.published = body.published === "true";
 
+    if (typeof body.title !== "undefined") patch.title = body.title;
+    if (typeof body.album !== "undefined") patch.album = body.album;
+    if (typeof body.published !== "undefined")
+      patch.published = body.published === true || body.published === "true";
     if (typeof body.placement !== "undefined") {
       patch.placement = PLACEMENTS.includes(body.placement)
         ? body.placement
         : "gallery";
     }
-    if (typeof body.order !== "undefined") {
-      const n = Number(body.order);
-      patch.order = Number.isFinite(n) ? n : 0;
-    }
-
+    if (typeof body.order !== "undefined")
+      patch.order = Number(body.order) || 0;
     if (typeof body.tags !== "undefined") {
-      patch.tags =
-        typeof body.tags === "string"
-          ? body.tags
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
-          : Array.isArray(body.tags)
-          ? body.tags
-          : [];
+      patch.tags = Array.isArray(body.tags)
+        ? body.tags
+        : typeof body.tags === "string"
+        ? body.tags
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [];
     }
 
-    // If new files are provided, upload first
     let newMainUrl, newThumbUrl;
-    if (image) {
-      const up = await uploadBufferToS3({
-        buffer: image.buffer,
-        mimetype: image.mimetype,
-        originalname: image.originalname,
-        folder: "uploads/gallery",
-      });
-      newMainUrl = up.url;
+    if (body.imageKey) {
+      await headObject(body.imageKey);
+      newMainUrl = publicUrlFromKey(body.imageKey);
       patch.url = newMainUrl;
     }
-    if (thumb) {
-      const up = await uploadBufferToS3({
-        buffer: thumb.buffer,
-        mimetype: thumb.mimetype,
-        originalname: thumb.originalname,
-        folder: "uploads/gallery",
-      });
-      newThumbUrl = up.url;
+    if (body.thumbKey) {
+      await headObject(body.thumbKey);
+      newThumbUrl = publicUrlFromKey(body.thumbKey);
       patch.thumbnail = newThumbUrl;
     }
 
@@ -219,13 +191,11 @@ exports.update = async (req, res) => {
       runValidators: true,
     }).lean();
 
-    // After successful DB update, delete the old objects if replaced
-    if (image && before.url && before.url !== newMainUrl) {
+    // Clean up old objects if replaced
+    if (newMainUrl && before.url && before.url !== newMainUrl)
       await deleteByUrl(before.url);
-    }
-    if (thumb && before.thumbnail && before.thumbnail !== newThumbUrl) {
+    if (newThumbUrl && before.thumbnail && before.thumbnail !== newThumbUrl)
       await deleteByUrl(before.thumbnail);
-    }
 
     res.json(absolutize(req, doc));
   } catch (e) {
@@ -237,11 +207,8 @@ exports.remove = async (req, res) => {
   try {
     const doc = await GalleryItem.findByIdAndDelete(req.params.id).lean();
     if (!doc) return res.status(404).json({ message: "Not found" });
-
-    // Best-effort delete of S3 objects
     if (doc.url) await deleteByUrl(doc.url);
     if (doc.thumbnail) await deleteByUrl(doc.thumbnail);
-
     res.status(204).send();
   } catch (e) {
     res.status(400).json({ message: e.message });
@@ -252,13 +219,10 @@ exports.removeAll = async (_req, res) => {
   try {
     const docs = await GalleryItem.find({}, { url: 1, thumbnail: 1 }).lean();
     await GalleryItem.deleteMany({});
-
-    // Fire-and-forget deletes
     await Promise.allSettled([
       ...docs.map((d) => (d.url ? deleteByUrl(d.url) : null)),
       ...docs.map((d) => (d.thumbnail ? deleteByUrl(d.thumbnail) : null)),
     ]);
-
     res.status(204).send();
   } catch (e) {
     res.status(400).json({ message: e.message });

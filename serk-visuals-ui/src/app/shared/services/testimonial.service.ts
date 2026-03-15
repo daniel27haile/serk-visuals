@@ -7,9 +7,9 @@ import {
   TestimonialCreateDTO,
   TestimonialUpdateDTO,
 } from '../models/testimonial.model';
+import { environment } from '../../../environments/environment';
 
-// Adjust to your env if needed
-const BASE = 'http://localhost:3500/api/testimonials';
+const BASE = `${environment.apiUrl}/api/testimonials`;
 
 @Injectable({ providedIn: 'root' })
 export class TestimonialService {
@@ -18,9 +18,9 @@ export class TestimonialService {
   list(opts?: {
     page?: number;
     limit?: number;
-    sort?: string; // e.g. 'order,-createdAt'
-    published?: boolean; // optional filter
-    q?: string; // optional search
+    sort?: string;
+    published?: boolean;
+    q?: string;
   }): Observable<Paged<Testimonial>> {
     let params = new HttpParams();
     Object.entries(opts || {}).forEach(([k, v]) => {
@@ -35,41 +35,23 @@ export class TestimonialService {
     return this.http.get<Testimonial>(`${BASE}/${id}`);
   }
 
+  /** Create: pass avatarKey from UploadService instead of a raw File */
   create(payload: TestimonialCreateDTO): Observable<Testimonial> {
-    const fd = new FormData();
-    fd.set('author', payload.author);
-    fd.set('quote', payload.quote);
-    if (payload.role) fd.set('role', payload.role);
-    if (typeof payload.published === 'boolean') {
-      fd.set('published', String(payload.published));
-    }
-    if (typeof payload.order === 'number') {
-      fd.set('order', String(payload.order));
-    }
-    if (payload.avatar instanceof File) {
-      fd.set('avatar', payload.avatar);
-    }
-    return this.http.post<Testimonial>(BASE, fd);
+    return this.http.post<Testimonial>(BASE, payload, {
+      withCredentials: true,
+    });
   }
 
+  /** Update: pass avatarKey from UploadService instead of a raw File */
   update(id: string, patch: TestimonialUpdateDTO): Observable<Testimonial> {
-    const fd = new FormData();
-    if (patch.author) fd.set('author', patch.author);
-    if (patch.quote) fd.set('quote', patch.quote);
-    if (patch.role) fd.set('role', patch.role);
-    if (typeof patch.published === 'boolean') {
-      fd.set('published', String(patch.published));
-    }
-    if (typeof patch.order === 'number') {
-      fd.set('order', String(patch.order));
-    }
-    if (patch.avatar instanceof File) {
-      fd.set('avatar', patch.avatar);
-    }
-    return this.http.patch<Testimonial>(`${BASE}/${id}`, fd);
+    return this.http.patch<Testimonial>(`${BASE}/${id}`, patch, {
+      withCredentials: true,
+    });
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${BASE}/${id}`);
+    return this.http.delete<void>(`${BASE}/${id}`, {
+      withCredentials: true,
+    });
   }
 }

@@ -1,19 +1,14 @@
 name: Deploy
 
-# Runs ONLY on push to main (after a PR is merged).
-# Re-runs the same CI checks, then deploys both frontend and backend in parallel.
-
 on:
   push:
     branches: [main]
 
-# Only one deploy at a time — never cancel a deploy in progress.
 concurrency:
   group: deploy-production
   cancel-in-progress: false
 
 jobs:
-  # ── Re-run CI checks before any deployment ─────────────────────────────────
   frontend-ci:
     name: Frontend — Type-check, Build & Test
     runs-on: ubuntu-latest
@@ -42,15 +37,6 @@ jobs:
       - name: Unit tests (headless Chrome)
         run: npx ng test --watch=false --browsers=ChromeHeadless --no-progress
 
-      # Keep the production build artifact so deploy-frontend can reuse it
-      # instead of building a second time.
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-dist
-          path: serk-visuals-ui/dist/serk-visuals-ui/browser/
-          retention-days: 1
-
   backend-ci:
     name: Backend — Install & Syntax Check
     runs-on: ubuntu-latest
@@ -73,7 +59,6 @@ jobs:
       - name: Syntax check all JS files
         run: find . -name "*.js" -not -path "./node_modules/*" | xargs node --check
 
-  # ── Deploy frontend to Vercel ───────────────────────────────────────────────
   deploy-frontend:
     name: Deploy → Vercel (Production)
     runs-on: ubuntu-latest
@@ -124,7 +109,6 @@ jobs:
       - name: Print deployment URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"
 
-  # ── Deploy backend to Render ────────────────────────────────────────────────
   deploy-backend:
     name: Deploy → Render (Production)
     runs-on: ubuntu-latest

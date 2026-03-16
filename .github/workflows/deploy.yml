@@ -119,8 +119,12 @@ jobs:
     steps:
       - name: Trigger Render deploy hook
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            "${{ secrets.RENDER_DEPLOY_HOOK_URL }}")
+          HOOK_URL="${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
+          if [ -z "$HOOK_URL" ]; then
+            echo "::error::RENDER_DEPLOY_HOOK_URL secret is not set. Add it in Settings → Secrets."
+            exit 1
+          fi
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HOOK_URL")
           echo "Render API responded with status: $STATUS"
           if [ "$STATUS" != "200" ] && [ "$STATUS" != "201" ]; then
             echo "Deploy hook failed with status $STATUS"

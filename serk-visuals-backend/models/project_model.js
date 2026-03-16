@@ -10,11 +10,6 @@ const ProjectSchema = new Schema(
       default: "new",
       index: true,
     },
-
-    // With presigned S3 we store absolute URLs (S3 or CDN)
-    cover: { type: String, required: true }, // e.g. https://bucket.s3.amazonaws.com/uploads/projects/uuid.jpg
-    thumbnail: { type: String, default: null }, // optional absolute URL
-
     tags: { type: [String], default: [] },
     notes: { type: String, trim: true, maxlength: 2000 },
 
@@ -30,8 +25,6 @@ const ProjectSchema = new Schema(
           id: ret._id,
           title: ret.title,
           status: ret.status,
-          cover: ret.cover,
-          thumbnail: ret.thumbnail ?? null,
           tags: ret.tags ?? [],
           notes: ret.notes ?? null,
           createdAt: ret.createdAt,

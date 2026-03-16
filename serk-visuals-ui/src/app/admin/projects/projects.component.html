@@ -3,8 +3,6 @@
   <header class="head">
     <div class="head__top">
       <h1>Projects</h1>
-      <!-- optional helper text -->
-      <!-- <p class="muted head__sub">Manage projects, filter, and search quickly.</p> -->
     </div>
 
     <div class="filters" role="search" aria-label="Project filters">
@@ -101,16 +99,6 @@
         </div>
       </label>
 
-      <label class="file">
-        <span class="lbl">Cover image {{ editingId() ? '(optional if not changing)' : '(required)' }}</span>
-        <input type="file" accept="image/*" (change)="onFile('cover', $event)" />
-      </label>
-
-      <label class="file">
-        <span class="lbl">Thumbnail (optional)</span>
-        <input type="file" accept="image/*" (change)="onFile('thumb', $event)" />
-      </label>
-
       <label class="full">
         <span class="lbl">Tags (comma separated)</span>
         <input formControlName="tagsCsv" placeholder="wedding, commercial, outdoor" />
@@ -120,16 +108,11 @@
         <span class="lbl">Notes</span>
         <textarea rows="3" formControlName="notes" placeholder="Short description"></textarea>
       </label>
-
-      <div class="full" *ngIf="coverPreview()">
-        <span class="lbl">Preview</span>
-        <img [src]="coverPreview()!" alt="Cover preview" class="preview" />
-      </div>
     </div>
 
     <div class="actions">
-      <button class="btn primary" type="submit" [disabled]="uploading()">
-        {{ uploading() ? 'Uploading…' : (editingId() ? 'Update' : 'Create') }}
+      <button class="btn primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : (editingId() ? 'Update' : 'Create') }}
       </button>
       <button class="btn" type="button" *ngIf="editingId()" (click)="cancelEdit()">Cancel</button>
     </div>
@@ -140,9 +123,15 @@
 
   <div class="grid-list" *ngIf="!loading() && !error() && items().length">
     <article class="tile" *ngFor="let it of items(); trackBy: trackById">
-      <img [src]="it.thumbnail || it.cover" [alt]="it.title" />
+      <div class="tile__accent"
+           [class.s1]="it.status==='new'"
+           [class.s2]="it.status==='in-progress'"
+           [class.s3]="it.status==='completed'"
+           [class.s4]="it.status==='delivered'">
+      </div>
 
       <div class="tile__body">
+        <!-- Title + status chip -->
         <div class="row">
           <h4 class="tile__title clamp-2">{{ it.title }}</h4>
           <span class="chip"
@@ -154,11 +143,34 @@
           </span>
         </div>
 
-        <p class="muted meta-line">
-          <ng-container *ngIf="it.createdAt">{{ ageFrom(it.createdAt) }}</ng-container>
-          <ng-container *ngIf="it.tags?.length"> · {{ it.tags!.join(', ') }}</ng-container>
+        <!-- Timestamp line -->
+        <p class="meta-line muted" *ngIf="it.createdAt; else noDate">
+          <time [dateTime]="it.createdAt" [title]="ageFrom(it.createdAt)">
+            {{ formatDate(it.createdAt) }}
+          </time>
+          <span class="meta-rel">&nbsp;· {{ ageFrom(it.createdAt) }}</span>
+          <ng-container *ngIf="it.tags?.length">&nbsp;· {{ it.tags!.join(', ') }}</ng-container>
         </p>
+        <ng-template #noDate>
+          <p class="meta-line muted">
+            <span class="meta-unavailable">Posting time unavailable</span>
+            <ng-container *ngIf="it.tags?.length">&nbsp;· {{ it.tags!.join(', ') }}</ng-container>
+          </p>
+        </ng-template>
 
+        <!-- Notes preview -->
+        <p class="tile__notes muted" *ngIf="it.notes">{{ it.notes }}</p>
+        <button
+          *ngIf="it.notes"
+          class="read-more"
+          type="button"
+          (click)="openDetail(it)"
+          [attr.aria-label]="'Read full notes for ' + it.title"
+        >
+          Read more
+        </button>
+
+        <!-- Actions -->
         <div class="tile__actions">
           <button class="btn sm" (click)="edit(it)">Edit</button>
           <button class="btn sm danger" (click)="remove(it)">Delete</button>
@@ -175,3 +187,83 @@
     <button class="btn" [disabled]="page()===pages()" (click)="goto(page()+1)">Next</button>
   </nav>
 </section>
+
+<!-- ── Detail modal ────────────────────────────────────────── -->
+<div
+  class="detail-backdrop"
+  *ngIf="detailProject()"
+  (click)="closeDetail()"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-labelledby]="'detail-title'"
+>
+  <article class="detail-modal" (click)="$event.stopPropagation()">
+
+    <header class="detail-modal__head">
+      <div class="detail-modal__meta-row">
+        <span class="chip"
+              [class.s1]="detailProject()!.status === 'new'"
+              [class.s2]="detailProject()!.status === 'in-progress'"
+              [class.s3]="detailProject()!.status === 'completed'"
+              [class.s4]="detailProject()!.status === 'delivered'">
+          {{ detailProject()!.status === 'in-progress' ? 'In progress' : (detailProject()!.status | titlecase) }}
+        </span>
+      </div>
+      <h2 class="detail-modal__title" id="detail-title">{{ detailProject()!.title }}</h2>
+      <button
+        class="detail-modal__close"
+        type="button"
+        (click)="closeDetail()"
+        aria-label="Close project details"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18"
+             fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6"  y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="detail-modal__body">
+
+      <!-- Date / time -->
+      <div class="detail-modal__time" *ngIf="detailProject()!.createdAt">
+        <svg viewBox="0 0 24 24" aria-hidden="true" width="14" height="14"
+             fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <time [dateTime]="detailProject()!.createdAt">
+          {{ formatDate(detailProject()!.createdAt) }}
+        </time>
+        <span class="meta-rel">· {{ ageFrom(detailProject()!.createdAt) }}</span>
+      </div>
+      <p class="detail-modal__time muted" *ngIf="!detailProject()!.createdAt">
+        Posting time unavailable
+      </p>
+
+      <!-- Tags -->
+      <div class="detail-modal__tags" *ngIf="detailProject()!.tags?.length">
+        <span class="tag-pill" *ngFor="let t of detailProject()!.tags">{{ t }}</span>
+      </div>
+
+      <!-- Notes -->
+      <div class="detail-modal__notes" *ngIf="detailProject()!.notes">
+        <h3 class="detail-modal__section-label">Notes</h3>
+        <p class="detail-modal__notes-text">{{ detailProject()!.notes }}</p>
+      </div>
+      <p class="muted detail-modal__empty" *ngIf="!detailProject()!.notes">
+        No notes for this project.
+      </p>
+
+    </div>
+
+    <footer class="detail-modal__footer">
+      <button class="btn sm" (click)="edit(detailProject()!); closeDetail()">Edit project</button>
+      <button class="btn" (click)="closeDetail()">Close</button>
+    </footer>
+
+  </article>
+</div>

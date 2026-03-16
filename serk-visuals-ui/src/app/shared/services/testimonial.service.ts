@@ -35,23 +35,15 @@ export class TestimonialService {
     return this.http.get<Testimonial>(`${BASE}/${id}`);
   }
 
-  /** Create: pass avatarKey from UploadService instead of a raw File */
   create(payload: TestimonialCreateDTO): Observable<Testimonial> {
-    return this.http.post<Testimonial>(BASE, payload, {
-      withCredentials: true,
-    });
+    return this.http.post<Testimonial>(BASE, payload, { withCredentials: true });
   }
 
-  /** Update: pass avatarKey from UploadService instead of a raw File */
   update(id: string, patch: TestimonialUpdateDTO): Observable<Testimonial> {
-    return this.http.patch<Testimonial>(`${BASE}/${id}`, patch, {
-      withCredentials: true,
-    });
+    return this.http.patch<Testimonial>(`${BASE}/${id}`, patch, { withCredentials: true });
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${BASE}/${id}`, {
-      withCredentials: true,
-    });
+    return this.http.delete<void>(`${BASE}/${id}`, { withCredentials: true });
   }
 }

@@ -7,16 +7,10 @@ export interface Project {
   clientName?: string | null;
   status: ProjectStatus;
   description?: string | null;
-
   startedAt?: string | null;
   dueAt?: string | null;
   deliveredAt?: string | null;
-
-  coverUrl?: string | null;
-  images?: string[];
-
   tags?: string[];
-
   createdAt?: string;
   updatedAt?: string;
 }

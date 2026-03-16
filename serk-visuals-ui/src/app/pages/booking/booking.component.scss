@@ -71,4 +71,68 @@ button {
 .ok  { color: #69db7c; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
 .err { color: #ff6b6b; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
 
+// ── Duration stepper  ─  ( − )  1 hour  ( + ) ────────────
+.duration-stepper {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+
+  button {
+    // Completely override the broad `button` rule
+    margin-top: 0;
+    flex: 0 0 2rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid var(--color-accent);
+    background: var(--color-accent);
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition:
+      background var(--t-base),
+      border-color var(--t-base),
+      box-shadow var(--t-base),
+      transform var(--t-fast);
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-dark);
+      border-color: var(--color-accent-dark);
+      box-shadow: 0 4px 14px rgba(124, 106, 255, .45);
+      transform: scale(1.1);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(.92);
+      box-shadow: none;
+    }
+
+    &:disabled {
+      background: var(--color-surface-2);
+      border-color: var(--color-border-strong);
+      color: var(--color-text-muted);
+      opacity: .5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+
+  span {
+    flex: 1;
+    text-align: center;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text);
+    user-select: none;
+    letter-spacing: .01em;
+  }
+}
+
 @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }

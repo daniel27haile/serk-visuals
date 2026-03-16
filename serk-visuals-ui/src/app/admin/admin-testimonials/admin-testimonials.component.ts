@@ -14,7 +14,6 @@ import {
   TestimonialUpdateDTO,
 } from '../../shared/models/testimonial.model';
 import { TestimonialService } from '../../shared/services/testimonial.service';
-import { UploadService } from '../../shared/services/upload.service';
 
 @Component({
   selector: 'app-admin-testimonials',
@@ -25,7 +24,6 @@ import { UploadService } from '../../shared/services/upload.service';
 })
 export class AdminTestimonialsComponent implements OnInit {
   private api = inject(TestimonialService);
-  private uploadService = inject(UploadService);
   private fb = inject(FormBuilder);
 
   page = signal(1);
@@ -33,14 +31,11 @@ export class AdminTestimonialsComponent implements OnInit {
   total = signal(0);
   pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit())));
   loading = signal(true);
-  uploading = signal(false);
+  saving = signal(false);
   error = signal<string | null>(null);
 
   items = signal<Testimonial[]>([]);
   editingId = signal<string | null>(null);
-
-  // avatar is held as a File locally; it is uploaded to S3 on submit
-  avatarFile = signal<File | null>(null);
 
   form = this.fb.group({
     author: ['', [Validators.required, Validators.minLength(2)]],
@@ -83,11 +78,6 @@ export class AdminTestimonialsComponent implements OnInit {
     this.fetch();
   }
 
-  onFile(ev: Event) {
-    const input = ev.target as HTMLInputElement;
-    this.avatarFile.set(input.files?.[0] || null);
-  }
-
   async submit() {
     if (this.form.invalid) return;
 
@@ -99,19 +89,10 @@ export class AdminTestimonialsComponent implements OnInit {
       order: number;
     };
 
-    this.uploading.set(true);
+    this.saving.set(true);
     this.error.set(null);
 
     try {
-      // Upload avatar to S3 if a file was selected
-      let avatarKey: string | undefined;
-      if (this.avatarFile()) {
-        avatarKey = await this.uploadService.upload(
-          this.avatarFile()!,
-          'uploads/testimonials'
-        );
-      }
-
       const id = this.editingId();
 
       if (id) {
@@ -121,7 +102,6 @@ export class AdminTestimonialsComponent implements OnInit {
           quote: v.quote,
           published: v.published,
           order: typeof v.order === 'number' ? v.order : undefined,
-          avatarKey,
         };
         await firstValueFrom(this.api.update(id, patch));
       } else {
@@ -131,7 +111,6 @@ export class AdminTestimonialsComponent implements OnInit {
           quote: v.quote,
           published: v.published,
           order: typeof v.order === 'number' ? v.order : undefined,
-          avatarKey,
         };
         await firstValueFrom(this.api.create(payload));
       }
@@ -142,7 +121,7 @@ export class AdminTestimonialsComponent implements OnInit {
       console.error(e);
       this.error.set(e?.error?.message || e?.message || 'Failed to save testimonial.');
     } finally {
-      this.uploading.set(false);
+      this.saving.set(false);
     }
   }
 
@@ -155,7 +134,6 @@ export class AdminTestimonialsComponent implements OnInit {
       published: item.published !== false,
       order: typeof item.order === 'number' ? item.order : 0,
     });
-    this.avatarFile.set(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -168,9 +146,15 @@ export class AdminTestimonialsComponent implements OnInit {
       published: true,
       order: 0,
     });
-    this.avatarFile.set(null);
-    const f = document.getElementById('avatar') as HTMLInputElement | null;
-    if (f) f.value = '';
+  }
+
+  initials(author: string): string {
+    return author
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('');
   }
 
   async remove(item: Testimonial) {

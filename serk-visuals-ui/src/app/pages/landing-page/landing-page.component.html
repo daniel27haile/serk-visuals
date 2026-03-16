@@ -126,35 +126,35 @@
       class="t-slides"
       [style.transform]="'translateX(' + -tIndex() * 100 + '%)'"
     >
-      <figure
+      <div
         class="t-slide"
         *ngFor="let t of testimonials(); trackBy: trackByTestimonial"
       >
-        <div class="t-header">
-          <img
-            *ngIf="t.avatar"
-            class="t-avatar"
-            [src]="t.avatar"
-            [alt]="t.author"
-            width="64"
-            height="64"
-            loading="lazy"
-          />
-          <figcaption>
-            <span class="author">{{ t.author }}</span>
-            <span class="role" *ngIf="t.role">— {{ t.role }}</span>
-          </figcaption>
+        <!-- Quote text (deco quote mark rendered via CSS ::before) -->
+        <p class="t-quote">{{ t.quote }}</p>
+
+        <!-- Author row (below quote, separated by thin divider) -->
+        <div class="t-author">
+          <div class="t-avatar-icon" aria-hidden="true">{{ initials(t.author) }}</div>
+          <div class="t-author-info">
+            <span class="t-author-name">{{ t.author }}</span>
+            <span class="t-author-role" *ngIf="t.role">{{ t.role }}</span>
+          </div>
         </div>
-
-        <blockquote class="quote">“{{ t.quote }}”</blockquote>
-      </figure>
+      </div>
     </div>
 
-    <div class="t-nav" aria-hidden="true">
-      <button (click)="tPrev()" aria-label="Previous testimonial">‹</button>
-      <button (click)="tNext()" aria-label="Next testimonial">›</button>
+    <!-- Arrow controls — absolutely positioned left/right like hero slider -->
+    <div class="t-nav" role="group" aria-label="Carousel controls">
+      <button class="t-arrow t-arrow--prev" type="button" (click)="tPrev()" aria-label="Previous testimonial">
+        <span class="t-chevron" aria-hidden="true"></span>
+      </button>
+      <button class="t-arrow t-arrow--next" type="button" (click)="tNext()" aria-label="Next testimonial">
+        <span class="t-chevron" aria-hidden="true"></span>
+      </button>
     </div>
 
+    <!-- Dots indicator -->
     <div class="t-dots" role="tablist" aria-label="Testimonial selectors">
       <button
         class="t-dot"
@@ -170,15 +170,9 @@
 
   <p
     class="hint"
-    *ngIf="
-      !loadingTestimonials() &&
-      testimonials().length === 0 &&
-      !errorTestimonials()
-    "
+    *ngIf="!loadingTestimonials() && testimonials().length === 0 && !errorTestimonials()"
   >
     No testimonials yet. Add them in Admin → Testimonials.
   </p>
-  <p class="hint error" *ngIf="errorTestimonials()">
-    {{ errorTestimonials() }}
-  </p>
+  <p class="hint error" *ngIf="errorTestimonials()">{{ errorTestimonials() }}</p>
 </section>

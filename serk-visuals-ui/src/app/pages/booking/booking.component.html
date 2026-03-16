@@ -7,17 +7,17 @@
       <div class="grid">
         <label for="name">
           Name
-          <input id="name" formControlName="name" placeholder="Your full name" autocomplete="name" />
+          <input id="name" formControlName="name" placeholder="Your full name..." autocomplete="name" />
         </label>
 
         <label for="email">
           Email
-          <input id="email" formControlName="email" type="email" placeholder="you@example.com" autocomplete="email" />
+          <input id="email" formControlName="email" type="email" placeholder="Your Email..." autocomplete="email" />
         </label>
 
         <label for="phone">
           Phone
-          <input id="phone" formControlName="phone" type="tel" placeholder="+1 206 555 0199" autocomplete="tel" />
+          <input id="phone" formControlName="phone" type="tel" placeholder="Your Phone Number..." autocomplete="tel" />
         </label>
 
         <label for="type">
@@ -37,11 +37,21 @@
           <input id="time" formControlName="time" type="time" step="60" autocomplete="off" />
         </label>
 
-        <label for="duration" title="How long you need for the session">
+        <label title="How long you need for the session">
           Duration
-          <select id="duration" formControlName="durationMinutes">
-            <option *ngFor="let d of durations" [value]="d">{{ d }} min</option>
-          </select>
+          <div class="duration-stepper" role="group" aria-label="Session duration in hours">
+            <button
+              type="button"
+              (click)="decrementDuration()"
+              [disabled]="form.controls.durationMinutes.value <= minDurationMinutes"
+              aria-label="Decrease duration by one hour">−</button>
+            <span aria-live="polite" aria-atomic="true">{{ durationLabel }}</span>
+            <button
+              type="button"
+              (click)="incrementDuration()"
+              [disabled]="form.controls.durationMinutes.value >= maxDurationMinutes"
+              aria-label="Increase duration by one hour">+</button>
+          </div>
         </label>
 
         <label for="message" class="full">

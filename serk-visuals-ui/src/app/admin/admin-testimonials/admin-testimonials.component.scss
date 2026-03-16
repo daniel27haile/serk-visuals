@@ -31,14 +31,19 @@
 
 .tile__row { display: flex; gap: var(--spacing-sm); align-items: center; }
 
-.avatar {
-  width: 72px;
-  height: 72px;
-  object-fit: cover;
+.avatar-icon {
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
   flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--color-secondary, #7c6aff), #5aa8ff 90%);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: var(--weight-extrabold);
+  letter-spacing: .5px;
+  user-select: none;
 }
 
 .tile__meta { display: grid; gap: .15rem; }

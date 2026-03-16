@@ -36,7 +36,30 @@ export class BookingFormPage {
     { value: 'Personal', label: 'Personal' },
     { value: 'Other',    label: 'Other'    },
   ];
-  readonly durations = [30, 60, 90, 120, 180];
+  readonly minDurationMinutes  = 60;
+  readonly maxDurationMinutes  = 480;
+  readonly durationStepMinutes = 60;
+
+  get durationLabel(): string {
+    const hours = (this.form.controls.durationMinutes.value ?? 60) / 60;
+    return hours === 1 ? '1 hour' : `${hours} hours`;
+  }
+
+  decrementDuration(): void {
+    const next = Math.max(
+      this.minDurationMinutes,
+      this.form.controls.durationMinutes.value - this.durationStepMinutes,
+    );
+    this.form.controls.durationMinutes.setValue(next);
+  }
+
+  incrementDuration(): void {
+    const next = Math.min(
+      this.maxDurationMinutes,
+      this.form.controls.durationMinutes.value + this.durationStepMinutes,
+    );
+    this.form.controls.durationMinutes.setValue(next);
+  }
 
   submitting = signal(false);
   submitted  = signal(false);

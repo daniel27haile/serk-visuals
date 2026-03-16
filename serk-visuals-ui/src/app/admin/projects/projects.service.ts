@@ -10,11 +10,9 @@ export interface Project {
   _id?: string;
   title: string;
   status: ProjectStatus;
-  cover: string; // absolute URL from API
-  thumbnail?: string | null;
   tags?: string[];
   notes?: string | null;
-  createdAt: string; // ISO
+  createdAt: string;
   updatedAt?: string;
 }
 
@@ -28,8 +26,6 @@ export interface ProjectListResponse {
 export interface ProjectCreatePayload {
   title: string;
   status?: ProjectStatus;
-  coverKey: string; // S3 key from UploadService
-  thumbKey?: string; // S3 key from UploadService
   tags?: string;
   notes?: string;
   createdAt?: string;
@@ -38,8 +34,6 @@ export interface ProjectCreatePayload {
 export interface ProjectUpdatePayload {
   title?: string;
   status?: ProjectStatus;
-  coverKey?: string; // S3 key from UploadService (only when replacing image)
-  thumbKey?: string; // S3 key from UploadService (only when replacing thumb)
   tags?: string;
   notes?: string;
   createdAt?: string;
@@ -69,23 +63,15 @@ export class ProjectsService {
     });
   }
 
-  /** Create: pass S3 keys obtained from UploadService */
   create(payload: ProjectCreatePayload): Observable<Project> {
-    return this.http.post<Project>(this.BASE, payload, {
-      withCredentials: true,
-    });
+    return this.http.post<Project>(this.BASE, payload, { withCredentials: true });
   }
 
-  /** Update: pass S3 keys only when replacing images */
   update(id: string, payload: ProjectUpdatePayload): Observable<Project> {
-    return this.http.patch<Project>(`${this.BASE}/${id}`, payload, {
-      withCredentials: true,
-    });
+    return this.http.patch<Project>(`${this.BASE}/${id}`, payload, { withCredentials: true });
   }
 
   remove(id: string): Observable<{ message?: string }> {
-    return this.http.delete<{ message?: string }>(`${this.BASE}/${id}`, {
-      withCredentials: true,
-    });
+    return this.http.delete<{ message?: string }>(`${this.BASE}/${id}`, { withCredentials: true });
   }
 }

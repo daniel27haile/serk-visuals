@@ -1,5 +1,14 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  effect,
+  OnDestroy,
+  PLATFORM_ID,
+  HostListener,
+} from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -11,7 +20,6 @@ import {
   Project,
   ProjectStatus,
 } from './projects.service';
-import { UploadService } from '../../shared/services/upload.service';
 
 @Component({
   selector: 'app-projects',
@@ -20,12 +28,12 @@ import { UploadService } from '../../shared/services/upload.service';
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss'],
 })
-export class ProjectsComponent {
+export class ProjectsComponent implements OnDestroy {
   private fb = inject(NonNullableFormBuilder);
   private api = inject(ProjectsService);
-  private uploadService = inject(UploadService);
+  private platformId = inject(PLATFORM_ID);
 
-  // Filters / paging
+  // ── Filters / paging ─────────────────────────────────────
   q = signal<string>('');
   status = signal<ProjectStatus | ''>('');
   year = signal<number | ''>('');
@@ -33,17 +41,17 @@ export class ProjectsComponent {
   page = signal(1);
   pageSize = signal(10);
 
-  // Data
+  // ── Data ─────────────────────────────────────────────────
   items = signal<Project[]>([]);
   total = signal(0);
   pages = computed(() =>
     Math.max(1, Math.ceil(this.total() / this.pageSize()))
   );
   loading = signal(false);
-  uploading = signal(false);
+  saving = signal(false);
   error = signal<string | null>(null);
 
-  // Create/Edit form
+  // ── Create / Edit form ───────────────────────────────────
   editingId = signal<string | null>(null);
   form = this.fb.group({
     title: this.fb.control('', [Validators.required, Validators.minLength(2)]),
@@ -55,12 +63,14 @@ export class ProjectsComponent {
     notes: this.fb.control<string>(''),
   });
 
-  // Files
-  coverFile = signal<File | null>(null);
-  thumbFile = signal<File | null>(null);
-  coverPreview = signal<string | null>(null);
+  // ── Detail modal ─────────────────────────────────────────
+  detailProject = signal<Project | null>(null);
 
-  // Options
+  // ── Reactive clock (updates ageFrom every 30 s) ──────────
+  private nowMs = signal(Date.now());
+  private tickTimer: ReturnType<typeof setInterval> | null = null;
+
+  // ── Options ──────────────────────────────────────────────
   readonly statuses: ProjectStatus[] = [
     'new',
     'in-progress',
@@ -72,18 +82,18 @@ export class ProjectsComponent {
     return Array.from({ length: 11 }, (_, i) => now - i);
   })();
   readonly months = [
-    { v: 1, label: 'January' },
-    { v: 2, label: 'February' },
-    { v: 3, label: 'March' },
-    { v: 4, label: 'April' },
-    { v: 5, label: 'May' },
-    { v: 6, label: 'June' },
-    { v: 7, label: 'July' },
-    { v: 8, label: 'August' },
-    { v: 9, label: 'September' },
-    { v: 10, label: 'October' },
-    { v: 11, label: 'November' },
-    { v: 12, label: 'December' },
+    { v: 1,  label: 'January'   },
+    { v: 2,  label: 'February'  },
+    { v: 3,  label: 'March'     },
+    { v: 4,  label: 'April'     },
+    { v: 5,  label: 'May'       },
+    { v: 6,  label: 'June'      },
+    { v: 7,  label: 'July'      },
+    { v: 8,  label: 'August'    },
+    { v: 9,  label: 'September' },
+    { v: 10, label: 'October'   },
+    { v: 11, label: 'November'  },
+    { v: 12, label: 'December'  },
   ];
 
   constructor() {
@@ -98,8 +108,73 @@ export class ProjectsComponent {
       };
       queueMicrotask(() => this.fetch(params));
     });
+
+    if (isPlatformBrowser(this.platformId)) {
+      this.tickTimer = setInterval(() => this.nowMs.set(Date.now()), 30_000);
+    }
   }
 
+  ngOnDestroy() {
+    if (this.tickTimer) clearInterval(this.tickTimer);
+    this.lockScroll(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscKey() {
+    if (this.detailProject()) this.closeDetail();
+  }
+
+  // ── Detail modal ─────────────────────────────────────────
+  openDetail(p: Project) {
+    this.detailProject.set(p);
+    this.lockScroll(true);
+  }
+
+  closeDetail() {
+    this.detailProject.set(null);
+    this.lockScroll(false);
+  }
+
+  private lockScroll(on: boolean) {
+    if (typeof document === 'undefined') return;
+    document.documentElement.style.overflow = on ? 'hidden' : '';
+  }
+
+  // ── Timestamps ───────────────────────────────────────────
+  /** Returns a localized exact date + time string, e.g. "Mar 15, 2026, 12:40 PM" */
+  formatDate(iso: string | undefined): string {
+    if (!iso) return '';
+    const d = new Date(iso);
+    if (!Number.isFinite(d.getTime())) return '';
+    return new Intl.DateTimeFormat(undefined, {
+      year:   'numeric',
+      month:  'short',
+      day:    'numeric',
+      hour:   'numeric',
+      minute: '2-digit',
+    }).format(d);
+  }
+
+  /** Returns a reactive relative label ("just now", "5m ago", "2d ago", …).
+   *  Reads `nowMs` signal so the view re-evaluates every 30 s automatically. */
+  ageFrom(iso: string | undefined): string {
+    if (!iso) return '';
+    const t = +new Date(iso);
+    if (!Number.isFinite(t)) return '';
+    const diff = this.nowMs() - t;
+    if (diff < 60_000) return 'just now';
+    const d = Math.floor(diff / 86_400_000);
+    if (d <= 0) {
+      const h = Math.floor(diff / 3_600_000);
+      return h <= 0 ? `${Math.floor(diff / 60_000)}m ago` : `${h}h ago`;
+    }
+    if (d < 30) return `${d}d ago`;
+    const mo = Math.floor(d / 30);
+    if (mo < 12) return `${mo}mo ago`;
+    return `${Math.floor(mo / 12)}y ago`;
+  }
+
+  // ── Private fetch ────────────────────────────────────────
   private fetch(params: {
     page: number;
     pageSize: number;
@@ -125,6 +200,7 @@ export class ProjectsComponent {
     });
   }
 
+  // ── Filter / paging helpers ──────────────────────────────
   resetFilters() {
     this.q.set('');
     this.status.set('');
@@ -132,46 +208,14 @@ export class ProjectsComponent {
     this.month.set('');
     this.page.set(1);
   }
+
   goto(p: number) {
     if (p >= 1 && p <= this.pages()) this.page.set(p);
   }
+
   trackById = (_: number, it: Project) => (it.id || it._id)!;
 
-  ageFrom(iso: string): string {
-    const t = +new Date(iso);
-    if (!Number.isFinite(t)) return '';
-    const diff = Date.now() - t;
-    const d = Math.floor(diff / 86400000);
-    if (d <= 0) {
-      const h = Math.floor(diff / 3600000);
-      if (h <= 0) return `${Math.floor(diff / 60000)}m ago`;
-      return `${h}h ago`;
-    }
-    if (d < 30) return `${d}d ago`;
-    const mo = Math.floor(d / 30);
-    if (mo < 12) return `${mo}mo ago`;
-    return `${Math.floor(mo / 12)}y ago`;
-  }
-
-  private toISODate(dateStr: string): string {
-    if (!dateStr) return '';
-    if (/\d{4}-\d{2}-\d{2}T/.test(dateStr))
-      return new Date(dateStr).toISOString();
-    const [y, m, d] = dateStr.split('-').map(Number);
-    if (!y || !m || !d) return new Date(dateStr).toISOString();
-    return new Date(Date.UTC(y, (m || 1) - 1, d || 1, 0, 0, 0)).toISOString();
-  }
-
-  onFile(kind: 'cover' | 'thumb', ev: Event) {
-    const file = (ev.target as HTMLInputElement).files?.[0] ?? null;
-    if (kind === 'cover') {
-      this.coverFile.set(file);
-      this.coverPreview.set(file ? URL.createObjectURL(file) : null);
-    } else {
-      this.thumbFile.set(file);
-    }
-  }
-
+  // ── Edit helpers ─────────────────────────────────────────
   edit(p: Project) {
     this.editingId.set(String(p.id || p._id));
     this.form.reset({
@@ -183,117 +227,53 @@ export class ProjectsComponent {
       tagsCsv: (p.tags ?? []).join(', '),
       notes: p.notes ?? '',
     });
-    this.coverFile.set(null);
-    this.thumbFile.set(null);
-    this.coverPreview.set(p.cover || null);
-    try {
-      window?.scrollTo?.({ top: 0, behavior: 'smooth' });
-    } catch {}
+    try { window?.scrollTo?.({ top: 0, behavior: 'smooth' }); } catch {}
   }
 
   cancelEdit() {
     this.editingId.set(null);
-    this.form.reset({
-      title: '',
-      status: 'new',
-      createdAt: '',
-      tagsCsv: '',
-      notes: '',
-    });
-    this.coverFile.set(null);
-    this.thumbFile.set(null);
-    this.coverPreview.set(null);
+    this.form.reset({ title: '', status: 'new', createdAt: '', tagsCsv: '', notes: '' });
   }
 
-  async submit() {
+  submit() {
     if (this.form.invalid) return;
 
     const id = this.editingId();
     const v = this.form.getRawValue();
 
-    if (!id && !this.coverFile()) {
-      this.error.set('Please select a cover image.');
-      return;
-    }
-
-    this.uploading.set(true);
+    this.saving.set(true);
     this.error.set(null);
 
-    try {
-      // Upload files to S3 first
-      let coverKey: string | undefined;
-      let thumbKey: string | undefined;
+    const payload = {
+      title: v.title.trim(),
+      status: v.status,
+      tags: v.tagsCsv || undefined,
+      notes: v.notes || undefined,
+      createdAt: v.createdAt ? this.toISODate(v.createdAt) : undefined,
+    };
 
-      if (this.coverFile()) {
-        coverKey = await this.uploadService.upload(
-          this.coverFile()!,
-          'uploads/projects'
-        );
-      }
-      if (this.thumbFile()) {
-        thumbKey = await this.uploadService.upload(
-          this.thumbFile()!,
-          'uploads/projects'
-        );
-      }
+    const req$ = id
+      ? this.api.update(id, payload)
+      : this.api.create(payload);
 
-      if (!id) {
-        this.api
-          .create({
-            title: v.title.trim(),
-            status: v.status,
-            coverKey: coverKey!,
-            thumbKey,
-            tags: v.tagsCsv || undefined,
-            notes: v.notes || undefined,
-            createdAt: v.createdAt ? this.toISODate(v.createdAt) : undefined,
-          })
-          .subscribe({
-            next: () => {
-              this.cancelEdit();
-              this.page.set(1);
-              this.uploading.set(false);
-            },
-            error: (e) => {
-              this.error.set(e?.error?.message || 'Failed to create.');
-              this.uploading.set(false);
-            },
-          });
-      } else {
-        this.api
-          .update(id, {
-            title: v.title.trim(),
-            status: v.status,
-            coverKey,
-            thumbKey,
-            tags: v.tagsCsv || undefined,
-            notes: v.notes || undefined,
-            createdAt: v.createdAt ? this.toISODate(v.createdAt) : undefined,
-          })
-          .subscribe({
-            next: () => {
-              this.cancelEdit();
-              this.fetch({
-                page: this.page(),
-                pageSize: this.pageSize(),
-                q: this.q() || undefined,
-                status: this.status() || undefined,
-                year: this.year() || undefined,
-                month: this.month() || undefined,
-              });
-              this.uploading.set(false);
-            },
-            error: (e) => {
-              this.error.set(e?.error?.message || 'Failed to update.');
-              this.uploading.set(false);
-            },
-          });
-      }
-    } catch (e: any) {
-      console.error(e);
-      this.error.set(e?.message || 'Upload failed.');
-      this.uploading.set(false);
-    }
+    req$.subscribe({
+      next: () => {
+        this.cancelEdit();
+        this.fetch({
+          page: this.page(),
+          pageSize: this.pageSize(),
+          q: this.q() || undefined,
+          status: this.status() || undefined,
+          year: this.year() || undefined,
+          month: this.month() || undefined,
+        });
+        this.saving.set(false);
+      },
+      error: (e) => {
+        this.error.set(e?.error?.message || (id ? 'Failed to update.' : 'Failed to create.'));
+        this.saving.set(false);
+      },
+    });
   }
 
   remove(it: Project) {
@@ -329,12 +309,16 @@ export class ProjectsComponent {
     if (typeof anyEl.showPicker === 'function') {
       anyEl.showPicker();
     } else {
-      try {
-        inputEl.focus();
-        inputEl.click();
-      } catch {
-        inputEl.focus();
-      }
+      try { inputEl.focus(); inputEl.click(); } catch { inputEl.focus(); }
     }
+  }
+
+  private toISODate(dateStr: string): string {
+    if (!dateStr) return '';
+    if (/\d{4}-\d{2}-\d{2}T/.test(dateStr))
+      return new Date(dateStr).toISOString();
+    const [y, m, d] = dateStr.split('-').map(Number);
+    if (!y || !m || !d) return new Date(dateStr).toISOString();
+    return new Date(Date.UTC(y, (m || 1) - 1, d || 1, 0, 0, 0)).toISOString();
   }
 }

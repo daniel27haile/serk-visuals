@@ -319,6 +319,15 @@ export class LandingPageComponent implements OnDestroy {
     }
   }
 
+  initials(author: string): string {
+    return author
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((w) => w[0]?.toUpperCase() ?? '')
+      .join('');
+  }
+
   // Nice hover glow on .svc cards
   private onPointerMove = (ev: PointerEvent) => {
     const target = (ev.target as HTMLElement)?.closest?.(

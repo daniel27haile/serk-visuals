@@ -41,15 +41,11 @@
         <input type="number" formControlName="order" placeholder="0" />
       </label>
 
-      <label class="file full">
-        <span class="lbl">Avatar (optional)</span>
-        <input id="avatar" type="file" accept="image/*" (change)="onFile($event)" />
-      </label>
     </div>
 
     <div class="actions">
-      <button class="btn primary" type="submit" [disabled]="uploading()">
-        {{ uploading() ? 'Uploading…' : (editingId() ? 'Update' : 'Create') }}
+      <button class="btn primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : (editingId() ? 'Update' : 'Create') }}
       </button>
       <button class="btn" type="button" (click)="cancelEdit()" *ngIf="editingId()">
         Cancel
@@ -63,13 +59,7 @@
   <div class="grid-list" *ngIf="!loading() && !error()">
     <article class="tile" *ngFor="let it of items(); trackBy: trackById">
       <div class="tile__row">
-        <img
-          class="avatar"
-          [src]="it.avatar || 'https://placehold.co/96x96?text=%20'"
-          [alt]="it.author"
-          width="96"
-          height="96"
-        />
+        <div class="avatar-icon" aria-hidden="true">{{ initials(it.author) }}</div>
         <div class="tile__meta">
           <h4 class="tile__title">{{ it.author }}</h4>
           <p class="muted">{{ it.role || '—' }}</p>

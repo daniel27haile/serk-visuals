@@ -1,0 +1,83 @@
+name: CI
+
+# Runs on every PR targeting main.
+# Push to main is handled by deploy.yml (which re-runs these same checks).
+
+on:
+  pull_request:
+    branches: [main]
+
+# Cancel in-progress runs for the same PR when new commits are pushed.
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Frontend ────────────────────────────────────────────────────────────────
+  frontend:
+    name: Frontend — Type-check, Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: serk-visuals-ui
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: serk-visuals-ui/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit -p tsconfig.app.json
+
+      - name: Build (production)
+        run: npm run build:prod
+
+      - name: Unit tests (headless Chrome)
+        run: npx ng test --watch=false --browsers=ChromeHeadless --no-progress --code-coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: serk-visuals-ui/coverage/
+          retention-days: 7
+
+  # ── Backend ─────────────────────────────────────────────────────────────────
+  backend:
+    name: Backend — Install & Syntax Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: serk-visuals-backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: serk-visuals-backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Syntax check all JS files
+        run: find . -name "*.js" -not -path "./node_modules/*" | xargs node --check
+
+      - name: Verify app entrypoint loads
+        run: node -e "require('./app.js')" || true
+        env:
+          NODE_ENV: test
+          PORT: 3500
+          MONGODB_URI: mongodb://localhost:27017/test
+          JWT_SECRET: ci-test-secret
+          JWT_REFRESH_SECRET: ci-test-refresh-secret

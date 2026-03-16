@@ -1,13 +1,10 @@
 // controller/project_controller.js
 const Project = require("../models/project_model");
-const { publicUrlFromKey, headObject, deleteByUrl } = require("../config/s3");
 
 const pick = (obj, keys) =>
   Object.fromEntries(
     Object.entries(obj || {}).filter(([k]) => keys.includes(k))
   );
-
-const absolutize = (_req, item) => item; // already storing absolute URLs
 
 /** LIST: GET /api/projects */
 exports.getAll = async (req, res, next) => {
@@ -50,7 +47,7 @@ exports.getAll = async (req, res, next) => {
     ]);
 
     res.json({
-      items: items.map((i) => absolutize(req, i)),
+      items,
       total,
       page,
       pages: Math.ceil(total / pageSize),
@@ -68,7 +65,7 @@ exports.getOne = async (req, res, next) => {
       deletedAt: null,
     }).lean();
     if (!doc) return res.status(404).json({ message: "Project not found" });
-    res.json(absolutize(req, doc));
+    res.json(doc);
   } catch (err) {
     next(err);
   }
@@ -76,7 +73,7 @@ exports.getOne = async (req, res, next) => {
 
 /**
  * CREATE (JSON)
- * body: { title, status?, tags?, notes?, createdAt?, coverKey, thumbKey? }
+ * body: { title, status?, tags?, notes?, createdAt? }
  */
 exports.create = async (req, res, next) => {
   try {
@@ -86,18 +83,10 @@ exports.create = async (req, res, next) => {
       "tags",
       "notes",
       "createdAt",
-      "coverKey",
-      "thumbKey",
     ]);
-    if (!body.title || !body.coverKey) {
-      return res
-        .status(400)
-        .json({ message: "title and coverKey are required" });
+    if (!body.title) {
+      return res.status(400).json({ message: "title is required" });
     }
-
-    // (Optional) verify S3 objects exist
-    await headObject(body.coverKey);
-    if (body.thumbKey) await headObject(body.thumbKey);
 
     const tags =
       typeof body.tags === "string"
@@ -112,14 +101,12 @@ exports.create = async (req, res, next) => {
     const doc = await Project.create({
       title: body.title,
       status: body.status || "new",
-      cover: publicUrlFromKey(body.coverKey),
-      thumbnail: body.thumbKey ? publicUrlFromKey(body.thumbKey) : undefined,
       tags,
       notes: body.notes || undefined,
       ...(body.createdAt ? { createdAt: new Date(body.createdAt) } : {}),
     });
 
-    res.status(201).json(absolutize(req, doc.toObject()));
+    res.status(201).json(doc.toObject());
   } catch (err) {
     next(err);
   }
@@ -127,24 +114,16 @@ exports.create = async (req, res, next) => {
 
 /**
  * UPDATE (JSON)
- * body: { title?, status?, tags?, notes?, createdAt?, coverKey?, thumbKey? }
+ * body: { title?, status?, tags?, notes?, createdAt? }
  */
 exports.update = async (req, res, next) => {
   try {
-    const before = await Project.findOne({
-      _id: req.params.id,
-      deletedAt: null,
-    }).lean();
-    if (!before) return res.status(404).json({ message: "Project not found" });
-
     const body = pick(req.body, [
       "title",
       "status",
       "tags",
       "notes",
       "createdAt",
-      "coverKey",
-      "thumbKey",
     ]);
     const patch = {};
 
@@ -165,31 +144,14 @@ exports.update = async (req, res, next) => {
     }
     if (body.createdAt) patch.createdAt = new Date(body.createdAt);
 
-    let newCoverUrl, newThumbUrl;
-    if (body.coverKey) {
-      await headObject(body.coverKey);
-      newCoverUrl = publicUrlFromKey(body.coverKey);
-      patch.cover = newCoverUrl;
-    }
-    if (body.thumbKey) {
-      await headObject(body.thumbKey);
-      newThumbUrl = publicUrlFromKey(body.thumbKey);
-      patch.thumbnail = newThumbUrl;
-    }
-
     const doc = await Project.findOneAndUpdate(
       { _id: req.params.id, deletedAt: null },
       patch,
       { new: true, runValidators: true }
     ).lean();
+    if (!doc) return res.status(404).json({ message: "Project not found" });
 
-    // best-effort cleanup of replaced media
-    if (newCoverUrl && before.cover && before.cover !== newCoverUrl)
-      await deleteByUrl(before.cover);
-    if (newThumbUrl && before.thumbnail && before.thumbnail !== newThumbUrl)
-      await deleteByUrl(before.thumbnail);
-
-    res.json(absolutize(req, doc));
+    res.json(doc);
   } catch (err) {
     next(err);
   }
@@ -208,7 +170,7 @@ exports.updateStatus = async (req, res, next) => {
       { new: true, runValidators: true }
     ).lean();
     if (!doc) return res.status(404).json({ message: "Project not found" });
-    res.json(absolutize(req, doc));
+    res.json(doc);
   } catch (err) {
     next(err);
   }
@@ -237,9 +199,6 @@ exports.hardDelete = async (req, res, next) => {
   try {
     const doc = await Project.findByIdAndDelete(req.params.id);
     if (!doc) return res.status(404).json({ message: "Project not found" });
-    // best-effort cleanup
-    if (doc.cover) await deleteByUrl(doc.cover);
-    if (doc.thumbnail) await deleteByUrl(doc.thumbnail);
     res.json({ message: "Permanently removed", id: doc._id });
   } catch (err) {
     next(err);

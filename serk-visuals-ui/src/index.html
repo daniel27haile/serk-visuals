@@ -24,13 +24,32 @@
   <meta name="twitter:description" content="Capturing life's most important moments. Wedding, event, portrait, and brand photography & videography.">
   <meta name="twitter:image"       content="/images/serkvisuals_logo.png">
 
-  <!-- ── Favicon ────────────────────────────────────────── -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <!-- ── Favicon — Serk Visuals logo ────────────────────── -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/sv.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/sv.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/serkvisuals_logo.png">
+  <link rel="shortcut icon" href="favicon.ico"><!-- legacy ICO fallback -->
 
-  <!-- ── Fonts ──────────────────────────────────────────── -->
+  <!-- ── DNS/connection hints for production API ─────────── -->
+  <link rel="dns-prefetch" href="https://api.serkvisuals.com">
+  <link rel="preconnect" href="https://api.serkvisuals.com" crossorigin>
+
+  <!-- ── Fonts — async load to eliminate render-blocking ─── -->
+  <!-- TCP+TLS to Google Fonts is established early via preconnect -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Josefin+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <!--
+    rel=preload fetches the CSS without blocking the parser.
+    onload swaps it to a real stylesheet once downloaded.
+    Reduced to the weights actually needed (9 → 7 variants).
+  -->
+  <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;1,400&family=Josefin+Sans:wght@400;600;700&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'">
+  <noscript>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;1,400&family=Josefin+Sans:wght@400;600;700&display=swap">
+  </noscript>
 </head>
 <body>
   <app-root></app-root>

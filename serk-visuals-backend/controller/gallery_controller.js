@@ -8,7 +8,22 @@ const pick = (obj, keys) =>
     Object.entries(obj || {}).filter(([k]) => keys.includes(k))
   );
 
-const absolutize = (_req, item) => item; // now storing absolute URLs already
+/**
+ * Normalize image URLs in a gallery item before sending to client.
+ * New records already store absolute URLs, but this is a safety net for any
+ * legacy records that may have an S3 key or relative path in the url field.
+ */
+const absolutize = (_req, item) => {
+  if (!item) return item;
+  const out = { ...item };
+  if (out.url && !out.url.startsWith("http")) {
+    out.url = publicUrlFromKey(out.url);
+  }
+  if (out.thumbnail && !out.thumbnail.startsWith("http")) {
+    out.thumbnail = publicUrlFromKey(out.thumbnail);
+  }
+  return out;
+};
 
 exports.list = async (req, res) => {
   try {

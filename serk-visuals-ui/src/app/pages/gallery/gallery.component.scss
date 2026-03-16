@@ -129,6 +129,15 @@
   transform: scale(1); transition: transform .6s ease;
 }
 .zoomable { cursor: zoom-in; }
+
+// Graceful placeholder when an S3 image fails to load
+.img--broken {
+  display: block !important;
+  width: 100%;
+  height: 100%;
+  background: var(--color-surface-2);
+  cursor: default;
+}
 .thumb__overlay {
   position: absolute; inset: 0;
   background:

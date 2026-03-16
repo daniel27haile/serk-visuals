@@ -66,6 +66,7 @@
           [alt]="it.title"
           loading="lazy"
           (click)="openLightbox(i)"
+          (error)="onImgError($event)"
         />
         <div class="thumb__overlay"></div>
       </div>
@@ -109,7 +110,7 @@
     <button class="lb-nav next" type="button" aria-label="Next image" (click)="lbNext()">›</button>
 
     <ng-container *ngIf="lbCurr() as curr">
-      <img class="lb-img" [src]="curr.url" [alt]="curr.title" />
+      <img class="lb-img" [src]="curr.url" [alt]="curr.title" (error)="onImgError($event)" />
       <div class="lb-caption">
         <span class="title">{{ curr.title }}</span>
         <span class="count">{{ lightboxIdx() + 1 }} / {{ items().length }}</span>

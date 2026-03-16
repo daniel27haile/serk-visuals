@@ -93,13 +93,16 @@ const PORT = process.env.PORT || 3500;
     const password = process.env.ADMIN_PASSWORD;
 
     if (email && password) {
-      const exists = await User.findOne({ email });
-      if (!exists) {
-        const passwordHash = await argon2.hash(password);
+      // Always re-hash and upsert so that changing ADMIN_PASSWORD in env
+      // and redeploying immediately takes effect without manual DB edits.
+      const passwordHash = await argon2.hash(password);
+      const existing = await User.findOne({ email });
+      if (!existing) {
         await User.create({ email, passwordHash, role: "admin" });
-        console.log(`✅ Seeded admin: ${email}`);
+        console.log(`✅ Admin created: ${email}`);
       } else {
-        console.log(`ℹ️ Admin exists: ${email}`);
+        await User.updateOne({ email }, { $set: { passwordHash, role: "admin" } });
+        console.log(`✅ Admin credentials synced: ${email}`);
       }
     } else {
       console.log(

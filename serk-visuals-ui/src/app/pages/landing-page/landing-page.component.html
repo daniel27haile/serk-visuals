@@ -33,6 +33,7 @@
           loading="eager"
           width="1600"
           height="1000"
+          (error)="onImgError($event)"
         />
       </div>
 
@@ -94,6 +95,7 @@
       loading="lazy"
       width="1200"
       height="800"
+      (error)="onImgError($event)"
     />
   </div>
 

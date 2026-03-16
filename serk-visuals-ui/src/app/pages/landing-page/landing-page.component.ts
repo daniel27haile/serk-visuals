@@ -268,6 +268,13 @@ export class LandingPageComponent implements OnDestroy {
     if (e.key === 'ArrowLeft') this.tPrev();
   }
 
+  // ===== Image error fallback =====
+  onImgError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.classList.add('img--broken');
+    img.removeAttribute('src');
+  }
+
   // ===== trackBy =====
   trackByGallery = (_: number, it: GalleryItem) => it._id!;
   trackByTestimonial = (_: number, it: Testimonial) => it._id ?? it.author;

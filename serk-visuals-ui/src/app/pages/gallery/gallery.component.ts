@@ -167,6 +167,13 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
     if (p >= 1 && p <= this.pages()) this.page.set(p);
   }
   trackById = (_: number, it: GalleryItem) => it._id!;
+
+  /** Hide broken images gracefully instead of showing the browser's broken-icon */
+  onImgError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.classList.add('img--broken');
+    img.removeAttribute('src');
+  }
   joinTags(tags?: string[] | null): string {
     return Array.isArray(tags) && tags.length ? tags.join(', ') : '';
   }

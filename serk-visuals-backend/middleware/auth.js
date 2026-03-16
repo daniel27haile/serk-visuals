@@ -40,25 +40,28 @@ const requireAdmin = [requireAuth, requireRole(["admin"])];
 
 function setAuthCookie(res, token) {
   const isProd = process.env.NODE_ENV === "production";
-
-  // NOTE: If your frontend and backend are on different domains in production,
-  // you’ll likely want: sameSite: "none", secure: true
-  // res.cookie(COOKIE_NAME, token, { httpOnly: true, sameSite: "none", secure: true, ... })
-
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: isProd ? "lax" : "lax",
+    // SameSite=None is required for cross-subdomain credentialed requests
+    // (frontend: serkvisuals.com  →  API: api.serkvisuals.com).
+    // SameSite=None mandates Secure=true, which is already enforced in prod.
+    sameSite: isProd ? "none" : "lax",
     secure: isProd,
+    // Explicit domain so the cookie is valid across all *.serkvisuals.com subdomains
+    domain: isProd ? ".serkvisuals.com" : undefined,
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 }
 
 function clearAuthCookie(res) {
+  const isProd = process.env.NODE_ENV === "production";
+  // Attributes must EXACTLY match setAuthCookie or the browser won’t delete it
   res.clearCookie(COOKIE_NAME, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: isProd ? "none" : "lax",
+    secure: isProd,
+    domain: isProd ? ".serkvisuals.com" : undefined,
     path: "/",
   });
 }

@@ -1,4 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
 
 import { PublicLayoutsComponent } from './public-layouts.component';
 
@@ -8,9 +10,9 @@ describe('PublicLayoutsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PublicLayoutsComponent]
-    })
-    .compileComponents();
+      imports: [PublicLayoutsComponent],
+      providers: [provideRouter([]), provideHttpClient()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PublicLayoutsComponent);
     component = fixture.componentInstance;

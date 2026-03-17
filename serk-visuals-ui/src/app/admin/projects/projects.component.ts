@@ -5,10 +5,10 @@ import {
   computed,
   effect,
   OnDestroy,
-  PLATFORM_ID,
+  ChangeDetectorRef,
   HostListener,
 } from '@angular/core';
-import { isPlatformBrowser, CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -31,7 +31,7 @@ import {
 export class ProjectsComponent implements OnDestroy {
   private fb = inject(NonNullableFormBuilder);
   private api = inject(ProjectsService);
-  private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
 
   // ── Filters / paging ─────────────────────────────────────
   q = signal<string>('');
@@ -66,8 +66,7 @@ export class ProjectsComponent implements OnDestroy {
   // ── Detail modal ─────────────────────────────────────────
   detailProject = signal<Project | null>(null);
 
-  // ── Reactive clock (updates ageFrom every 30 s) ──────────
-  private nowMs = signal(Date.now());
+  // ── Tick timer — forces re-render every 30 s so ageFrom stays fresh ─
   private tickTimer: ReturnType<typeof setInterval> | null = null;
 
   // ── Options ──────────────────────────────────────────────
@@ -109,9 +108,7 @@ export class ProjectsComponent implements OnDestroy {
       queueMicrotask(() => this.fetch(params));
     });
 
-    if (isPlatformBrowser(this.platformId)) {
-      this.tickTimer = setInterval(() => this.nowMs.set(Date.now()), 30_000);
-    }
+    this.tickTimer = setInterval(() => this.cdr.markForCheck(), 30_000);
   }
 
   ngOnDestroy() {
@@ -155,19 +152,17 @@ export class ProjectsComponent implements OnDestroy {
     }).format(d);
   }
 
-  /** Returns a reactive relative label ("just now", "5m ago", "2d ago", …).
-   *  Reads `nowMs` signal so the view re-evaluates every 30 s automatically. */
+  /** Returns a human-readable relative label ("just now", "5m ago", "2d ago", …).
+   *  Re-evaluated every 30 s via the tick timer. */
   ageFrom(iso: string | undefined): string {
     if (!iso) return '';
     const t = +new Date(iso);
     if (!Number.isFinite(t)) return '';
-    const diff = this.nowMs() - t;
+    const diff = Date.now() - t;
     if (diff < 60_000) return 'just now';
+    const h = Math.floor(diff / 3_600_000);
     const d = Math.floor(diff / 86_400_000);
-    if (d <= 0) {
-      const h = Math.floor(diff / 3_600_000);
-      return h <= 0 ? `${Math.floor(diff / 60_000)}m ago` : `${h}h ago`;
-    }
+    if (d < 1) return `${h}h ago`;
     if (d < 30) return `${d}d ago`;
     const mo = Math.floor(d / 30);
     if (mo < 12) return `${mo}mo ago`;

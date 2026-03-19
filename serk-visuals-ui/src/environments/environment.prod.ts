@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.serkvisuals.com'
+  apiUrl: 'https://serk-visuals-api.onrender.com'
 };

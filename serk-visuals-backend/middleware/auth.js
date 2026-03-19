@@ -42,13 +42,13 @@ function setAuthCookie(res, token) {
   const isProd = process.env.NODE_ENV === "production";
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
-    // SameSite=None is required for cross-subdomain credentialed requests
-    // (frontend: serkvisuals.com  →  API: api.serkvisuals.com).
-    // SameSite=None mandates Secure=true, which is already enforced in prod.
+    // SameSite=None is required for cross-origin credentialed requests
+    // (frontend: serkvisuals.com → API: serk-visuals-api.onrender.com).
+    // SameSite=None mandates Secure=true, enforced in prod.
+    // No domain attribute — cookie is scoped to the API’s own domain so the
+    // browser sends it on credentialed cross-origin requests.
     sameSite: isProd ? "none" : "lax",
     secure: isProd,
-    // Explicit domain so the cookie is valid across all *.serkvisuals.com subdomains
-    domain: isProd ? ".serkvisuals.com" : undefined,
     path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
@@ -61,7 +61,6 @@ function clearAuthCookie(res) {
     httpOnly: true,
     sameSite: isProd ? "none" : "lax",
     secure: isProd,
-    domain: isProd ? ".serkvisuals.com" : undefined,
     path: "/",
   });
 }

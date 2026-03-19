@@ -69,42 +69,49 @@ jobs:
     environment:
       name: production
       url: https://serkvisuals.com
+    # Secrets mapped to env vars once at job level; all steps inherit them automatically.
+    # Using $VERCEL_TOKEN (env ref) keeps values masked in runner logs.
+    env:
+      VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
       - uses: actions/checkout@v4
 
+      # Fail early with a clear message rather than deep inside a deploy command
+      - name: Validate Vercel secrets
+        run: |
+          missing=()
+          [ -z "$VERCEL_TOKEN" ]      && missing+=("VERCEL_TOKEN")
+          [ -z "$VERCEL_ORG_ID" ]     && missing+=("VERCEL_ORG_ID")
+          [ -z "$VERCEL_PROJECT_ID" ] && missing+=("VERCEL_PROJECT_ID")
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "::error::Missing required secrets: ${missing[*]}"
+            echo "::error::Add them in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          echo "All Vercel secrets present."
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: npm
-          cache-dependency-path: serk-visuals-ui/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      # Pull project settings so VERCEL_ORG_ID / VERCEL_PROJECT_ID are wired correctly
       - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
 
-      - name: Build via Vercel
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
+      # Deploy from source — Vercel builds on their infrastructure.
+      # Avoids the "spawn sh ENOENT" error that occurs when vercel build runs locally
+      # in a GitHub Actions runner and tries to shell-out to execute the build command.
       - name: Deploy to Vercel
         id: deploy
         run: |
-          URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(vercel deploy --prod --token=$VERCEL_TOKEN)
           echo "url=$URL" >> $GITHUB_OUTPUT
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Print deployment URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"

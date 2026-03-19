@@ -106,7 +106,7 @@ exports.create = async (req, res, next) => {
       ...(body.createdAt ? { createdAt: new Date(body.createdAt) } : {}),
     });
 
-    res.status(201).json(doc.toObject());
+    res.status(201).json(doc);
   } catch (err) {
     next(err);
   }
@@ -118,31 +118,22 @@ exports.create = async (req, res, next) => {
  */
 exports.update = async (req, res, next) => {
   try {
-    const body = pick(req.body, [
-      "title",
-      "status",
-      "tags",
-      "notes",
-      "createdAt",
-    ]);
+    // createdAt is intentionally excluded — editing never changes the original timestamp
+    const body = pick(req.body, ["title", "status", "tags", "notes"]);
     const patch = {};
 
-    if (typeof body.title !== "undefined") patch.title = body.title;
+    if (typeof body.title  !== "undefined") patch.title  = body.title;
     if (typeof body.status !== "undefined") patch.status = body.status;
-    if (typeof body.notes !== "undefined") patch.notes = body.notes;
+    if (typeof body.notes  !== "undefined") patch.notes  = body.notes;
 
     if (typeof body.tags !== "undefined") {
       patch.tags =
         typeof body.tags === "string"
-          ? body.tags
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
+          ? body.tags.split(",").map((s) => s.trim()).filter(Boolean)
           : Array.isArray(body.tags)
           ? body.tags
           : [];
     }
-    if (body.createdAt) patch.createdAt = new Date(body.createdAt);
 
     const doc = await Project.findOneAndUpdate(
       { _id: req.params.id, deletedAt: null },

@@ -108,21 +108,20 @@ jobs:
           ls -la serk-visuals-ui
 
       # Vercel CLI runs from serk-visuals-ui/ on each step below.
-      # The vercel.json already in that folder (buildCommand, outputDirectory, rewrites)
-      # provides all build configuration — no dashboard Root Directory needed.
+      # vercel.json in that folder supplies buildCommand, outputDirectory, rewrites, and headers.
+      # We skip "vercel build" (local build simulation) because it fails in GitHub Actions
+      # with "spawn sh ENOENT" — the spawned Node child process can't locate sh on PATH.
+      # "vercel deploy --prod" (source deploy) lets Vercel build on their own servers
+      # where sh is always available.
       - name: Pull Vercel project settings
         working-directory: serk-visuals-ui
         run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
-
-      - name: Build via Vercel
-        working-directory: serk-visuals-ui
-        run: vercel build --prod --token="$VERCEL_TOKEN"
 
       - name: Deploy to Vercel
         id: deploy
         working-directory: serk-visuals-ui
         run: |
-          URL=$(vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          URL=$(vercel deploy --prod --token="$VERCEL_TOKEN")
           echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Print deployment URL

@@ -63,9 +63,8 @@ jobs:
     name: Deploy → Vercel (Production)
     runs-on: ubuntu-latest
     needs: [frontend-ci, backend-ci]
-    # No job-level working-directory default.
-    # Vercel CLI steps each set working-directory: serk-visuals-ui explicitly.
-    # The dashboard Root Directory MUST be empty/cleared (see notes below).
+    # Vercel CLI runs from repo root so that the dashboard Root Directory setting
+    # ("serk-visuals-ui") resolves the subfolder without doubling the path.
     environment:
       name: production
       url: https://serkvisuals.com
@@ -107,19 +106,14 @@ jobs:
           echo "--- serk-visuals-ui contents ---"
           ls -la serk-visuals-ui
 
-      # Vercel CLI runs from serk-visuals-ui/ on each step below.
-      # vercel.json in that folder supplies buildCommand, outputDirectory, rewrites, and headers.
-      # We skip "vercel build" (local build simulation) because it fails in GitHub Actions
-      # with "spawn sh ENOENT" — the spawned Node child process can't locate sh on PATH.
-      # "vercel deploy --prod" (source deploy) lets Vercel build on their own servers
-      # where sh is always available.
+      # Both CLI steps run from repo root. Vercel resolves serk-visuals-ui/ via
+      # the dashboard Root Directory setting. Source deploy (no --prebuilt) lets
+      # Vercel build on their servers, avoiding "spawn sh ENOENT" in GitHub Actions.
       - name: Pull Vercel project settings
-        working-directory: serk-visuals-ui
         run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
 
       - name: Deploy to Vercel
         id: deploy
-        working-directory: serk-visuals-ui
         run: |
           URL=$(vercel deploy --prod --token="$VERCEL_TOKEN")
           echo "url=$URL" >> $GITHUB_OUTPUT

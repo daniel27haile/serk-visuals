@@ -12,7 +12,8 @@ export interface Project {
   status: ProjectStatus;
   tags?: string[];
   notes?: string | null;
-  createdAt: string;
+  /** ISO string from the server; always present on saved records */
+  createdAt?: string;
   updatedAt?: string;
 }
 
@@ -36,7 +37,7 @@ export interface ProjectUpdatePayload {
   status?: ProjectStatus;
   tags?: string;
   notes?: string;
-  createdAt?: string;
+  // createdAt intentionally omitted — editing never changes the original timestamp
 }
 
 @Injectable({ providedIn: 'root' })

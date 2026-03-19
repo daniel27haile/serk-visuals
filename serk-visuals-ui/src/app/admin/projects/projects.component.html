@@ -79,7 +79,8 @@
         </select>
       </label>
 
-      <label class="date-field">
+      <!-- Date picker only shown when creating; edits never change the original timestamp -->
+      <label class="date-field" *ngIf="!editingId()">
         <span class="lbl">Created date (optional)</span>
         <div class="date-input-wrap">
           <input type="date" formControlName="createdAt" #createdAtInput />
@@ -145,10 +146,10 @@
 
         <!-- Timestamp line -->
         <p class="meta-line muted" *ngIf="it.createdAt; else noDate">
-          <time [dateTime]="it.createdAt" [title]="ageFrom(it.createdAt)">
-            {{ formatDate(it.createdAt) }}
+          <time [dateTime]="it.createdAt" [title]="it.createdAt | timeAgo">
+            {{ it.createdAt | date:'MMM d, y, h:mm a' }}
           </time>
-          <span class="meta-rel">&nbsp;· {{ ageFrom(it.createdAt) }}</span>
+          <span class="meta-rel">&nbsp;· {{ it.createdAt | timeAgo }}</span>
           <ng-container *ngIf="it.tags?.length">&nbsp;· {{ it.tags!.join(', ') }}</ng-container>
         </p>
         <ng-template #noDate>
@@ -236,9 +237,9 @@
           <polyline points="12 6 12 12 16 14"/>
         </svg>
         <time [dateTime]="detailProject()!.createdAt">
-          {{ formatDate(detailProject()!.createdAt) }}
+          {{ detailProject()!.createdAt | date:'MMM d, y, h:mm a' }}
         </time>
-        <span class="meta-rel">· {{ ageFrom(detailProject()!.createdAt) }}</span>
+        <span class="meta-rel">· {{ detailProject()!.createdAt | timeAgo }}</span>
       </div>
       <p class="detail-modal__time muted" *ngIf="!detailProject()!.createdAt">
         Posting time unavailable

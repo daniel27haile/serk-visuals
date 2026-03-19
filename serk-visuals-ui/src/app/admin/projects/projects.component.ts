@@ -5,10 +5,9 @@ import {
   computed,
   effect,
   OnDestroy,
-  ChangeDetectorRef,
   HostListener,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -20,62 +19,50 @@ import {
   Project,
   ProjectStatus,
 } from './projects.service';
+import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, TimeAgoPipe, DatePipe],
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss'],
 })
 export class ProjectsComponent implements OnDestroy {
-  private fb = inject(NonNullableFormBuilder);
+  private fb  = inject(NonNullableFormBuilder);
   private api = inject(ProjectsService);
-  private cdr = inject(ChangeDetectorRef);
 
   // ── Filters / paging ─────────────────────────────────────
-  q = signal<string>('');
-  status = signal<ProjectStatus | ''>('');
-  year = signal<number | ''>('');
-  month = signal<number | ''>('');
-  page = signal(1);
-  pageSize = signal(10);
+  q         = signal<string>('');
+  status    = signal<ProjectStatus | ''>('');
+  year      = signal<number | ''>('');
+  month     = signal<number | ''>('');
+  page      = signal(1);
+  pageSize  = signal(10);
 
   // ── Data ─────────────────────────────────────────────────
-  items = signal<Project[]>([]);
-  total = signal(0);
-  pages = computed(() =>
-    Math.max(1, Math.ceil(this.total() / this.pageSize()))
-  );
+  items   = signal<Project[]>([]);
+  total   = signal(0);
+  pages   = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize())));
   loading = signal(false);
-  saving = signal(false);
-  error = signal<string | null>(null);
+  saving  = signal(false);
+  error   = signal<string | null>(null);
 
   // ── Create / Edit form ───────────────────────────────────
   editingId = signal<string | null>(null);
   form = this.fb.group({
-    title: this.fb.control('', [Validators.required, Validators.minLength(2)]),
-    status: this.fb.control<ProjectStatus>('new', {
-      validators: [Validators.required],
-    }),
+    title:     this.fb.control('', [Validators.required, Validators.minLength(2)]),
+    status:    this.fb.control<ProjectStatus>('new', { validators: [Validators.required] }),
     createdAt: this.fb.control<string>(''),
-    tagsCsv: this.fb.control<string>(''),
-    notes: this.fb.control<string>(''),
+    tagsCsv:   this.fb.control<string>(''),
+    notes:     this.fb.control<string>(''),
   });
 
   // ── Detail modal ─────────────────────────────────────────
   detailProject = signal<Project | null>(null);
 
-  // ── Tick timer — forces re-render every 30 s so ageFrom stays fresh ─
-  private tickTimer: ReturnType<typeof setInterval> | null = null;
-
   // ── Options ──────────────────────────────────────────────
-  readonly statuses: ProjectStatus[] = [
-    'new',
-    'in-progress',
-    'completed',
-    'delivered',
-  ];
+  readonly statuses: ProjectStatus[] = ['new', 'in-progress', 'completed', 'delivered'];
   readonly years = (() => {
     const now = new Date().getFullYear();
     return Array.from({ length: 11 }, (_, i) => now - i);
@@ -98,21 +85,18 @@ export class ProjectsComponent implements OnDestroy {
   constructor() {
     effect(() => {
       const params = {
-        page: this.page(),
+        page:     this.page(),
         pageSize: this.pageSize(),
-        q: this.q() || undefined,
-        status: this.status() || undefined,
-        year: this.year() || undefined,
-        month: this.month() || undefined,
+        q:        this.q()      || undefined,
+        status:   this.status() || undefined,
+        year:     this.year()   || undefined,
+        month:    this.month()  || undefined,
       };
       queueMicrotask(() => this.fetch(params));
     });
-
-    this.tickTimer = setInterval(() => this.cdr.markForCheck(), 30_000);
   }
 
   ngOnDestroy() {
-    if (this.tickTimer) clearInterval(this.tickTimer);
     this.lockScroll(false);
   }
 
@@ -137,46 +121,10 @@ export class ProjectsComponent implements OnDestroy {
     document.documentElement.style.overflow = on ? 'hidden' : '';
   }
 
-  // ── Timestamps ───────────────────────────────────────────
-  /** Returns a localized exact date + time string, e.g. "Mar 15, 2026, 12:40 PM" */
-  formatDate(iso: string | undefined): string {
-    if (!iso) return '';
-    const d = new Date(iso);
-    if (!Number.isFinite(d.getTime())) return '';
-    return new Intl.DateTimeFormat(undefined, {
-      year:   'numeric',
-      month:  'short',
-      day:    'numeric',
-      hour:   'numeric',
-      minute: '2-digit',
-    }).format(d);
-  }
-
-  /** Returns a human-readable relative label ("just now", "5m ago", "2d ago", …).
-   *  Re-evaluated every 30 s via the tick timer. */
-  ageFrom(iso: string | undefined): string {
-    if (!iso) return '';
-    const t = +new Date(iso);
-    if (!Number.isFinite(t)) return '';
-    const diff = Date.now() - t;
-    if (diff < 60_000) return 'just now';
-    const h = Math.floor(diff / 3_600_000);
-    const d = Math.floor(diff / 86_400_000);
-    if (d < 1) return `${h}h ago`;
-    if (d < 30) return `${d}d ago`;
-    const mo = Math.floor(d / 30);
-    if (mo < 12) return `${mo}mo ago`;
-    return `${Math.floor(mo / 12)}y ago`;
-  }
-
   // ── Private fetch ────────────────────────────────────────
   private fetch(params: {
-    page: number;
-    pageSize: number;
-    q?: string;
-    status?: ProjectStatus;
-    year?: number;
-    month?: number;
+    page: number; pageSize: number;
+    q?: string; status?: ProjectStatus; year?: number; month?: number;
   }) {
     this.loading.set(true);
     this.error.set(null);
@@ -212,15 +160,14 @@ export class ProjectsComponent implements OnDestroy {
 
   // ── Edit helpers ─────────────────────────────────────────
   edit(p: Project) {
-    this.editingId.set(String(p.id || p._id));
+    const rawId = p.id || p._id || null;
+    this.editingId.set(rawId ? String(rawId) : null);
     this.form.reset({
-      title: p.title ?? '',
-      status: p.status ?? 'new',
-      createdAt: p.createdAt
-        ? new Date(p.createdAt).toISOString().slice(0, 10)
-        : '',
-      tagsCsv: (p.tags ?? []).join(', '),
-      notes: p.notes ?? '',
+      title:     p.title  ?? '',
+      status:    p.status ?? 'new',
+      createdAt: '',          // hidden in edit mode; original timestamp preserved on server
+      tagsCsv:   (p.tags ?? []).join(', '),
+      notes:     p.notes  ?? '',
     });
     try { window?.scrollTo?.({ top: 0, behavior: 'smooth' }); } catch {}
   }
@@ -234,37 +181,44 @@ export class ProjectsComponent implements OnDestroy {
     if (this.form.invalid) return;
 
     const id = this.editingId();
-    const v = this.form.getRawValue();
+    const v  = this.form.getRawValue();
 
     this.saving.set(true);
     this.error.set(null);
 
-    const payload = {
-      title: v.title.trim(),
-      status: v.status,
-      tags: v.tagsCsv || undefined,
-      notes: v.notes || undefined,
-      createdAt: v.createdAt ? this.toISODate(v.createdAt) : undefined,
-    };
+    // createdAt is only sent on create; editing never changes the original timestamp
+    const payload = id
+      ? {
+          title:  v.title.trim(),
+          status: v.status,
+          tags:   v.tagsCsv || undefined,
+          notes:  v.notes   || undefined,
+        }
+      : {
+          title:     v.title.trim(),
+          status:    v.status,
+          tags:      v.tagsCsv || undefined,
+          notes:     v.notes   || undefined,
+          createdAt: v.createdAt ? this.toLocalISODate(v.createdAt) : undefined,
+        };
 
-    const req$ = id
-      ? this.api.update(id, payload)
-      : this.api.create(payload);
+    const req$ = id ? this.api.update(id, payload) : this.api.create(payload);
 
     req$.subscribe({
       next: () => {
         this.cancelEdit();
         this.fetch({
-          page: this.page(),
+          page:     this.page(),
           pageSize: this.pageSize(),
-          q: this.q() || undefined,
-          status: this.status() || undefined,
-          year: this.year() || undefined,
-          month: this.month() || undefined,
+          q:        this.q()      || undefined,
+          status:   this.status() || undefined,
+          year:     this.year()   || undefined,
+          month:    this.month()  || undefined,
         });
         this.saving.set(false);
       },
       error: (e) => {
+        if (e?.status === 404) this.editingId.set(null);
         this.error.set(e?.error?.message || (id ? 'Failed to update.' : 'Failed to create.'));
         this.saving.set(false);
       },
@@ -278,13 +232,10 @@ export class ProjectsComponent implements OnDestroy {
 
     this.api.remove(id).subscribe({
       next: () => {
-        this.items.update((xs) =>
-          xs.filter((x) => String(x.id || x._id) !== id)
-        );
+        this.items.update((xs) => xs.filter((x) => String(x.id || x._id) !== id));
         this.total.update((n) => Math.max(0, n - 1));
         queueMicrotask(() => {
-          if (this.items().length === 0 && this.page() > 1)
-            this.page.set(this.page() - 1);
+          if (this.items().length === 0 && this.page() > 1) this.page.set(this.page() - 1);
         });
       },
       error: (e) => {
@@ -308,12 +259,13 @@ export class ProjectsComponent implements OnDestroy {
     }
   }
 
-  private toISODate(dateStr: string): string {
+  /** Converts a YYYY-MM-DD string from the date picker to an ISO string at local midnight. */
+  private toLocalISODate(dateStr: string): string {
     if (!dateStr) return '';
-    if (/\d{4}-\d{2}-\d{2}T/.test(dateStr))
-      return new Date(dateStr).toISOString();
+    if (/\d{4}-\d{2}-\d{2}T/.test(dateStr)) return new Date(dateStr).toISOString();
     const [y, m, d] = dateStr.split('-').map(Number);
     if (!y || !m || !d) return new Date(dateStr).toISOString();
-    return new Date(Date.UTC(y, (m || 1) - 1, d || 1, 0, 0, 0)).toISOString();
+    // new Date(y, m-1, d) uses local time, not UTC — avoids timezone-shift bug
+    return new Date(y, m - 1, d, 0, 0, 0).toISOString();
   }
 }

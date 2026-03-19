@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://staging.servisuals.com/api',
+  apiBaseUrl: 'https://staging.serkvisuals.com/api',
 };

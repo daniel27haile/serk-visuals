@@ -44,6 +44,7 @@
                 }
               ],
               "optimization": true,
+              "sourceMap": false,
               "outputHashing": "all",
               "budgets": [
                 {

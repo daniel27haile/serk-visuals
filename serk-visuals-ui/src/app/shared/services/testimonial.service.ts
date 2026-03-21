@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import {
   Paged,
   Testimonial,
@@ -14,6 +14,14 @@ const BASE = `${environment.apiUrl}/api/testimonials`;
 @Injectable({ providedIn: 'root' })
 export class TestimonialService {
   private http = inject(HttpClient);
+
+  /**
+   * Emits whenever testimonials are mutated (create/update/delete).
+   * Subscribers (e.g. LandingPageComponent) can react without a full page reload.
+   */
+  private _changed$ = new BehaviorSubject<void>(undefined);
+  /** Observable that fires whenever testimonials change. */
+  readonly changed$ = this._changed$.asObservable();
 
   list(opts?: {
     page?: number;
@@ -36,14 +44,20 @@ export class TestimonialService {
   }
 
   create(payload: TestimonialCreateDTO): Observable<Testimonial> {
-    return this.http.post<Testimonial>(BASE, payload, { withCredentials: true });
+    return this.http
+      .post<Testimonial>(BASE, payload, { withCredentials: true })
+      .pipe(tap(() => this._changed$.next()));
   }
 
   update(id: string, patch: TestimonialUpdateDTO): Observable<Testimonial> {
-    return this.http.patch<Testimonial>(`${BASE}/${id}`, patch, { withCredentials: true });
+    return this.http
+      .patch<Testimonial>(`${BASE}/${id}`, patch, { withCredentials: true })
+      .pipe(tap(() => this._changed$.next()));
   }
 
   remove(id: string): Observable<void> {
-    return this.http.delete<void>(`${BASE}/${id}`, { withCredentials: true });
+    return this.http
+      .delete<void>(`${BASE}/${id}`, { withCredentials: true })
+      .pipe(tap(() => this._changed$.next()));
   }
 }

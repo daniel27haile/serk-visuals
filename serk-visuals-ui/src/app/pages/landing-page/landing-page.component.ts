@@ -8,7 +8,8 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { skip } from 'rxjs/operators';
 
 import { GalleryService } from '../../shared/services/gallery.service';
 import { TestimonialService } from '../../shared/services/testimonial.service';
@@ -53,37 +54,27 @@ export class LandingPageComponent implements OnDestroy {
   services: ServiceCard[] = [
     {
       icon: '📷',
-      title: 'Photography',
-      copy: 'Editorial & documentary-style coverage, color-graded to a clean, timeless look.',
+      title: 'Photography & Videography',
+      copy: 'Editorial & cinematic coverage — from stunning stills to story-driven films, all color-graded to a timeless look.',
       bullets: [
         'Weddings & Engagements',
         'Portraits & Headshots',
-        'Products & Branding',
+        'Wedding Highlight Films',
+        'Brand Stories & Event Recaps',
       ],
-      ctaText: 'Book photography →',
-      ctaLink: ['/bookings'],
-    },
-    {
-      icon: '🎬',
-      title: 'Videography',
-      copy: 'Story-driven films with cinematic motion, sound design, and tasteful pacing.',
-      bullets: ['Wedding Highlight Films', 'Event Recaps', 'Brand Stories'],
-      ctaText: 'Book videography →',
+      ctaText: 'Book a Session →',
       ctaLink: ['/bookings'],
     },
     {
       icon: '🪄',
-      title: 'Photo Editing',
-      copy: 'Consistent tone, flattering skin, and refined color science for your images.',
-      bullets: ['Pro Retouching', 'Color Grading', 'Batch Processing'],
-      ctaText: 'Contact Us →',
-      ctaLink: ['/contact'],
-    },
-    {
-      icon: '✂️',
-      title: 'Video Editing',
-      copy: 'Snappy cuts, motion graphics, and sound mixing for social & web.',
-      bullets: ['Short-form Reels', 'Ads & Promos', 'YouTube & Web'],
+      title: 'Photo & Video Editing',
+      copy: 'Polished color science, clean cuts, and motion graphics for images and film alike.',
+      bullets: [
+        'Pro Retouching & Color Grading',
+        'Batch Processing',
+        'Short-form Reels & Ads',
+        'YouTube & Web Videos',
+      ],
       ctaText: 'Contact Us →',
       ctaLink: ['/contact'],
     },
@@ -95,19 +86,6 @@ export class LandingPageComponent implements OnDestroy {
       ctaText: 'Contact Us →',
       ctaLink: ['/contact'],
     },
-    {
-      icon: '🎓',
-      title: 'Online Tutoring',
-      copy: 'Web Development & DevOps (incl. AWS Certification) with practical, career-focused guidance.',
-      bullets: [
-        'Tailored Curriculum',
-        'Project Feedback',
-        'Career Guidance',
-        'Resume & LinkedIn Optimization',
-      ],
-      ctaText: 'Contact Us →',
-      ctaLink: ['/contact'],
-    },
   ];
 
   // ===== SLIDERS STATE =====
@@ -115,6 +93,7 @@ export class LandingPageComponent implements OnDestroy {
   tIndex = signal(0); // testimonials
   private heroTimer: ReturnType<typeof setInterval> | null = null;
   private testiTimer: ReturnType<typeof setInterval> | null = null;
+  private testiChangedSub?: Subscription;
 
   // ===== LIGHTBOX STATE =====
   lightboxOpen = signal(false);
@@ -138,6 +117,13 @@ export class LandingPageComponent implements OnDestroy {
       },
       { allowSignalWrites: true }
     );
+
+    // Re-fetch testimonials whenever admin performs a create/update/delete.
+    // skip(1) skips the initial BehaviorSubject emission (the component loads
+    // testimonials itself on init via the effect above).
+    this.testiChangedSub = this.testiApi.changed$
+      .pipe(skip(1))
+      .subscribe(() => this.loadTestimonials());
   }
 
   // ---------- LOADERS ----------
@@ -226,6 +212,7 @@ export class LandingPageComponent implements OnDestroy {
   }
   ngOnDestroy() {
     this.stopTimers();
+    this.testiChangedSub?.unsubscribe();
     if (isPlatformBrowser(this.platformId)) {
       document.removeEventListener('pointermove', this.onPointerMove);
       this.lockScroll(false);

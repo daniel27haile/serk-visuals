@@ -65,6 +65,8 @@
           [src]="it.thumbnail || it.url"
           [alt]="it.title"
           loading="lazy"
+          width="400"
+          height="220"
           (click)="openLightbox(i)"
           (error)="onImgError($event)"
         />

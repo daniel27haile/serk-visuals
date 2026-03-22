@@ -15,11 +15,12 @@ import { GalleryService } from '../../shared/services/gallery.service';
 import { Album, GalleryItem } from '../../shared/models/gallery.model';
 import { firstValueFrom, fromEvent, Subscription } from 'rxjs';
 import { skip, throttleTime } from 'rxjs/operators';
+import { LightboxComponent } from '../../shared/components/lightbox/lightbox.component';
 
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LightboxComponent],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],
 })
@@ -60,21 +61,11 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
 
   // ------- tabs overflow state -------
   @ViewChild('tabWrap') tabWrap?: ElementRef<HTMLDivElement>;
+  @ViewChild(LightboxComponent) lb!: LightboxComponent;
   canScrollLeft = signal(false);
   canScrollRight = signal(false);
   private resizeSub?: Subscription;
   private galleryChangedSub?: Subscription;
-
-  // ------- LIGHTBOX state -------
-  lightboxOpen = signal(false);
-  lightboxIdx = signal(0);
-  /** Current image for lightbox (safe null) */
-  lbCurr = computed<GalleryItem | null>(() => {
-    const arr = this.items();
-    const i = this.lightboxIdx();
-    return i >= 0 && i < arr.length ? arr[i] : null;
-  });
-  private _prevOverflow: string | undefined;
 
   constructor() {
     effect(
@@ -102,7 +93,6 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.resizeSub?.unsubscribe();
     this.galleryChangedSub?.unsubscribe();
-    this.lockScroll(false);
   }
 
   // ------- data load -------
@@ -186,46 +176,8 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
     return Array.isArray(tags) && tags.length ? tags.join(', ') : '';
   }
 
-  // ------- LIGHTBOX controls -------
+  // ------- LIGHTBOX -------
   openLightbox(index: number) {
-    const len = this.items().length;
-    if (len === 0) return;
-    const idx = Math.max(0, Math.min(index, len - 1));
-    this.lightboxIdx.set(idx);
-    this.lightboxOpen.set(true);
-    this.lockScroll(true);
-
-    // focus for keyboard controls
-    if (this.isBrowser) {
-      setTimeout(() => document.getElementById('lb-root')?.focus(), 0);
-    }
-  }
-  closeLightbox() {
-    this.lightboxOpen.set(false);
-    this.lockScroll(false);
-  }
-  lbNext() {
-    const len = this.items().length || 1;
-    this.lightboxIdx.update((i) => (i + 1) % len);
-  }
-  lbPrev() {
-    const len = this.items().length || 1;
-    this.lightboxIdx.update((i) => (i - 1 + len) % len);
-  }
-  onLightboxKey(e: KeyboardEvent) {
-    if (!this.lightboxOpen()) return;
-    if (e.key === 'Escape') this.closeLightbox();
-    if (e.key === 'ArrowRight') this.lbNext();
-    if (e.key === 'ArrowLeft') this.lbPrev();
-  }
-  private lockScroll(on: boolean) {
-    if (!this.isBrowser) return;
-    const root = document.documentElement;
-    if (on) {
-      this._prevOverflow = root.style.overflow;
-      root.style.overflow = 'hidden';
-    } else {
-      root.style.overflow = this._prevOverflow ?? '';
-    }
+    this.lb.open(this.items(), index);
   }
 }

@@ -89,12 +89,14 @@
 
   <div class="grid gallery">
     <img
-      *ngFor="let f of featured(); trackBy: trackByGallery"
+      *ngFor="let f of featured(); trackBy: trackByGallery; let i = index"
+      class="zoomable"
       [src]="f.thumbnail || f.url"
       [alt]="f.title"
       loading="lazy"
       width="1200"
       height="800"
+      (click)="lb.open(featured(), i)"
       (error)="onImgError($event)"
     />
   </div>
@@ -178,3 +180,5 @@
   </p>
   <p class="hint error" *ngIf="errorTestimonials()">{{ errorTestimonials() }}</p>
 </section>
+
+<app-lightbox (opened)="stopTimers()" (closed)="startTimers()"></app-lightbox>

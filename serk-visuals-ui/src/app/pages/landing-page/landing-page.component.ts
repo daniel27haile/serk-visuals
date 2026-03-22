@@ -4,10 +4,12 @@ import {
   signal,
   inject,
   effect,
+  ViewChild,
   PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { LightboxComponent } from '../../shared/components/lightbox/lightbox.component';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { skip } from 'rxjs/operators';
 
@@ -28,7 +30,7 @@ type ServiceCard = {
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LightboxComponent],
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.scss'],
 })
@@ -96,11 +98,7 @@ export class LandingPageComponent implements OnDestroy {
   private testiChangedSub?: Subscription;
   private galleryChangedSub?: Subscription;
 
-  // ===== LIGHTBOX STATE =====
-  lightboxOpen = signal(false);
-  lightboxIdx = signal(0);
-  lightboxList = signal<GalleryItem[]>([]);
-  private _prevOverflow: string | undefined;
+  @ViewChild(LightboxComponent) lb!: LightboxComponent;
 
   constructor() {
     effect(
@@ -208,12 +206,12 @@ export class LandingPageComponent implements OnDestroy {
   }
 
   // ---------- AUTOPLAY ----------
-  private startTimers() {
+  startTimers() {
     this.stopTimers();
     this.heroTimer = setInterval(() => this.next(), 4500);
     this.testiTimer = setInterval(() => this.tNext(), 6000);
   }
-  private stopTimers() {
+  stopTimers() {
     if (this.heroTimer) clearInterval(this.heroTimer);
     if (this.testiTimer) clearInterval(this.testiTimer);
     this.heroTimer = null;
@@ -225,7 +223,6 @@ export class LandingPageComponent implements OnDestroy {
     this.galleryChangedSub?.unsubscribe();
     if (isPlatformBrowser(this.platformId)) {
       document.removeEventListener('pointermove', this.onPointerMove);
-      this.lockScroll(false);
     }
   }
 
@@ -275,53 +272,6 @@ export class LandingPageComponent implements OnDestroy {
   // ===== trackBy =====
   trackByGallery = (_: number, it: GalleryItem) => it._id!;
   trackByTestimonial = (_: number, it: Testimonial) => it._id ?? it.author;
-
-  // ===== Lightbox =====
-  openLightbox(list: GalleryItem[], startIndex: number) {
-    this.lightboxList.set(list);
-    this.lightboxIdx.set(startIndex);
-    this.lightboxOpen.set(true);
-    this.stopTimers();
-    this.lockScroll(true);
-
-    if (isPlatformBrowser(this.platformId)) {
-      setTimeout(() => {
-        document.getElementById('lb-root')?.focus();
-      }, 0);
-    }
-  }
-
-  closeLightbox() {
-    this.lightboxOpen.set(false);
-    this.lockScroll(false);
-    if (isPlatformBrowser(this.platformId)) this.startTimers();
-  }
-
-  lbNext() {
-    const len = this.lightboxList().length || 1;
-    this.lightboxIdx.update((i) => (i + 1) % len);
-  }
-  lbPrev() {
-    const len = this.lightboxList().length || 1;
-    this.lightboxIdx.update((i) => (i - 1 + len) % len);
-  }
-  onLightboxKey(e: KeyboardEvent) {
-    if (!this.lightboxOpen()) return;
-    if (e.key === 'Escape') this.closeLightbox();
-    if (e.key === 'ArrowRight') this.lbNext();
-    if (e.key === 'ArrowLeft') this.lbPrev();
-  }
-
-  private lockScroll(on: boolean) {
-    if (!isPlatformBrowser(this.platformId)) return;
-    const root = document.documentElement;
-    if (on) {
-      this._prevOverflow = root.style.overflow;
-      root.style.overflow = 'hidden';
-    } else {
-      root.style.overflow = this._prevOverflow ?? '';
-    }
-  }
 
   initials(author: string): string {
     return author

@@ -1,0 +1,24 @@
+<div
+  *ngIf="isOpen()"
+  id="lb-root"
+  class="lightbox-backdrop"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Image preview"
+  tabindex="0"
+  (click)="close()"
+>
+  <div class="lightbox" (click)="$event.stopPropagation()">
+    <button class="lb-close" type="button" aria-label="Close" (click)="close()">×</button>
+    <button class="lb-nav prev" type="button" aria-label="Previous image" (click)="prev()">‹</button>
+    <button class="lb-nav next" type="button" aria-label="Next image" (click)="next()">›</button>
+
+    <ng-container *ngIf="curr() as c">
+      <img class="lb-img" [src]="c.url" [alt]="c.title" (error)="onImgError($event)" />
+      <div class="lb-caption">
+        <span class="title">{{ c.title }}</span>
+        <span class="count">{{ idx() + 1 }} / {{ items().length }}</span>
+      </div>
+    </ng-container>
+  </div>
+</div>

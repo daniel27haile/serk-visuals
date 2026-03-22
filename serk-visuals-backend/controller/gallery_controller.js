@@ -10,18 +10,28 @@ const pick = (obj, keys) =>
 
 /**
  * Normalize image URLs in a gallery item before sending to client.
- * New records already store absolute URLs, but this is a safety net for any
- * legacy records that may have an S3 key or relative path in the url field.
+ * Priority: re-derive from stored S3 key using current CDN_URL (ensures
+ * CloudFront URLs are always used). Falls back to stored URL for legacy
+ * records that have no key saved.
  */
 const absolutize = (_req, item) => {
   if (!item) return item;
   const out = { ...item };
-  if (out.url && !out.url.startsWith("http")) {
+
+  // Re-derive URL from key when available (key is the source of truth)
+  if (out.imageKey) {
+    out.url = publicUrlFromKey(out.imageKey);
+  } else if (out.url && !out.url.startsWith("http")) {
+    // Legacy: stored value is a raw key/path, not an absolute URL
     out.url = publicUrlFromKey(out.url);
   }
-  if (out.thumbnail && !out.thumbnail.startsWith("http")) {
+
+  if (out.thumbKey) {
+    out.thumbnail = publicUrlFromKey(out.thumbKey);
+  } else if (out.thumbnail && !out.thumbnail.startsWith("http")) {
     out.thumbnail = publicUrlFromKey(out.thumbnail);
   }
+
   return out;
 };
 
@@ -132,7 +142,9 @@ exports.create = async (req, res) => {
       album: body.album,
       placement,
       order,
+      imageKey: body.imageKey,
       url: publicUrlFromKey(body.imageKey),
+      thumbKey: body.thumbKey || undefined,
       thumbnail: body.thumbKey ? publicUrlFromKey(body.thumbKey) : undefined,
       tags,
       published:
@@ -193,11 +205,13 @@ exports.update = async (req, res) => {
     if (body.imageKey) {
       await headObject(body.imageKey);
       newMainUrl = publicUrlFromKey(body.imageKey);
+      patch.imageKey = body.imageKey;
       patch.url = newMainUrl;
     }
     if (body.thumbKey) {
       await headObject(body.thumbKey);
       newThumbUrl = publicUrlFromKey(body.thumbKey);
+      patch.thumbKey = body.thumbKey;
       patch.thumbnail = newThumbUrl;
     }
 

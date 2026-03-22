@@ -17,8 +17,10 @@ const GalleryItemSchema = new Schema(
       index: true,
     },
     order: { type: Number, default: 0, index: true }, // new
-    url: { type: String, required: true }, // e.g. /uploads/gallery/xxx.jpg
-    thumbnail: { type: String }, // optional
+    url: { type: String, required: true }, // absolute CDN/S3 URL — derived from imageKey
+    thumbnail: { type: String }, // optional absolute CDN/S3 URL — derived from thumbKey
+    imageKey: { type: String }, // S3 object key — source of truth for URL derivation
+    thumbKey: { type: String }, // S3 object key for thumbnail
     tags: { type: [String], default: [] },
     published: { type: Boolean, default: true },
   },

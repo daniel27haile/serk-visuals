@@ -14,7 +14,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { GalleryService } from '../../shared/services/gallery.service';
 import { Album, GalleryItem } from '../../shared/models/gallery.model';
 import { firstValueFrom, fromEvent, Subscription } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import { skip, throttleTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-gallery',
@@ -63,6 +63,7 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
   canScrollLeft = signal(false);
   canScrollRight = signal(false);
   private resizeSub?: Subscription;
+  private galleryChangedSub?: Subscription;
 
   // ------- LIGHTBOX state -------
   lightboxOpen = signal(false);
@@ -82,6 +83,12 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
       },
       { allowSignalWrites: true }
     );
+
+    // Re-fetch when admin mutates gallery items in the same SPA session.
+    // skip(1) avoids a double-fetch on component init.
+    this.galleryChangedSub = this.api.changed$
+      .pipe(skip(1))
+      .subscribe(() => void this.fetch());
   }
 
   ngAfterViewInit(): void {
@@ -94,6 +101,7 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.resizeSub?.unsubscribe();
+    this.galleryChangedSub?.unsubscribe();
     this.lockScroll(false);
   }
 

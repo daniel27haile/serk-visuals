@@ -94,6 +94,7 @@ export class LandingPageComponent implements OnDestroy {
   private heroTimer: ReturnType<typeof setInterval> | null = null;
   private testiTimer: ReturnType<typeof setInterval> | null = null;
   private testiChangedSub?: Subscription;
+  private galleryChangedSub?: Subscription;
 
   // ===== LIGHTBOX STATE =====
   lightboxOpen = signal(false);
@@ -120,10 +121,18 @@ export class LandingPageComponent implements OnDestroy {
 
     // Re-fetch testimonials whenever admin performs a create/update/delete.
     // skip(1) skips the initial BehaviorSubject emission (the component loads
-    // testimonials itself on init via the effect above).
+    // data itself on init via the effect above).
     this.testiChangedSub = this.testiApi.changed$
       .pipe(skip(1))
       .subscribe(() => this.loadTestimonials());
+
+    // Re-fetch slider and featured whenever admin mutates gallery items.
+    this.galleryChangedSub = this.galleryApi.changed$
+      .pipe(skip(1))
+      .subscribe(() => {
+        this.loadSlider();
+        this.loadFeatured();
+      });
   }
 
   // ---------- LOADERS ----------
@@ -213,6 +222,7 @@ export class LandingPageComponent implements OnDestroy {
   ngOnDestroy() {
     this.stopTimers();
     this.testiChangedSub?.unsubscribe();
+    this.galleryChangedSub?.unsubscribe();
     if (isPlatformBrowser(this.platformId)) {
       document.removeEventListener('pointermove', this.onPointerMove);
       this.lockScroll(false);

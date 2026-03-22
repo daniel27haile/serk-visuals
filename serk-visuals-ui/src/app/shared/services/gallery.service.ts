@@ -1,7 +1,7 @@
 // src/app/shared/services/gallery.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Album, GalleryItem, Paged, Placement } from '../models/gallery.model';
 import { environment } from '../../../environments/environment';
 
@@ -11,6 +11,14 @@ const baseUrl = `${environment.apiUrl}/api/gallery`;
 export class GalleryService {
   private http = inject(HttpClient);
   private base = baseUrl;
+
+  /**
+   * Emits whenever gallery items are mutated (create/update/delete).
+   * The landing page and public gallery subscribe to this so they
+   * stay in sync with admin changes without a manual page refresh.
+   */
+  private _changed$ = new BehaviorSubject<void>(undefined);
+  readonly changed$ = this._changed$.asObservable();
 
   list(opts?: {
     album?: Album;
@@ -45,9 +53,8 @@ export class GalleryService {
     placement?: Placement;
     order?: number;
   }): Observable<GalleryItem> {
-    return this.http.post<GalleryItem>(this.base, form, {
-      withCredentials: true,
-    });
+    return this.http.post<GalleryItem>(this.base, form, { withCredentials: true })
+      .pipe(tap(() => this._changed$.next()));
   }
 
   /** Update: pass imageKey/thumbKey only when replacing the image */
@@ -58,14 +65,12 @@ export class GalleryService {
       thumbKey?: string;
     }
   ): Observable<GalleryItem> {
-    return this.http.patch<GalleryItem>(`${this.base}/${id}`, patch, {
-      withCredentials: true,
-    });
+    return this.http.patch<GalleryItem>(`${this.base}/${id}`, patch, { withCredentials: true })
+      .pipe(tap(() => this._changed$.next()));
   }
 
   remove(id: string) {
-    return this.http.delete<void>(`${this.base}/${id}`, {
-      withCredentials: true,
-    });
+    return this.http.delete<void>(`${this.base}/${id}`, { withCredentials: true })
+      .pipe(tap(() => this._changed$.next()));
   }
 }

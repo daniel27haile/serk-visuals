@@ -157,7 +157,7 @@
 
 // ── Lightbox ─────────────────────────────────────────────
 .lightbox-backdrop {
-  position: fixed; inset: 0; z-index: var(--z-header) + 10;
+  position: fixed; inset: 0; z-index: calc(var(--z-header) + 100);
   background: rgba(0, 0, 0, .88);
   display: grid; place-items: center;
   animation: lb-fade .15s ease-out;

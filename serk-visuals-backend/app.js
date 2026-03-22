@@ -91,6 +91,7 @@ const PORT = process.env.PORT || 3500;
 
     const email = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
     const password = process.env.ADMIN_PASSWORD;
+    const name = (process.env.ADMIN_NAME || "").trim();
 
     if (email && password) {
       // Always re-hash and upsert so that changing ADMIN_PASSWORD in env
@@ -98,10 +99,13 @@ const PORT = process.env.PORT || 3500;
       const passwordHash = await argon2.hash(password);
       const existing = await User.findOne({ email });
       if (!existing) {
-        await User.create({ email, passwordHash, role: "admin" });
-        console.log(`✅ Admin created: ${email}`);
+        await User.create({ email, passwordHash, role: "admin", name });
+        console.log(`✅ Admin created: ${email}${name ? ` (${name})` : ""}`);
       } else {
-        await User.updateOne({ email }, { $set: { passwordHash, role: "admin" } });
+        const update = { passwordHash, role: "admin" };
+        // Fill name if provided and not already set
+        if (name && !existing.name) update.name = name;
+        await User.updateOne({ email }, { $set: update });
         console.log(`✅ Admin credentials synced: ${email}`);
       }
     } else {

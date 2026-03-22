@@ -2,7 +2,7 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GalleryService } from '../../shared/services/gallery.service';
-import { UploadService } from '../../shared/services/upload.service';
+import { UploadService, UploadResult } from '../../shared/services/upload.service';
 import {
   Album,
   GalleryItem,
@@ -140,49 +140,51 @@ export class AdminGalleryComponent implements OnInit {
     this.error.set(null);
 
     try {
-      // Upload files to S3 first
-      let imageKey: string | undefined;
-      let thumbKey: string | undefined;
+      // Upload files to S3 first — await ensures PUT is complete before saving record
+      let imageUpload: UploadResult | undefined;
+      let thumbUpload: UploadResult | undefined;
 
       if (v.image) {
-        imageKey = await this.uploadService.upload(v.image, 'uploads/gallery');
+        imageUpload = await this.uploadService.upload(v.image, 'uploads/gallery');
       }
       if (v.thumb) {
-        thumbKey = await this.uploadService.upload(v.thumb, 'uploads/gallery');
+        thumbUpload = await this.uploadService.upload(v.thumb, 'uploads/gallery');
       }
 
+      const payload = {
+        title: v.title,
+        album: v.album,
+        tags,
+        published: !!v.published,
+        placement: v.placement,
+        order: Number(v.order ?? 0),
+        imageKey: imageUpload?.key,
+        thumbKey: thumbUpload?.key,
+      };
+
+      // Use the API response item directly for instant UI update —
+      // it contains the backend-derived CloudFront URL in .url
+      let saved: GalleryItem;
       if (id) {
-        await firstValueFrom(
-          this.api.update(id, {
-            title: v.title,
-            album: v.album,
-            tags,
-            published: !!v.published,
-            imageKey,
-            thumbKey,
-            placement: v.placement,
-            order: Number(v.order ?? 0),
-          })
+        saved = await firstValueFrom(this.api.update(id, payload));
+        // Replace the edited item in place so the updated image shows immediately
+        this.items.update(prev =>
+          prev.map(it => (it._id === id ? saved : it))
         );
       } else {
-        await firstValueFrom(
-          this.api.create({
-            title: v.title,
-            album: v.album,
-            tags,
-            published: !!v.published,
-            imageKey: imageKey!,
-            thumbKey,
-            placement: v.placement,
-            order: Number(v.order ?? 0),
-          })
+        saved = await firstValueFrom(
+          this.api.create({ ...payload, imageKey: imageUpload!.key })
         );
+        // Prepend new item so it shows immediately without waiting for fetch()
+        this.items.update(prev => [saved, ...prev]);
+        this.total.update(t => t + 1);
       }
 
       this.cancelEdit();
+      // Re-fetch to get properly sorted/paginated list from backend
       await this.fetch();
     } catch (e: any) {
-      console.error(e);
+      console.error('[AdminGallery] save failed:', e);
       this.error.set(e?.error?.message || e?.message || 'Failed to save.');
     } finally {
       this.uploading.set(false);
@@ -234,4 +236,12 @@ export class AdminGalleryComponent implements OnInit {
   }
 
   trackById = (_: number, it: GalleryItem) => it._id!;
+
+  /** Hide broken images and log to help diagnose CDN/URL issues */
+  onImgError(event: Event, item: GalleryItem): void {
+    console.warn('[AdminGallery] Image failed to load:', item.url, item);
+    const img = event.target as HTMLImageElement;
+    img.classList.add('img--broken');
+    img.removeAttribute('src');
+  }
 }

@@ -105,7 +105,7 @@
   <div class="grid-list" *ngIf="!loading() && !error()">
     <article class="tile" *ngFor="let it of items(); trackBy: trackById">
       <div class="media">
-        <img [src]="it.thumbnail || it.url" [alt]="it.title" />
+        <img [src]="it.thumbnail || it.url" [alt]="it.title" (error)="onImgError($event, it)" />
         <div class="overlay">
           <div class="overlay__actions">
             <button class="btn sm primary" (click)="edit(it)">Edit</button>

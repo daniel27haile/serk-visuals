@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { Meta } from '@angular/platform-browser';
+import { ViewportScroller, isPlatformBrowser } from '@angular/common';
 import { filter, map } from 'rxjs/operators';
 
 @Component({
@@ -14,8 +15,20 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private meta = inject(Meta);
+  private scroller = inject(ViewportScroller);
+  private platformId = inject(PLATFORM_ID);
 
   ngOnInit(): void {
+    // Push anchored content below the sticky header when using fragment links.
+    // Reads the actual header height at runtime so it stays correct on resize.
+    if (isPlatformBrowser(this.platformId)) {
+      const updateOffset = () => {
+        const h = document.querySelector('.site-header')?.getBoundingClientRect().height ?? 80;
+        this.scroller.setOffset([0, Math.ceil(h) + 16]); // +16px breathing room
+      };
+      updateOffset();
+      window.addEventListener('resize', updateOffset, { passive: true });
+    }
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
       map(() => {

@@ -143,6 +143,8 @@
   --container-max: 1200px;
   --container-pad: clamp(1rem, 2.4vw, 1.5rem);
   --sidebar-w:     260px;
+  // Sticky-header height: logo clamp(98px,9vw,160px) + padding-block 1.5rem
+  --header-h: calc(clamp(98px, 9vw, 160px) + 1.5rem);
 
   // ── Z-index scale ─────────────────────────────────────────
   --z-header:  1000;

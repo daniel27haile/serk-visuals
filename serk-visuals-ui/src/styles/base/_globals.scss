@@ -2,6 +2,13 @@
 // SERK VISUALS — Global utilities & environmental styles
 // ============================================================
 
+// ── Anchor scroll offset (accounts for sticky header) ─────
+// Any element with an id that becomes a fragment target gets pushed clear of
+// the header automatically. The 1rem breathing room matches the router offset.
+[id] {
+  scroll-margin-top: calc(var(--header-h, 80px) + 1rem);
+}
+
 // ── Screen-reader only ────────────────────────────────────
 .sr-only {
   position: absolute !important;

@@ -1,0 +1,161 @@
+// ============================================================
+// Services Page — component-specific styles only.
+// ============================================================
+
+:host {
+  display: block;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+.section { padding-block: clamp(1.5rem, 4vw, 2.5rem); }
+
+.lead { color: var(--color-text-muted); }
+
+.section-heading {
+  margin: 0 0 .75rem;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  text-wrap: balance;
+}
+
+// ── Page hero ─────────────────────────────────────────────
+.services-hero {
+  padding-block: clamp(2rem, 5vw, 3.5rem);
+  text-align: center;
+
+  .page-title {
+    margin: 0 0 .75rem;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-tight);
+    text-wrap: balance;
+  }
+
+  .lead {
+    max-width: 56ch;
+    margin-inline: auto;
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+  }
+}
+
+// ── Service cards grid ────────────────────────────────────
+.services {
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+}
+
+.svc {
+  position: relative;
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255, 255, 255, .02);
+  }
+}
+
+.svc__glow {
+  pointer-events: none;
+  position: absolute;
+  inset: -40%;
+  background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(6, 182, 212, .08), transparent 40%);
+  opacity: .8;
+  transition: opacity var(--t-base);
+}
+.svc:hover .svc__glow { opacity: 1; }
+
+.svc__icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .03);
+  margin-bottom: .6rem;
+}
+
+.svc h2 {
+  margin: .25rem 0;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-extrabold);
+}
+
+.svc__bullets {
+  margin: .5rem 0 .75rem;
+  padding-left: var(--spacing-md);
+  color: var(--color-text-muted);
+
+  li { margin: .2rem 0; }
+}
+
+.svc__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: var(--color-secondary);
+  text-decoration: none;
+  font-weight: var(--weight-bold);
+
+  &:hover { text-decoration: underline; }
+}
+
+// ── Bottom CTA section ────────────────────────────────────
+.cta-section {
+  text-align: center;
+  padding-block: clamp(2rem, 5vw, 3.5rem);
+}
+
+.button-group {
+  margin-top: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: center;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: var(--weight-semibold);
+    border: 1px solid transparent;
+    text-decoration: none;
+    transition: all .25s ease;
+
+    &.btn--accent {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-primary-ink);
+      &:hover { opacity: .9; }
+    }
+
+    &.btn--ghost {
+      background: transparent;
+      border: 1px solid var(--color-text);
+      color: var(--color-text);
+      &:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    }
+  }
+}
+
+// ── Breakpoints ───────────────────────────────────────────
+@media (min-width: 640px) {
+  .services { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .services { grid-template-columns: repeat(3, 1fr); }
+}

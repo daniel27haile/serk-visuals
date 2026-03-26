@@ -108,6 +108,7 @@ export class AdminGalleryComponent implements OnInit {
   }
 
   async submit() {
+    this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
     const v = this.form.getRawValue() as {
@@ -132,7 +133,7 @@ export class AdminGalleryComponent implements OnInit {
 
     // Require image for new items
     if (!id && !v.image) {
-      alert('Image is required');
+      this.error.set('An image is required to create a new gallery item.');
       return;
     }
 

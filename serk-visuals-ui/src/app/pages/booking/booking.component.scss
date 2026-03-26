@@ -68,8 +68,16 @@ button {
   &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
-.ok  { color: #69db7c; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
-.err { color: #ff6b6b; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
+.ok       { color: #69db7c; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
+.err      { color: #ff6b6b; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
+.checking { color: var(--color-text-muted); margin-top: var(--spacing-sm); font-size: var(--text-sm); font-style: italic; }
+
+.grid input.is-invalid,
+.grid select.is-invalid,
+.grid textarea.is-invalid {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, .18);
+}
 
 // ── Duration stepper  ─  ( − )  1 hour  ( + ) ────────────
 .duration-stepper {

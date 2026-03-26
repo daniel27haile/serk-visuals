@@ -130,6 +130,41 @@ select {
   @media (max-width: 720px) { grid-template-columns: 1fr; }
 }
 
+// ── Field validation error messages ──────────────────────
+// Wraps a label + its error messages so they stack correctly inside the grid.
+.field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+
+  label { width: 100%; }
+
+  // Inherit full-width column span from any .full on the inner label
+  &:has(label.full) { grid-column: 1 / -1; }
+}
+
+.field-errors {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+  margin-top: .3rem;
+
+  small {
+    font-size: var(--text-sm);
+    color: #fca5a5;
+    line-height: 1.4;
+  }
+}
+
+// Red border state on invalid + touched inputs/selects/textareas
+input.is-invalid,
+select.is-invalid,
+textarea.is-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, .18) !important;
+}
+
 // ── Actions row ───────────────────────────────────────────
 .actions {
   display: flex;

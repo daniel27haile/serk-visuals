@@ -30,6 +30,7 @@
     <!-- Navigation -->
     <nav id="site-nav" class="nav" [class.is-open]="isMenuOpen" role="navigation" aria-label="Primary">
       <a [routerLink]="['/home']" routerLinkActive="is-active" (click)="closeMenu()">Home</a>
+      <a [routerLink]="['/services']" routerLinkActive="is-active" (click)="closeMenu()">Services</a>
       <a [routerLink]="['/gallery']" routerLinkActive="is-active" (click)="closeMenu()">Gallery</a>
       <a [routerLink]="['/bookings']" routerLinkActive="is-active" (click)="closeMenu()">Booking</a>
       <a [routerLink]="['/contact']" routerLinkActive="is-active" (click)="closeMenu()">Contact</a>

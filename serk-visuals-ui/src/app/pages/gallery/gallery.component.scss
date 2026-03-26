@@ -144,6 +144,7 @@
     radial-gradient(60% 50% at 50% 30%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .25) 60%),
     linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, .35) 100%);
   opacity: .55; transition: opacity var(--t-slow);
+  pointer-events: none; /* must not intercept clicks destined for the img below */
 }
 .gallery__item:hover .thumb img { transform: scale(1.05); }
 .gallery__item:hover .thumb__overlay { opacity: .65; }

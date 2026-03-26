@@ -2,10 +2,11 @@
 const express = require("express");
 const ctrl = require("../controller/gallery_controller");
 const { requireAuth, requireRole } = require("../middleware/auth");
+const { publicCache } = require("../middleware/cache");
 
 const router = express.Router();
 
-router.get("/", ctrl.list);
+router.get("/", publicCache(30, 60), ctrl.list);
 router.get("/:id", ctrl.getOne);
 
 // Admin-only for mutations

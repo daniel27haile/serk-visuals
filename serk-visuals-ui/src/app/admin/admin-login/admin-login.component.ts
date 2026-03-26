@@ -30,6 +30,7 @@ export class AdminLoginComponent {
   });
 
   submit() {
+    this.form.markAllAsTouched();
     if (this.form.invalid || this.loading()) return;
     this.loading.set(true);
     this.error.set(null);

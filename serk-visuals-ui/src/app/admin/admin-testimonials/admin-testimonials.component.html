@@ -9,24 +9,38 @@
     </h2>
 
     <div class="grid form-grid">
-      <label>
-        <span class="lbl">Author *</span>
-        <input formControlName="author" placeholder="Daniel Haile" />
-      </label>
+      <div class="field-wrap">
+        <label>
+          <span class="lbl">Author *</span>
+          <input formControlName="author" placeholder="Daniel Haile"
+            [class.is-invalid]="form.controls['author'].touched && form.controls['author'].invalid" />
+        </label>
+        <div class="field-errors" *ngIf="form.controls['author'].touched && form.controls['author'].invalid">
+          <small *ngIf="form.controls['author'].errors?.['required']">Author is required.</small>
+          <small *ngIf="form.controls['author'].errors?.['minlength']">At least 2 characters.</small>
+        </div>
+      </div>
 
       <label>
         <span class="lbl">Role / Title</span>
         <input formControlName="role" placeholder="Bride, CEO, etc." />
       </label>
 
-      <label class="full">
-        <span class="lbl">Quote *</span>
-        <textarea
-          formControlName="quote"
-          rows="4"
-          placeholder="They captured our day perfectly…"
-        ></textarea>
-      </label>
+      <div class="field-wrap full">
+        <label class="full">
+          <span class="lbl">Quote *</span>
+          <textarea
+            formControlName="quote"
+            rows="4"
+            placeholder="They captured our day perfectly…"
+            [class.is-invalid]="form.controls['quote'].touched && form.controls['quote'].invalid"
+          ></textarea>
+        </label>
+        <div class="field-errors" *ngIf="form.controls['quote'].touched && form.controls['quote'].invalid">
+          <small *ngIf="form.controls['quote'].errors?.['required']">Quote is required.</small>
+          <small *ngIf="form.controls['quote'].errors?.['minlength']">At least 6 characters.</small>
+        </div>
+      </div>
 
       <label>
         <span class="lbl">Published</span>

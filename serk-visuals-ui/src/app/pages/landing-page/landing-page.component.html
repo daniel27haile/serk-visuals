@@ -1,10 +1,11 @@
 <!-- HERO -->
 <section class="container section hero">
   <div class="copy">
-    <h1>Bring your vision to life.</h1> 
+    <p class="eyebrow">Photography · Videography · Website</p>
+    <h1>Bring your vision to life.</h1>
     <p class="lead">
-      Professional photography & videography, photo & video editing, and
-      modern website development — all in one place.
+      Cinematic coverage, polished editing, and modern websites — all crafted
+      with intention and delivered with care.
     </p>
 
     <div class="cta-row">
@@ -26,13 +27,14 @@
         [style.transform]="'translateX(' + -index() * 100 + '%)'"
       >
         <img
-          class="slide"
-          *ngFor="let s of slider(); trackBy: trackByGallery"
-          [src]="s.url"
+          class="slide zoomable"
+          *ngFor="let s of slider(); trackBy: trackByGallery; let i = index"
+          [src]="s.thumbnail || s.url"
           [alt]="s.title"
           loading="eager"
           width="1600"
           height="1000"
+          (click)="lb.open(slider(), i)"
           (error)="onImgError($event)"
         />
       </div>
@@ -65,23 +67,30 @@
   </div>
 </section>
 
-<!-- SERVICES -->
-<section id="services" class="container section">
-  <h2 class="section-heading">Services</h2>
-
-  <div class="grid services">
-    <article class="svc" *ngFor="let svc of services">
-      <div class="svc__glow"></div>
-      <div class="svc__icon" aria-hidden="true">{{ svc.icon }}</div>
-      <h3>{{ svc.title }}</h3>
-      <p class="lead clamp-2">{{ svc.copy }}</p>
-      <ul class="svc__bullets">
-        <li *ngFor="let b of svc.bullets">{{ b }}</li>
-      </ul>
-      <a [routerLink]="svc.ctaLink" class="svc__cta">{{ svc.ctaText }}</a>
-    </article>
+<!-- STATS STRIP -->
+<div class="stats-strip" aria-label="At a glance">
+  <div class="container stats-inner">
+    <div class="stat">
+      <span class="stat__num">200<span class="stat__plus">+</span></span>
+      <span class="stat__label">Sessions Captured</span>
+    </div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat">
+      <span class="stat__num">5<span class="stat__star">★</span></span>
+      <span class="stat__label">Client Rating</span>
+    </div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat">
+      <span class="stat__num">3<span class="stat__plus">+</span></span>
+      <span class="stat__label">Years Experience</span>
+    </div>
+    <div class="stat-divider" aria-hidden="true"></div>
+    <div class="stat">
+      <span class="stat__num">48<span class="stat__unit">hr</span></span>
+      <span class="stat__label">Avg. Turnaround</span>
+    </div>
   </div>
-</section>
+</div>
 
 <!-- FEATURED GALLERY -->
 <section id="gallery" class="container section">
@@ -112,6 +121,38 @@
   <div class="button-group">
     <a [routerLink]="['/gallery']" class="btn btn--ghost">See More</a>
     <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+  </div>
+</section>
+
+<!-- WHY SERK VISUALS -->
+<section class="why-section">
+  <div class="container">
+    <h2 class="section-heading">Why Serk Visuals?</h2>
+    <p class="lead why-lead">
+      We don't just press a button — we craft every frame with purpose.
+    </p>
+
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-card__icon" aria-hidden="true">🎯</div>
+        <h3>Your Vision First</h3>
+        <p>We listen before we shoot. Every session starts with understanding your story, style, and goals — so the final product is unmistakably yours.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-card__icon" aria-hidden="true">🎬</div>
+        <h3>Cinematic Quality</h3>
+        <p>Studio-grade equipment, intentional composition, and professional color grading — delivering images and films that stand the test of time.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-card__icon" aria-hidden="true">⚡</div>
+        <h3>Fast Turnaround</h3>
+        <p>No waiting weeks to relive your moments. Edited galleries and final cuts delivered in days, not months — without cutting corners.</p>
+      </div>
+    </div>
+
+    <div class="why-cta">
+      <a [routerLink]="['/services']" class="btn btn--ghost">Explore Services</a>
+    </div>
   </div>
 </section>
 
@@ -148,7 +189,7 @@
       </div>
     </div>
 
-    <!-- Arrow controls — absolutely positioned left/right like hero slider -->
+    <!-- Arrow controls -->
     <div class="t-nav" role="group" aria-label="Carousel controls">
       <button class="t-arrow t-arrow--prev" type="button" (click)="tPrev()" aria-label="Previous testimonial">
         <span class="t-chevron" aria-hidden="true"></span>
@@ -179,6 +220,20 @@
     No testimonials yet. Add them in Admin → Testimonials.
   </p>
   <p class="hint error" *ngIf="errorTestimonials()">{{ errorTestimonials() }}</p>
+</section>
+
+<!-- FINAL CTA BANNER -->
+<section class="cta-banner">
+  <div class="container cta-banner__inner">
+    <div class="cta-banner__copy">
+      <h2>Ready to capture your story?</h2>
+      <p>Let's make something unforgettable together.</p>
+    </div>
+    <div class="cta-banner__actions">
+      <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+      <a [routerLink]="['/contact']" class="btn btn--ghost">Get in Touch</a>
+    </div>
+  </div>
 </section>
 
 <app-lightbox (opened)="stopTimers()" (closed)="startTimers()"></app-lightbox>

@@ -5,15 +5,29 @@
   <ng-container *ngIf="!submitted(); else successTpl">
     <form [formGroup]="form" (ngSubmit)="submit()" class="card" novalidate>
       <div class="grid">
-        <label for="name">
-          Name
-          <input id="name" formControlName="name" placeholder="Your full name..." autocomplete="name" />
-        </label>
+        <div class="field-wrap">
+          <label for="name">
+            Name *
+            <input id="name" formControlName="name" placeholder="Your full name..." autocomplete="name"
+              [class.is-invalid]="form.controls['name'].touched && form.controls['name'].invalid" />
+          </label>
+          <div class="field-errors" *ngIf="form.controls['name'].touched && form.controls['name'].invalid">
+            <small *ngIf="form.controls['name'].errors?.['required']">Name is required.</small>
+            <small *ngIf="form.controls['name'].errors?.['minlength']">At least 2 characters.</small>
+          </div>
+        </div>
 
-        <label for="email">
-          Email
-          <input id="email" formControlName="email" type="email" placeholder="Your Email..." autocomplete="email" />
-        </label>
+        <div class="field-wrap">
+          <label for="email">
+            Email *
+            <input id="email" formControlName="email" type="email" placeholder="Your Email..." autocomplete="email"
+              [class.is-invalid]="form.controls['email'].touched && form.controls['email'].invalid" />
+          </label>
+          <div class="field-errors" *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
+            <small *ngIf="form.controls['email'].errors?.['required']">Email is required.</small>
+            <small *ngIf="form.controls['email'].errors?.['email']">Enter a valid email address.</small>
+          </div>
+        </div>
 
         <label for="phone">
           Phone
@@ -27,15 +41,27 @@
           </select>
         </label>
 
-        <label for="date">
-          Date
-          <input id="date" formControlName="date" type="date" autocomplete="off" />
-        </label>
+        <div class="field-wrap">
+          <label for="date">
+            Date *
+            <input id="date" formControlName="date" type="date" autocomplete="off"
+              [class.is-invalid]="form.controls['date'].touched && form.controls['date'].invalid" />
+          </label>
+          <div class="field-errors" *ngIf="form.controls['date'].touched && form.controls['date'].invalid">
+            <small *ngIf="form.controls['date'].errors?.['required']">Date is required.</small>
+          </div>
+        </div>
 
-        <label for="time">
-          Time
-          <input id="time" formControlName="time" type="time" step="60" autocomplete="off" />
-        </label>
+        <div class="field-wrap">
+          <label for="time">
+            Time *
+            <input id="time" formControlName="time" type="time" step="60" autocomplete="off"
+              [class.is-invalid]="form.controls['time'].touched && form.controls['time'].invalid" />
+          </label>
+          <div class="field-errors" *ngIf="form.controls['time'].touched && form.controls['time'].invalid">
+            <small *ngIf="form.controls['time'].errors?.['required']">Time is required.</small>
+          </div>
+        </div>
 
         <label title="How long you need for the session">
           Duration
@@ -60,14 +86,17 @@
         </label>
       </div>
 
-      <div *ngIf="slotAvailable() === false" class="err" aria-live="assertive">
+      <div *ngIf="checkingSlot()" class="checking" aria-live="polite">
+        Checking availability…
+      </div>
+      <div *ngIf="!checkingSlot() && slotAvailable() === false" class="err" aria-live="assertive">
         ❌ This time slot is already booked. Please choose another.
       </div>
-      <div *ngIf="slotAvailable() === true" class="ok" aria-live="polite">
+      <div *ngIf="!checkingSlot() && slotAvailable() === true" class="ok" aria-live="polite">
         ✅ This time is available.
       </div>
 
-      <button type="submit" [disabled]="form.invalid || submitting() || slotAvailable() === false">
+      <button type="submit" [disabled]="submitting() || checkingSlot() || slotAvailable() === false">
         {{ submitting() ? 'Submitting...' : 'Submit' }}
       </button>
 

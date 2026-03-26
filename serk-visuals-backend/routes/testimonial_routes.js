@@ -3,6 +3,7 @@ const router = require("express").Router();
 const mongoose = require("mongoose");
 const ctrl = require("../controller/testimonial_controller");
 const { requireAuth, requireRole } = require("../middleware/auth");
+const { publicCache } = require("../middleware/cache");
 
 const validateId = (req, res, next) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
@@ -11,7 +12,7 @@ const validateId = (req, res, next) => {
   next();
 };
 
-router.get("/", ctrl.list);
+router.get("/", publicCache(30, 60), ctrl.list);
 router.get("/:id", validateId, ctrl.getOne);
 
 // Admin-only mutations

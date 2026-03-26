@@ -1,0 +1,36 @@
+<!-- PAGE HERO -->
+<header class="services-hero">
+  <div class="container">
+    <h1 class="page-title">Our Services</h1>
+    <p class="lead">
+      From cinematic photography and videography to polished editing and modern
+      web development — everything you need to tell your story.
+    </p>
+  </div>
+</header>
+
+<!-- SERVICE CARDS -->
+<section class="container section">
+  <div class="grid services">
+    <article class="svc" *ngFor="let svc of services">
+      <div class="svc__glow"></div>
+      <div class="svc__icon" aria-hidden="true">{{ svc.icon }}</div>
+      <h2>{{ svc.title }}</h2>
+      <p class="lead">{{ svc.copy }}</p>
+      <ul class="svc__bullets">
+        <li *ngFor="let b of svc.bullets">{{ b }}</li>
+      </ul>
+      <a [routerLink]="svc.ctaLink" class="svc__cta">{{ svc.ctaText }}</a>
+    </article>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="container section cta-section">
+  <h2 class="section-heading">Ready to get started?</h2>
+  <p class="lead">Let's bring your vision to life together.</p>
+  <div class="button-group">
+    <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+    <a [routerLink]="['/contact']" class="btn btn--ghost">Contact Us</a>
+  </div>
+</section>

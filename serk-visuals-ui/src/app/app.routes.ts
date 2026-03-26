@@ -60,6 +60,18 @@ export const routes = [
           ),
       },
       {
+        path: 'services',
+        title: 'Services | Serk Visuals',
+        data: {
+          description:
+            'Explore Serk Visuals services — photography, videography, photo & video editing, and website development.',
+        },
+        loadComponent: () =>
+          import('./pages/services/services.component').then(
+            (m) => m.ServicesComponent
+          ),
+      },
+      {
         path: 'bookings',
         title: 'Book a Session | Serk Visuals',
         data: {

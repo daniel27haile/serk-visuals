@@ -21,12 +21,14 @@ exports.list = async (req, res, next) => {
     const per = Math.min(100, Math.max(1, Number(limit)));
     const skip = (Math.max(1, Number(page)) - 1) * per;
 
-    const items = await Testimonial.find(filter)
-      .sort(sort.split(",").join(" "))
-      .skip(skip)
-      .limit(per)
-      .lean();
-    const total = await Testimonial.countDocuments(filter);
+    const [items, total] = await Promise.all([
+      Testimonial.find(filter)
+        .sort(sort.split(",").join(" "))
+        .skip(skip)
+        .limit(per)
+        .lean(),
+      Testimonial.countDocuments(filter),
+    ]);
     res.json({
       items,
       total,

@@ -11,4 +11,6 @@ const TestimonialSchema = new Schema(
   { timestamps: true }
 );
 
+TestimonialSchema.index({ published: 1, order: 1 });
+
 module.exports = model("Testimonial", TestimonialSchema);

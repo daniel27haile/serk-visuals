@@ -178,6 +178,7 @@ export class ProjectsComponent implements OnDestroy {
   }
 
   submit() {
+    this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
     const id = this.editingId();

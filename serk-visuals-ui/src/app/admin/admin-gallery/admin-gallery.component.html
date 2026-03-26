@@ -39,26 +39,45 @@
     </h2>
 
     <div class="grid form-grid">
-      <label>
-        <span class="lbl">Title</span>
-        <input formControlName="title" placeholder="Title" />
-      </label>
+      <div class="field-wrap">
+        <label>
+          <span class="lbl">Title *</span>
+          <input formControlName="title" placeholder="Title"
+            [class.is-invalid]="form.controls['title'].touched && form.controls['title'].invalid" />
+        </label>
+        <div class="field-errors" *ngIf="form.controls['title'].touched && form.controls['title'].invalid">
+          <small *ngIf="form.controls['title'].errors?.['required']">Title is required.</small>
+          <small *ngIf="form.controls['title'].errors?.['minlength']">At least 2 characters.</small>
+        </div>
+      </div>
 
-      <label>
-        <span class="lbl">Album</span>
-        <select formControlName="album">
-          <option *ngFor="let a of albums" [value]="a">{{ a | titlecase }}</option>
-        </select>
-      </label>
+      <div class="field-wrap">
+        <label>
+          <span class="lbl">Album *</span>
+          <select formControlName="album"
+            [class.is-invalid]="form.controls['album'].touched && form.controls['album'].invalid">
+            <option *ngFor="let a of albums" [value]="a">{{ a | titlecase }}</option>
+          </select>
+        </label>
+        <div class="field-errors" *ngIf="form.controls['album'].touched && form.controls['album'].invalid">
+          <small *ngIf="form.controls['album'].errors?.['required']">Album is required.</small>
+        </div>
+      </div>
 
-      <label>
-        <span class="lbl">Placement</span>
-        <select formControlName="placement">
-          <option value="gallery">Gallery</option>
-          <option value="slider">Slider (Landing)</option>
-          <option value="featured">Featured Gallery (Landing)</option>
-        </select>
-      </label>
+      <div class="field-wrap">
+        <label>
+          <span class="lbl">Placement *</span>
+          <select formControlName="placement"
+            [class.is-invalid]="form.controls['placement'].touched && form.controls['placement'].invalid">
+            <option value="gallery">Gallery</option>
+            <option value="slider">Slider (Landing)</option>
+            <option value="featured">Featured Gallery (Landing)</option>
+          </select>
+        </label>
+        <div class="field-errors" *ngIf="form.controls['placement'].touched && form.controls['placement'].invalid">
+          <small *ngIf="form.controls['placement'].errors?.['required']">Placement is required.</small>
+        </div>
+      </div>
 
       <label>
         <span class="lbl">Order (for slider/featured)</span>

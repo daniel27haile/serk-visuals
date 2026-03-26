@@ -79,6 +79,7 @@ export class AdminTestimonialsComponent implements OnInit {
   }
 
   async submit() {
+    this.form.markAllAsTouched();
     if (this.form.invalid) return;
 
     const v = this.form.getRawValue() as {

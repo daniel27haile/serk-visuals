@@ -24,8 +24,9 @@
       <div class="form-grid">
         <!-- Full name -->
         <div class="field">
-          <label for="fullName">Full name</label>
-          <input id="fullName" type="text" formControlName="fullName" autocomplete="name" />
+          <label for="fullName">Full name *</label>
+          <input id="fullName" type="text" formControlName="fullName" autocomplete="name"
+            [class.is-invalid]="f.fullName.touched && f.fullName.invalid" />
           @if (f.fullName.touched && f.fullName.invalid) {
             <div class="error">
               @if (f.fullName.errors?.['required']) { <span>Name is required.</span> }
@@ -36,8 +37,9 @@
 
         <!-- Email -->
         <div class="field">
-          <label for="email">Email</label>
-          <input id="email" type="email" formControlName="email" autocomplete="email" />
+          <label for="email">Email *</label>
+          <input id="email" type="email" formControlName="email" autocomplete="email"
+            [class.is-invalid]="f.email.touched && f.email.invalid" />
           @if (f.email.touched && f.email.invalid) {
             <div class="error">
               @if (f.email.errors?.['required']) { <span>Email is required.</span> }
@@ -49,14 +51,28 @@
 
       <!-- Subject -->
       <div class="field">
-        <label for="subject">Subject</label>
-        <input id="subject" type="text" formControlName="subject" />
+        <label for="subject">Subject *</label>
+        <input id="subject" type="text" formControlName="subject"
+          [class.is-invalid]="f.subject.touched && f.subject.invalid" />
+        @if (f.subject.touched && f.subject.invalid) {
+          <div class="error">
+            @if (f.subject.errors?.['required']) { <span>Subject is required.</span> }
+            @if (f.subject.errors?.['minlength']) { <span>At least 3 characters.</span> }
+          </div>
+        }
       </div>
 
       <!-- Message -->
       <div class="field">
-        <label for="message">Message</label>
-        <textarea id="message" rows="6" formControlName="message"></textarea>
+        <label for="message">Message *</label>
+        <textarea id="message" rows="6" formControlName="message"
+          [class.is-invalid]="f.message.touched && f.message.invalid"></textarea>
+        @if (f.message.touched && f.message.invalid) {
+          <div class="error">
+            @if (f.message.errors?.['required']) { <span>Message is required.</span> }
+            @if (f.message.errors?.['minlength']) { <span>At least 10 characters.</span> }
+          </div>
+        }
       </div>
 
       <div class="form-actions">
@@ -65,7 +81,7 @@
           <span>I consent to be contacted about my inquiry.</span>
         </label>
 
-        <button type="submit" class="btn btn--accent" [disabled]="submitting() || form.invalid">
+        <button type="submit" class="btn btn--accent" [disabled]="submitting()">
           @if (submitting()) { Sending… } @else { Send message }
         </button>
       </div>

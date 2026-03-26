@@ -18,15 +18,6 @@ import { TestimonialService } from '../../shared/services/testimonial.service';
 import { GalleryItem } from '../../shared/models/gallery.model';
 import { Testimonial } from '../../shared/models/testimonial.model';
 
-type ServiceCard = {
-  icon: string;
-  title: string;
-  copy: string;
-  bullets: string[];
-  ctaText: string;
-  ctaLink: string | any[];
-};
-
 @Component({
   selector: 'app-landing-page',
   standalone: true,
@@ -52,44 +43,6 @@ export class LandingPageComponent implements OnDestroy {
   errorFeatured = signal<string | null>(null);
   errorTestimonials = signal<string | null>(null);
 
-  // ====== SERVICES ======
-  services: ServiceCard[] = [
-    {
-      icon: '📷',
-      title: 'Photography & Videography',
-      copy: 'Editorial & cinematic coverage — from stunning stills to story-driven films, all color-graded to a timeless look.',
-      bullets: [
-        'Weddings & Engagements',
-        'Portraits & Headshots',
-        'Wedding Highlight Films',
-        'Brand Stories & Event Recaps',
-      ],
-      ctaText: 'Book a Session →',
-      ctaLink: ['/bookings'],
-    },
-    {
-      icon: '🪄',
-      title: 'Photo & Video Editing',
-      copy: 'Polished color science, clean cuts, and motion graphics for images and film alike.',
-      bullets: [
-        'Pro Retouching & Color Grading',
-        'Batch Processing',
-        'Short-form Reels & Ads',
-        'YouTube & Web Videos',
-      ],
-      ctaText: 'Contact Us →',
-      ctaLink: ['/contact'],
-    },
-    {
-      icon: '🌐',
-      title: 'Website Development',
-      copy: 'Fast, modern websites to showcase your brand and book more clients.',
-      bullets: ['Modern Frontend', 'CMS & Hosting', 'SEO Basics'],
-      ctaText: 'Contact Us →',
-      ctaLink: ['/contact'],
-    },
-  ];
-
   // ===== SLIDERS STATE =====
   index = signal(0); // hero slider
   tIndex = signal(0); // testimonials
@@ -109,9 +62,6 @@ export class LandingPageComponent implements OnDestroy {
 
         if (isPlatformBrowser(this.platformId)) {
           this.startTimers();
-          document.addEventListener('pointermove', this.onPointerMove, {
-            passive: true,
-          });
         }
       },
       { allowSignalWrites: true }
@@ -221,9 +171,6 @@ export class LandingPageComponent implements OnDestroy {
     this.stopTimers();
     this.testiChangedSub?.unsubscribe();
     this.galleryChangedSub?.unsubscribe();
-    if (isPlatformBrowser(this.platformId)) {
-      document.removeEventListener('pointermove', this.onPointerMove);
-    }
   }
 
   // ===== HERO slider controls =====
@@ -282,16 +229,4 @@ export class LandingPageComponent implements OnDestroy {
       .join('');
   }
 
-  // Nice hover glow on .svc cards
-  private onPointerMove = (ev: PointerEvent) => {
-    const target = (ev.target as HTMLElement)?.closest?.(
-      '.svc'
-    ) as HTMLElement | null;
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
-    const x = ((ev.clientX - rect.left) / rect.width) * 100;
-    const y = ((ev.clientY - rect.top) / rect.height) * 100;
-    target.style.setProperty('--x', `${x}%`);
-    target.style.setProperty('--y', `${y}%`);
-  };
 }

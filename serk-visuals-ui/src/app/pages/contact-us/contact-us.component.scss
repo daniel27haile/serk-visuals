@@ -69,7 +69,13 @@
   textarea { resize: vertical; min-height: 140px; }
 }
 
-.error { color: var(--color-danger); font-size: var(--text-sm); }
+.error { color: #fca5a5; font-size: var(--text-sm); }
+
+.field input.is-invalid,
+.field textarea.is-invalid {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, .18);
+}
 
 .form-actions {
   display: flex; justify-content: space-between; align-items: center;

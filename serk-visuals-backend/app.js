@@ -1,6 +1,7 @@
 // app.js
 const path = require("path");
 const express = require("express");
+const compression = require("compression");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -22,6 +23,8 @@ const testimonialRoutes = require("./routes/testimonial_routes");
 const uploadSignRoutes = require("./routes/upload_sign_routes");
 
 const app = express();
+
+app.use(compression());
 
 /** CORS */
 const rawOrigins = process.env.FRONTEND_ORIGIN || "http://localhost:4200";

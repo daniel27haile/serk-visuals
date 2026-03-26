@@ -27,5 +27,12 @@ const GalleryItemSchema = new Schema(
   { timestamps: true }
 );
 
+// Compound indexes for the exact query patterns used by landing page + gallery page:
+// { placement, published } covers all public listing queries.
+// The trailing sort fields (order, createdAt) are included so MongoDB can
+// satisfy ORDER BY from the index without a separate sort step.
+GalleryItemSchema.index({ placement: 1, published: 1, order: 1 });
+GalleryItemSchema.index({ placement: 1, published: 1, createdAt: -1 });
+
 module.exports = model("GalleryItem", GalleryItemSchema);
 module.exports.PLACEMENTS = PLACEMENTS;

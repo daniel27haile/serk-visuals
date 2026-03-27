@@ -1,6 +1,5 @@
 // ============================================================
 // Landing Page — component-specific styles only.
-// Background was rgb(58,55,55) — corrected to var(--color-bg).
 // ============================================================
 
 :host {
@@ -21,51 +20,235 @@
   text-wrap: balance;
 }
 
-// ── Eyebrow label ─────────────────────────────────────────
-.eyebrow {
-  display: inline-block;
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--color-secondary);
-  margin: 0 0 .65rem;
-  opacity: .9;
+// ── Hero — full-width image slider with text overlay ──────────
+.hero-wrap {
+  position: relative;
+  width: 100%;
+  // No container constraints — true edge-to-edge
 }
 
-// ── Hero ─────────────────────────────────────────────────
-.hero {
-  display: grid;
-  gap: var(--spacing-md);
-  align-items: center;
-  grid-template-columns: 1fr;
-}
-.hero > .copy, .hero > .hero-media { min-width: 0; }
-.hero h1 { font-size: clamp(1.8rem, 3vw, 3rem); line-height: var(--leading-tight); margin: 0; text-wrap: balance; }
+.hero-slider {
+  position: relative;
+  width: 100%;
+  height: clamp(260px, 55vw, 400px); // mobile default
+  overflow: hidden;
+  outline: none;
+  background: var(--color-surface-2); // placeholder while images load
 
-.cta-row {
-  margin-top: var(--spacing-md);
-  display: flex; gap: var(--spacing-md); flex-wrap: wrap;
-
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-    padding: .75rem 1.5rem; border-radius: var(--radius-md);
-    font-weight: var(--weight-semibold);
-    border: 1px solid transparent;
-    text-decoration: none;
-    transition: all .25s ease;
-    &--accent { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-primary-ink); &:hover { opacity: .9; } }
-    &--ghost  { background: transparent; border: 1px solid var(--color-text); color: var(--color-text); &:hover { border-color: var(--color-primary); color: var(--color-primary); } }
+  &:focus-visible {
+    outline: 3px solid var(--color-secondary);
+    outline-offset: -3px;
   }
 }
 
-.button-group {
+// Slide track — flex container that moves on translateX
+.hero-slides {
+  display: flex;
+  height: 100%;
+  transition: transform .65s cubic-bezier(.4, 0, .22, 1);
+  will-change: transform;
+}
+
+// Individual slide image — covers the full slot
+.hero-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center top;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+// Dark gradient overlay — left-weighted for text legibility, bottom for dots
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      105deg,
+      rgba(0, 0, 0, .76) 0%,
+      rgba(0, 0, 0, .48) 45%,
+      rgba(0, 0, 0, .16) 100%
+    ),
+    linear-gradient(
+      to top,
+      rgba(0, 0, 0, .5) 0%,
+      transparent 36%
+    );
+}
+
+// Text content — anchored to the lower portion of the slider
+.hero-copy {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;             // text sits in the lower third, revealing the subject above
+  padding-bottom: clamp(3.5rem, 8vh, 6rem); // clearance above dots + bottom edge
+  pointer-events: none; // pass clicks through to images underneath
+
+  .container {
+    pointer-events: auto;
+    max-width: min(100%, 680px); // constrain text column width
+  }
+
+  h1 {
+    font-size: clamp(1.9rem, 4.5vw, 3.5rem);
+    line-height: var(--leading-tight);
+    margin: 0;
+    text-wrap: balance;
+    color: #fff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .4);
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, .78);
+    margin: 0 0 .65rem;
+  }
+
+  .lead {
+    color: rgba(255, 255, 255, .84);
+    margin-top: .75rem;
+    max-width: 52ch;
+    line-height: 1.65;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, .35);
+  }
+}
+
+// CTA buttons inside the hero overlay
+.cta-row {
   margin-top: var(--spacing-md);
-  display: flex; gap: var(--spacing-md); flex-wrap: wrap;
+  display: flex;
+  gap: .75rem;
+  flex-wrap: nowrap;      // keep side by side on all common sizes
+  align-items: center;
 
   .btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    padding: .75rem 1.5rem; border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .75rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: var(--weight-semibold);
+    border: 1px solid transparent;
+    text-decoration: none;
+    white-space: nowrap;  // prevent text from breaking inside a button
+    transition: all .25s ease;
+
+    &--accent {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: var(--color-primary-ink);
+      &:hover { opacity: .9; }
+    }
+
+    // Ghost on dark hero background — white border + glass effect
+    &--ghost {
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .65);
+      color: #fff;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      &:hover {
+        background: rgba(255, 255, 255, .22);
+        border-color: #fff;
+      }
+    }
+  }
+}
+
+// Arrow navigation buttons
+.nav {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+
+  button {
+    pointer-events: auto;
+    background: rgba(0, 0, 0, .42);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .18);
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    margin: 0 .75rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    display: grid;
+    place-items: center;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transition: background .2s, border-color .2s, transform .15s;
+
+    &:hover {
+      background: rgba(0, 0, 0, .65);
+      border-color: rgba(255, 255, 255, .4);
+      transform: scale(1.08);
+    }
+    &:active { transform: scale(.94); }
+    &:focus-visible {
+      outline: 2px solid var(--color-secondary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Dot indicators
+.dots {
+  position: absolute;
+  inset: auto 0 1.25rem 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  gap: .45rem;
+}
+
+.dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 4px;
+  border: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, .38);
+  transition: background .2s, width .25s cubic-bezier(.4, 0, .2, 1);
+
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+  }
+  &.active {
+    background: #fff;
+    width: 24px;
+  }
+}
+
+// Gallery section CTA buttons (different context — non-hero, uses theme colors)
+.button-group {
+  margin-top: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: .75rem 1.5rem;
+    border-radius: var(--radius-md);
     font-weight: var(--weight-semibold);
     border: 1px solid transparent;
     text-decoration: none;
@@ -73,47 +256,6 @@
     &.btn--accent { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-primary-ink); &:hover { opacity: .9; } }
     &.btn--ghost  { background: transparent; border: 1px solid var(--color-text); color: var(--color-text); &:hover { border-color: var(--color-primary); color: var(--color-primary); } }
   }
-}
-
-// ── Hero image slider ─────────────────────────────────────
-.hero-media { border-radius: var(--radius-lg); overflow: hidden; }
-
-.slider {
-  --slider-h: clamp(200px, 40vh, 380px);
-  position: relative;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  height: var(--slider-h);
-  max-width: 100%; margin: 0 auto; outline: none;
-}
-.slides { display: flex; height: 100%; transition: transform .5s ease; }
-.slide { flex: 0 0 100%; width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; cursor: zoom-in; }
-
-.nav {
-  position: absolute; inset: 0;
-  display: flex; justify-content: space-between; align-items: center;
-  pointer-events: none;
-
-  button {
-    pointer-events: auto;
-    background: rgba(0, 0, 0, .4);
-    color: #fff; border: 0;
-    width: 36px; height: 36px;
-    border-radius: var(--radius-md);
-    margin: .5rem; cursor: pointer;
-    &:focus-visible { outline: 2px solid var(--color-secondary); outline-offset: 2px; }
-  }
-}
-
-.dots {
-  position: absolute; inset: auto 0 10px 0;
-  display: flex; justify-content: center; gap: .4rem;
-}
-.dot {
-  width: 8px; height: 8px;
-  border-radius: 50%; background: rgba(255, 255, 255, .33); border: 0;
-  &:focus-visible { outline: 2px solid var(--color-secondary); outline-offset: 2px; }
-  &.active { background: #fff; }
 }
 
 // ── Stats strip ───────────────────────────────────────────
@@ -303,7 +445,6 @@
 
 // ── Client Stories carousel ───────────────────────────────
 
-// Outer container — also the clipping viewport (mirrors .slider pattern)
 .testimonial-slider {
   position: relative;
   overflow: hidden;
@@ -320,7 +461,6 @@
 
 .t-slides { display: flex; transition: transform .5s cubic-bezier(.4, 0, .2, 1); }
 
-// ── Arrow overlay (absolutely positioned like .nav in hero slider) ─────────
 .t-nav {
   position: absolute;
   inset: 0;
@@ -331,7 +471,6 @@
   padding: 0 .5rem;
 }
 
-// ── Arrow buttons ─────────────────────────────────────────
 .t-arrow {
   pointer-events: auto;
   width: 44px;
@@ -385,20 +524,17 @@
 .t-arrow--prev .t-chevron { transform: rotate(-135deg) translate(1px, -1px); }
 .t-arrow--next .t-chevron { transform: rotate(45deg)  translate(-1px, 1px); }
 
-// ── Individual quote card ─────────────────────────────────
 .t-slide {
   flex: 0 0 100%;
   margin: 0;
-  // Side/top padding + extra bottom to clear absolutely-positioned dots
   padding: clamp(1.25rem, 3.5vw, 1.9rem) clamp(1.25rem, 3.5vw, 1.9rem) 2.5rem;
   background: linear-gradient(135deg, var(--color-surface) 60%, rgba(124, 106, 255, .04) 100%);
   border-left: 3px solid rgba(124, 106, 255, .5);
   display: grid;
-  gap: .85rem;           // tighter quote → author gap
+  gap: .85rem;
   position: relative;
   overflow: hidden;
 
-  // Decorative oversized quote mark via CSS (avoids HTML parser issues)
   &::before {
     content: "\201C";
     position: absolute;
@@ -420,11 +556,10 @@
   }
 }
 
-// Quote text
 .t-quote {
   margin: 0;
   font-size: clamp(.95rem, 1.9vw, 1.15rem);
-  line-height: 1.65;       // tighter than 1.78 — more connected feel
+  line-height: 1.65;
   color: var(--color-text);
   font-style: italic;
   font-weight: 400;
@@ -437,22 +572,20 @@
   padding: 0;
 }
 
-// Author row — sits below the divider line
 .t-author {
   display: flex;
   align-items: center;
   gap: .75rem;
   position: relative;
   z-index: 1;
-  padding-top: .6rem;    // space between divider line and content
+  padding-top: .6rem;
 
-  // Elegant soft divider — fades left-to-right, doesn't span full width
   &::before {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
-    width: 70%;          // doesn't reach the full edge — more intentional
+    width: 70%;
     height: 1px;
     background: linear-gradient(
       90deg,
@@ -485,7 +618,6 @@
   opacity: .85;
 }
 
-// Initials avatar circle
 .t-avatar-icon {
   width: 46px;
   height: 46px;
@@ -499,14 +631,12 @@
   font-weight: var(--weight-extrabold);
   letter-spacing: .4px;
   user-select: none;
-  // Outer indigo ring + subtle inner highlight
   box-shadow:
     0 0 0 2px rgba(124, 106, 255, .22),
     0 0 0 4px rgba(124, 106, 255, .08),
     inset 0 1px 0 rgba(255, 255, 255, .2);
 }
 
-// ── Dot indicators (absolutely positioned at slide bottom) ─────────────────
 .t-dots {
   position: absolute;
   inset: auto 0 .6rem 0;
@@ -534,7 +664,6 @@
 }
 
 // ── Broken image fallback ─────────────────────────────────
-// Applied via (error) binding when an S3 image URL fails to load
 .img--broken {
   display: block !important;
   width: 100%;
@@ -547,17 +676,72 @@
 .hint { color: var(--color-text-label); margin-top: var(--spacing-sm); }
 .hint.error { color: #ffc6c6; }
 
-// ── Breakpoints ───────────────────────────────────────────
+// ── Hero responsive heights ───────────────────────────────
+// Mobile (<640px): use vh so portrait phones have real vertical room
+@media (max-width: 639px) {
+  // vh-based height grows with the phone's viewport rather than width,
+  // ensuring the slider is tall enough for text + image composition.
+  .hero-slider { height: clamp(360px, 52vh, 480px); }
+
+  // Stronger uniform overlay — text sits over a narrower image area
+  .hero-overlay {
+    background: rgba(0, 0, 0, .58);
+  }
+
+  // Shrink nav arrows so they occupy less horizontal space
+  .nav button {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    margin: 0 .5rem; // 36px button + 8px margin = 44px from edge
+  }
+
+  .hero-copy {
+    // 2.75rem ≈ 44px — just enough to clear the smaller arrows above
+    padding-inline: 2.75rem;
+    padding-bottom: clamp(2.5rem, 7vh, 4rem);
+  }
+
+  // Prevent the global .container from adding extra horizontal padding
+  // on top of the arrow-clearance padding already on .hero-copy.
+  .hero-copy .container {
+    padding-inline: 0;
+  }
+
+  // The lead paragraph is ~4 lines on a narrow phone and leaves no room
+  // for the headline + buttons. Hide it — eyebrow + h1 + CTA is the
+  // correct mobile pattern; the full description is below the fold.
+  .hero-copy .lead {
+    display: none;
+  }
+}
+
+// On very small phones (<390px) allow intentional button wrapping:
+// both buttons stretch to equal width on their own rows.
+@media (max-width: 390px) {
+  .cta-row {
+    flex-wrap: wrap;
+    .btn { flex: 1 1 auto; justify-content: center; }
+  }
+}
+
+// Tablet (640px–1023px)
 @media (min-width: 640px) {
-  .gallery  { grid-template-columns: repeat(2, 1fr); }
-  .gallery img { height: 240px; }
-  .slider   { --slider-h: clamp(220px, 42vh, 420px); }
+  .hero-slider  { height: clamp(340px, 50vh, 520px); }
+  .gallery      { grid-template-columns: repeat(2, 1fr); }
+  .gallery img  { height: 240px; }
 }
+
+// Desktop (1024px+)
 @media (min-width: 1024px) {
-  .hero     { grid-template-columns: 1.1fr .9fr; gap: var(--spacing-lg); }
-  .gallery  { grid-template-columns: repeat(3, 1fr); }
-  .slider   { --slider-h: clamp(260px, 46vh, 480px); }
+  .hero-slider  { height: clamp(400px, 60vh, 660px); }
+  .gallery      { grid-template-columns: repeat(3, 1fr); }
+
+  // Widen the text column on large screens
+  .hero-copy .container { max-width: min(100%, 720px); }
 }
+
+// Large desktop (1280px+)
 @media (min-width: 1280px) {
-  .slider   { --slider-h: clamp(280px, 48vh, 520px); }
+  .hero-slider  { height: clamp(440px, 65vh, 720px); }
 }

@@ -1,70 +1,74 @@
-<!-- HERO -->
-<section class="container section hero">
-  <div class="copy">
-    <p class="eyebrow">Photography · Videography · Website</p>
-    <h1>Bring your vision to life.</h1>
-    <p class="lead">
-      Cinematic coverage, polished editing, and modern websites — all crafted
-      with intention and delivered with care.
-    </p>
-
-    <div class="cta-row">
-      <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
-      <a [routerLink]="['/gallery']" class="btn btn--ghost">View Gallery</a>
-    </div>
-  </div>
-
-  <div class="hero-media">
+<!-- HERO — full-width edge-to-edge slider with text overlay -->
+<section class="hero-wrap">
+  <div
+    class="hero-slider"
+    (keydown)="onKey($event)"
+    tabindex="0"
+    aria-roledescription="carousel"
+    [attr.aria-label]="'Hero gallery'"
+  >
+    <!-- Slide images (background layer) -->
     <div
-      class="slider"
-      (keydown)="onKey($event)"
-      tabindex="0"
-      aria-roledescription="carousel"
-      [attr.aria-label]="'Hero gallery'"
+      class="hero-slides"
+      [style.transform]="'translateX(' + -index() * 100 + '%)'"
     >
-      <div
-        class="slides"
-        [style.transform]="'translateX(' + -index() * 100 + '%)'"
-      >
-        <img
-          class="slide zoomable"
-          *ngFor="let s of slider(); trackBy: trackByGallery; let i = index"
-          [src]="s.thumbnail || s.url"
-          [alt]="s.title"
-          loading="eager"
-          width="1600"
-          height="1000"
-          (click)="lb.open(slider(), i)"
-          (error)="onImgError($event)"
-        />
-      </div>
+      <img
+        class="hero-slide"
+        *ngFor="let s of slider(); trackBy: trackByGallery; let i = index"
+        [src]="s.thumbnail || s.url"
+        [alt]="s.title"
+        loading="eager"
+        width="1600"
+        height="900"
+        (error)="onImgError($event)"
+      />
+    </div>
 
-      <div class="nav" aria-hidden="true">
-        <button (click)="prev()" aria-label="Previous slide">‹</button>
-        <button (click)="next()" aria-label="Next slide">›</button>
-      </div>
+    <!-- Dark gradient overlay for text readability -->
+    <div class="hero-overlay" aria-hidden="true"></div>
 
-      <div class="dots" role="tablist" aria-label="Slide selectors">
-        <button
-          class="dot"
-          *ngFor="let _ of slider(); let i = index"
-          [class.active]="i === index()"
-          (click)="go(i)"
-          [attr.aria-label]="'Go to slide ' + (i + 1)"
-          role="tab"
-          [attr.aria-selected]="(i === index()).toString()"
-        ></button>
+    <!-- Text content overlaid on images -->
+    <div class="hero-copy">
+      <div class="container">
+        <h1>Bring your vision to life.</h1>
+        <p class="lead">
+          Cinematic coverage, polished editing, and modern websites — all crafted
+          with intention and delivered with care.
+        </p>
+        <div class="cta-row">
+          <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+          <a [routerLink]="['/gallery']" class="btn btn--ghost">View Gallery</a>
+        </div>
       </div>
     </div>
 
-    <p
-      class="hint"
-      *ngIf="!loadingSlider() && slider().length === 0 && !errorSlider()"
-    >
-      No slider images yet. Add some in Admin → Gallery (placement: slider).
-    </p>
-    <p class="hint error" *ngIf="errorSlider()">{{ errorSlider() }}</p>
+    <!-- Arrow navigation -->
+    <div class="nav" aria-hidden="true">
+      <button (click)="prev()" aria-label="Previous slide">‹</button>
+      <button (click)="next()" aria-label="Next slide">›</button>
+    </div>
+
+    <!-- Dot indicators -->
+    <div class="dots" role="tablist" aria-label="Slide selectors">
+      <button
+        class="dot"
+        *ngFor="let _ of slider(); let i = index"
+        [class.active]="i === index()"
+        (click)="go(i)"
+        [attr.aria-label]="'Go to slide ' + (i + 1)"
+        role="tab"
+        [attr.aria-selected]="(i === index()).toString()"
+      ></button>
+    </div>
   </div>
+
+  <p
+    class="hint container"
+    *ngIf="!loadingSlider() && slider().length === 0 && !errorSlider()"
+  >
+    No slider images yet. Add some in Admin → Gallery (placement: slider).
+  </p>
+  <p class="hint error container" *ngIf="errorSlider()">{{ errorSlider() }}</p>
 </section>
 
 <!-- STATS STRIP -->

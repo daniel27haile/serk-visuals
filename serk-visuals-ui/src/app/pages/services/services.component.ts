@@ -48,14 +48,6 @@ export class ServicesComponent implements OnDestroy {
       ctaText: 'Contact Us →',
       ctaLink: ['/contact'],
     },
-    {
-      icon: '🌐',
-      title: 'Website Development',
-      copy: 'Fast, modern websites to showcase your brand and book more clients.',
-      bullets: ['Modern Frontend', 'CMS & Hosting', 'SEO Basics'],
-      ctaText: 'Contact Us →',
-      ctaLink: ['/contact'],
-    },
   ];
 
   constructor() {

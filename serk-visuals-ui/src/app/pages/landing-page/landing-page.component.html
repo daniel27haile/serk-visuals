@@ -32,7 +32,7 @@
       <div class="container">
         <h1>Bring your vision to life.</h1>
         <p class="lead">
-          Cinematic coverage, polished editing, and modern websites — all crafted
+          Cinematic coverage and polished editing — all crafted
           with intention and delivered with care.
         </p>
         <div class="cta-row">
@@ -181,6 +181,20 @@
       >
         <!-- Quote text (deco quote mark rendered via CSS ::before) -->
         <p class="t-quote">{{ t.quote }}</p>
+
+        <!-- Star rating — only rendered when a rating is stored -->
+        <div
+          class="t-stars"
+          *ngIf="t.rating"
+          [attr.aria-label]="t.rating + ' out of 5 stars'"
+        >
+          <span
+            class="t-star"
+            *ngFor="let n of starOptions"
+            [class.filled]="n <= t.rating!"
+            aria-hidden="true"
+          >★</span>
+        </div>
 
         <!-- Author row (below quote, separated by thin divider) -->
         <div class="t-author">

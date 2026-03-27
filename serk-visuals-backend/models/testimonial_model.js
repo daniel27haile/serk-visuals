@@ -5,6 +5,7 @@ const TestimonialSchema = new Schema(
     author: { type: String, required: true },
     role: { type: String, default: "" },
     quote: { type: String, required: true },
+    rating: { type: Number, min: 1, max: 5 },
     published: { type: Boolean, default: true },
     order: { type: Number, default: 0 },
   },

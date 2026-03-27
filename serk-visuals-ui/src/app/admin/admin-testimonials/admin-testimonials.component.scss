@@ -61,6 +61,50 @@
   padding: .65rem .8rem;
 }
 
+// ── Star picker (form) ────────────────────────────────────
+.star-picker {
+  display: flex;
+  gap: .2rem;
+  margin-top: .3rem;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  padding: .1rem .15rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  color: rgba(245, 158, 11, .28); // unfilled: dim amber so you can see the shape
+  transition: color .15s, transform .1s;
+
+  &.filled { color: #f59e0b; }   // filled/hovered: solid amber
+
+  &:hover {
+    color: #f59e0b;
+    transform: scale(1.15);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    border-radius: 3px;
+  }
+}
+
+// ── Stars in tile list ────────────────────────────────────
+.tile-stars {
+  display: flex;
+  gap: .1rem;
+  line-height: 1;
+}
+
+.tile-star {
+  font-size: .95rem;
+  color: rgba(245, 158, 11, .28);
+
+  &.filled { color: #f59e0b; }
+}
+
 // ── Grid ─────────────────────────────────────────────────
 .grid-list {
   display: grid;

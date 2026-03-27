@@ -3,6 +3,7 @@ export interface Testimonial {
   author: string;
   quote: string;
   role?: string;
+  rating?: number;
   published?: boolean;
   order?: number;
   createdAt?: string;
@@ -20,6 +21,7 @@ export interface TestimonialCreateDTO {
   author: string;
   quote: string;
   role?: string;
+  rating?: number;
   published?: boolean;
   order?: number;
 }
@@ -28,6 +30,7 @@ export interface TestimonialUpdateDTO {
   author?: string;
   quote?: string;
   role?: string;
+  rating?: number;
   published?: boolean;
   order?: number;
 }

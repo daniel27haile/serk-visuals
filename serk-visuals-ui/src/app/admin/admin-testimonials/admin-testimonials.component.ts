@@ -37,12 +37,16 @@ export class AdminTestimonialsComponent implements OnInit {
   items = signal<Testimonial[]>([]);
   editingId = signal<string | null>(null);
 
+  readonly starOptions = [1, 2, 3, 4, 5];
+  hoverRating = 0;
+
   form = this.fb.group({
-    author: ['', [Validators.required, Validators.minLength(2)]],
-    role: [''],
-    quote: ['', [Validators.required, Validators.minLength(6)]],
+    author:    ['', [Validators.required, Validators.minLength(2)]],
+    role:      [''],
+    quote:     ['', [Validators.required, Validators.minLength(6)]],
+    rating:    [null as number | null],
     published: [true],
-    order: [0],
+    order:     [0],
   });
 
   ngOnInit() {
@@ -86,6 +90,7 @@ export class AdminTestimonialsComponent implements OnInit {
       author: string;
       role: string;
       quote: string;
+      rating: number | null;
       published: boolean;
       order: number;
     };
@@ -98,20 +103,22 @@ export class AdminTestimonialsComponent implements OnInit {
 
       if (id) {
         const patch: TestimonialUpdateDTO = {
-          author: v.author,
-          role: v.role || undefined,
-          quote: v.quote,
+          author:    v.author,
+          role:      v.role || undefined,
+          quote:     v.quote,
+          ...(v.rating != null ? { rating: v.rating } : {}),
           published: v.published,
-          order: typeof v.order === 'number' ? v.order : undefined,
+          order:     typeof v.order === 'number' ? v.order : undefined,
         };
         await firstValueFrom(this.api.update(id, patch));
       } else {
         const payload: TestimonialCreateDTO = {
-          author: v.author,
-          role: v.role || undefined,
-          quote: v.quote,
+          author:    v.author,
+          role:      v.role || undefined,
+          quote:     v.quote,
+          ...(v.rating != null ? { rating: v.rating } : {}),
           published: v.published,
-          order: typeof v.order === 'number' ? v.order : undefined,
+          order:     typeof v.order === 'number' ? v.order : undefined,
         };
         await firstValueFrom(this.api.create(payload));
       }
@@ -129,11 +136,12 @@ export class AdminTestimonialsComponent implements OnInit {
   edit(item: Testimonial) {
     this.editingId.set(item._id || null);
     this.form.reset({
-      author: item.author || '',
-      role: item.role || '',
-      quote: item.quote || '',
+      author:    item.author || '',
+      role:      item.role || '',
+      quote:     item.quote || '',
+      rating:    item.rating ?? null,
       published: item.published !== false,
-      order: typeof item.order === 'number' ? item.order : 0,
+      order:     typeof item.order === 'number' ? item.order : 0,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -141,12 +149,14 @@ export class AdminTestimonialsComponent implements OnInit {
   cancelEdit() {
     this.editingId.set(null);
     this.form.reset({
-      author: '',
-      role: '',
-      quote: '',
+      author:    '',
+      role:      '',
+      quote:     '',
+      rating:    null,
       published: true,
-      order: 0,
+      order:     0,
     });
+    this.hoverRating = 0;
   }
 
   initials(author: string): string {

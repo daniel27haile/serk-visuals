@@ -56,7 +56,7 @@ exports.getOne = async (req, res, next) => {
  */
 exports.create = async (req, res, next) => {
   try {
-    const { author, role, quote, published, order } = req.body || {};
+    const { author, role, quote, rating, published, order } = req.body || {};
     if (!author || !quote)
       return res.status(400).json({ message: "author and quote are required" });
 
@@ -64,6 +64,9 @@ exports.create = async (req, res, next) => {
       author,
       role,
       quote,
+      ...(rating != null && Number.isFinite(Number(rating)) && Number(rating) >= 1
+        ? { rating: Math.min(5, Math.max(1, Math.round(Number(rating)))) }
+        : {}),
       published: published === false || published === "false" ? false : true,
       order: Number.isFinite(Number(order)) ? Number(order) : 0,
     });
@@ -84,6 +87,8 @@ exports.update = async (req, res, next) => {
     ["author", "role", "quote"].forEach((k) => {
       if (typeof req.body[k] !== "undefined") patch[k] = req.body[k];
     });
+    if (req.body.rating != null && Number.isFinite(Number(req.body.rating)) && Number(req.body.rating) >= 1)
+      patch.rating = Math.min(5, Math.max(1, Math.round(Number(req.body.rating))));
     if (typeof req.body.published !== "undefined")
       patch.published =
         req.body.published === true || req.body.published === "true";

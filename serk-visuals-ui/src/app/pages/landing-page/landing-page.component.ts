@@ -30,6 +30,8 @@ export class LandingPageComponent implements OnDestroy {
   private galleryApi = inject(GalleryService);
   private testiApi = inject(TestimonialService);
 
+  readonly starOptions = [1, 2, 3, 4, 5];
+
   // ====== DATA ======
   slider = signal<GalleryItem[]>([]);
   featured = signal<GalleryItem[]>([]);

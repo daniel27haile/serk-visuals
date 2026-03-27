@@ -26,6 +26,22 @@
         <input formControlName="role" placeholder="Bride, CEO, etc." />
       </label>
 
+      <label>
+        <span class="lbl">Rating</span>
+        <div class="star-picker" role="group" aria-label="Star rating" (mouseleave)="hoverRating = 0">
+          <button
+            type="button"
+            class="star-btn"
+            *ngFor="let n of starOptions"
+            [class.filled]="n <= (hoverRating || form.controls['rating'].value || 0)"
+            (mouseenter)="hoverRating = n"
+            (click)="form.controls['rating'].setValue(n)"
+            [attr.aria-label]="n + (n === 1 ? ' star' : ' stars')"
+            [attr.aria-pressed]="n === form.controls['rating'].value"
+          >&#9733;</button>
+        </div>
+      </label>
+
       <div class="field-wrap full">
         <label class="full">
           <span class="lbl">Quote *</span>
@@ -84,7 +100,16 @@
         </div>
       </div>
 
-      <blockquote class="quote">“{{ it.quote }}”</blockquote>
+      <div class="tile-stars" *ngIf="it.rating" [attr.aria-label]="it.rating + ' out of 5 stars'">
+        <span
+          class="tile-star"
+          *ngFor="let n of starOptions"
+          [class.filled]="n <= it.rating!"
+          aria-hidden="true"
+        >&#9733;</span>
+      </div>
+
+      <blockquote class="quote">"{{ it.quote }}"</blockquote>
 
       <div class="tile__actions">
         <button class="btn sm" (click)="edit(it)">Edit</button>

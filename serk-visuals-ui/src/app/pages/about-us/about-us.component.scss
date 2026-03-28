@@ -39,13 +39,13 @@
     font-size: clamp(1.8rem, 2.5vw, 2.4rem);
     font-weight: var(--weight-extrabold);
     margin-bottom: var(--spacing-md);
-    color: #6ab3ff;
+    color: var(--color-text);
   }
 
   &__text {
     margin-bottom: var(--spacing-md);
     line-height: var(--leading-relaxed);
-    color: #cfd5e1;
+    color: var(--color-text-muted);
   }
 }
 

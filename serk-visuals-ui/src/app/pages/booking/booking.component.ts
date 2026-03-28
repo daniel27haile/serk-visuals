@@ -10,6 +10,7 @@ import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs';
 
 import { BookingsService } from '../../shared/services/booking.service';
 import { Booking, BookingType } from '../../shared/models/booking.model';
+import { formatBookingDate } from '../../shared/utils/booking-format.util';
 
 @Component({
   selector: 'app-booking-form',
@@ -124,13 +125,6 @@ export class BookingFormPage {
     return new Date(y, (m || 1) - 1, d || 1, hh, mm, 0, 0).toISOString();
   }
 
-  private toLocalReadable(iso: string): string {
-    return new Date(iso).toLocaleString(undefined, {
-      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
-  }
-
   submit(): void {
     this.form.markAllAsTouched();
     if (this.form.invalid || this.submitting()) return;
@@ -160,7 +154,7 @@ export class BookingFormPage {
       next: (created: Booking) => {
         this.submitting.set(false);
         this.success.set({
-          when:     created.date ? this.toLocalReadable(created.date) : this.toLocalReadable(iso),
+          when:     created.date ? formatBookingDate(created.date) : formatBookingDate(iso),
           duration: created.durationMinutes ?? v.durationMinutes,
           email:    v.email,
         });

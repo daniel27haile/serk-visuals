@@ -14,18 +14,16 @@
 
 :root {
   // ── Background layers ─────────────────────────────────────
-  //    Warm purple-tinted darks — photos look warmer against these
-  --color-bg:            #0b0a10;   // page bg — deep warm near-black
-  --color-surface:       #151320;   // cards / panels — warm dark
-  --color-surface-2:     #1e1b2a;   // elevated card / modal
-  --color-surface-input: #110f19;   // form input fields (darkest surface)
-  --color-surface-hover: #262336;   // hover state
+  --color-bg:            #111020;   // page bg — comfortable warm dark (lifted from near-black)
+  --color-surface:       #1c1a2c;   // cards / panels
+  --color-surface-2:     #252340;   // elevated card / modal
+  --color-surface-input: #181630;   // form input fields
+  --color-surface-hover: #2e2b48;   // hover state
 
   // ── Borders ───────────────────────────────────────────────
-  //    Warm-tinted — coherent with the surface palette
-  --color-border:        #302c44;   // structural borders
-  --color-border-subtle: #221f30;   // lighter dividers inside surfaces
-  --color-border-strong: #463f5f;   // emphasis border (focus-adjacent, modals)
+  --color-border:        #3c3858;   // structural borders — clearly visible
+  --color-border-subtle: #2b2840;   // lighter dividers inside surfaces
+  --color-border-strong: #554e78;   // emphasis border
 
   // ── Text ──────────────────────────────────────────────────
   //    Warm whites — imperceptible lilac tint, softer than stark #fff
@@ -62,8 +60,8 @@
   --color-danger-border: rgba(248, 113, 113, .40);
 
   // ── Admin shell — fully dark, unified orange accent ───────
-  --color-admin-bg:             #09080e;   // sidebar background
-  --color-admin-deeper:         #060509;   // sidebar pressed / deeper
+  --color-admin-bg:             #0e0c1a;   // sidebar background
+  --color-admin-deeper:         #0a0814;   // sidebar pressed / deeper
   --color-admin-border:         #221f30;   // sidebar divider
   --color-admin-text:           #f0eef8;   // sidebar text
   --color-admin-muted:          #8e8aab;   // sidebar muted
@@ -102,13 +100,13 @@
   --radius-full: 999px;
 
   // ── Shadows ───────────────────────────────────────────────
-  --shadow-xs: 0 1px 4px rgba(0, 0, 0, .40);
-  --shadow-sm: 0 4px 16px rgba(0, 0, 0, .45);
-  --shadow-md: 0 8px 30px rgba(0, 0, 0, .52);
-  --shadow-lg: 0 16px 50px rgba(0, 0, 0, .58);
-  --shadow-xl: 0 24px 64px rgba(0, 0, 0, .65);
+  --shadow-xs: 0 1px 4px rgba(0, 0, 0, .22);
+  --shadow-sm: 0 4px 16px rgba(0, 0, 0, .28);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, .34);
+  --shadow-lg: 0 16px 50px rgba(0, 0, 0, .40);
+  --shadow-xl: 0 24px 64px rgba(0, 0, 0, .48);
 
-  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, .05);
+  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, .07);
 
   // ── Typography ────────────────────────────────────────────
   --font-sans:      system-ui, -apple-system, 'Segoe UI', sans-serif;

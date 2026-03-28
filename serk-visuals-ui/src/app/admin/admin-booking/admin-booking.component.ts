@@ -7,6 +7,7 @@ import {
   BookingStatus,
   PagedResult,
 } from '../admin-shared/booking/models';
+import { formatBookingDate } from '../../shared/utils/booking-format.util';
 
 @Component({
   selector: 'app-admin-booking',
@@ -21,6 +22,9 @@ export class AdminBookingComponent implements OnInit {
   loading = signal(true);
   error = signal<string | null>(null);
   items = signal<Booking[]>([]);
+
+  gmailSuccess = signal<{ when: string; duration: number; email: string } | null>(null);
+  copyDone = signal(false);
 
   // server-side filters
   q = new FormControl<string>('', { nonNullable: true });
@@ -164,6 +168,80 @@ export class AdminBookingComponent implements OnInit {
       error: (e) => console.error(e),
     });
   }
+
+  // ── Gmail draft helpers ──────────────────────────────────
+
+  private formatDuration(minutes: number): string {
+    const hrs  = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (mins === 0) return hrs === 1 ? '1 hr' : `${hrs} hrs`;
+    return hrs > 0 ? `${hrs} hr ${mins} min` : `${mins} min`;
+  }
+
+  private buildEmailBody(b: Booking): string {
+    const when          = b.date ? formatBookingDate(b.date) : 'TBD';
+    const duration      = b.durationMinutes ?? 60;
+    const durationLabel = `${this.formatDuration(duration)} (${duration} min)`;
+
+    const details: string[] = [
+      `Service:   ${b.type ?? 'Not specified'}`,
+      `Date:      ${when}`,
+      `Duration:  ${durationLabel}`,
+      `Name:      ${b.name}`,
+      `Email:     ${b.email}`,
+    ];
+    if (b.phone)   details.push(`Phone:     ${b.phone}`);
+    if (b.message) details.push(`Notes:     ${b.message}`);
+
+    return [
+      `Hi ${b.name},`,
+      '',
+      'Thank you for booking with Serk Visuals. We\'re looking forward to working with you!',
+      '',
+      'Here are your booking details:',
+      '',
+      ...details,
+      '',
+      'We\'ll review your request and follow up shortly with next steps.',
+      '',
+      'If you have any questions, feel free to reply to this email.',
+      '',
+      'Warm regards,',
+      'Serk Visuals',
+      'serkvisuals@gmail.com',
+    ].join('\n');
+  }
+
+  openGmailDraft(b: Booking): void {
+    if (!b.email) return;
+    const when     = b.date ? formatBookingDate(b.date) : 'TBD';
+    const duration = b.durationMinutes ?? 60;
+    const subject  = 'Your Booking is Confirmed – Serk Visuals';
+    const body     = this.buildEmailBody(b);
+    const url      =
+      'https://mail.google.com/mail/u/?authuser=serkvisuals@gmail.com' +
+      '&view=cm&fs=1' +
+      `&to=${encodeURIComponent(b.email)}` +
+      `&su=${encodeURIComponent(subject)}` +
+      `&body=${encodeURIComponent(body)}`;
+    window.open(url, '_blank');
+    this.gmailSuccess.set({ when, duration, email: b.email });
+    setTimeout(() => this.gmailSuccess.set(null), 10_000);
+  }
+
+  copyEmailTemplate(b: Booking): void {
+    if (!b.email) return;
+    navigator.clipboard.writeText(this.buildEmailBody(b)).then(() => {
+      this.copyDone.set(true);
+      setTimeout(() => this.copyDone.set(false), 3000);
+    });
+  }
+
+  dismissGmailSuccess(): void {
+    this.gmailSuccess.set(null);
+  }
+
+  // ────────────────────────────────────────────────────────
 
   export() {
     this.api

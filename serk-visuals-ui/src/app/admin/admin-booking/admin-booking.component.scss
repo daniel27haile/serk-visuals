@@ -59,6 +59,74 @@
   &:hover { transform: translateY(-1px); background: var(--color-surface-hover); border-color: var(--color-border-strong); }
 }
 
+// ── Gmail success alert ───────────────────────────────────
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid;
+  animation: slideIn .2s ease-out;
+}
+
+.alert--gmail {
+  background: rgba(255, 106, 0, .08);
+  border-color: rgba(255, 106, 0, .35);
+  color: var(--color-text);
+}
+
+.alert--error {
+  background: var(--color-danger-bg);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger);
+}
+
+.alert__icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: .1rem;
+}
+
+.alert__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  font-size: var(--text-sm);
+
+  strong { color: var(--color-text); font-weight: var(--weight-extrabold); }
+  span   { color: var(--color-text-muted); }
+}
+
+.alert__note {
+  color: rgba(255, 106, 0, .85) !important;
+  font-style: italic;
+}
+
+.alert__close {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: var(--text-base);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  display: grid;
+  place-items: center;
+  transition: background var(--t-base), color var(--t-base);
+  &:hover { background: rgba(255, 255, 255, .08); color: var(--color-text); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 // ── Data table ────────────────────────────────────────────
 .table-wrap { overflow-x: auto; margin-top: var(--spacing-md); }
 
@@ -121,6 +189,22 @@ td:first-child { width: 40px; }
     background: rgba(248, 113, 113, .10);
     color: #ffb3b3;
     &:hover { background: rgba(248, 113, 113, .20); border-color: var(--color-danger); box-shadow: 0 3px 10px rgba(248, 113, 113, .18); }
+  }
+
+  // "Gmail Draft" — brand orange
+  button.gmail {
+    border-color: rgba(255, 106, 0, .40);
+    background: rgba(255, 106, 0, .10);
+    color: var(--color-primary);
+    &:hover { background: rgba(255, 106, 0, .20); border-color: var(--color-primary); box-shadow: 0 3px 10px rgba(255, 106, 0, .20); }
+  }
+
+  // "Copy" — muted secondary
+  button.copy {
+    border-color: var(--color-border);
+    background: var(--color-surface-2);
+    color: var(--color-text-muted);
+    &:hover { background: var(--color-surface-hover); border-color: var(--color-border-strong); color: var(--color-text); }
   }
 }
 

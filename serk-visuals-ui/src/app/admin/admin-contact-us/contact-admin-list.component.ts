@@ -152,5 +152,14 @@ export class ContactAdminListComponent {
     });
   }
 
+  openGmailReply(msg: ContactItem) {
+    if (!msg.email) return;
+    const to      = encodeURIComponent(msg.email);
+    const subject = encodeURIComponent(`Re: ${msg.subject}`);
+    const body    = encodeURIComponent(`Hello ${msg.fullName},\n\n`);
+    const url = `https://mail.google.com/mail/u/?authuser=serkvisuals@gmail.com&view=cm&fs=1&to=${to}&su=${subject}&body=${body}`;
+    window.open(url, '_blank');
+  }
+
   trackById = (_: number, it: ContactItem) => it.id;
 }

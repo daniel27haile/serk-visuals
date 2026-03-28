@@ -15,7 +15,8 @@ export interface Booking {
   email: string;
   phone?: string | number; // may arrive as number; UI may set string
   type?: BookingType;
-  date?: string; // ISO
+  date?: string;            // ISO start
+  durationMinutes?: number;
   message?: string;
   status?: BookingStatus;
   createdAt?: string;

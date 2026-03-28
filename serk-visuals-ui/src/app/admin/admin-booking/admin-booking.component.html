@@ -26,6 +26,19 @@
     </div>
   </header>
 
+  @if (gmailSuccess()) {
+    <div class="alert alert--gmail" role="status">
+      <div class="alert__icon">✉️</div>
+      <div class="alert__body">
+        <strong>Confirmation email template is ready 🎉</strong>
+        <span>Requested time: {{ gmailSuccess()!.when }} ({{ gmailSuccess()!.duration }} min)</span>
+        <span>Prepared for: <strong>{{ gmailSuccess()!.email }}</strong></span>
+        <span class="alert__note">Please review and send it from Gmail.</span>
+      </div>
+      <button class="alert__close" (click)="dismissGmailSuccess()" aria-label="Dismiss">✕</button>
+    </div>
+  }
+
   @if (loading()) {
     <div class="skeleton">Loading bookings…</div>
   } @else if (error()) {
@@ -78,6 +91,18 @@
                 <button (click)="setStatus(b,'confirmed')">Confirm</button>
                 <button (click)="setStatus(b,'completed')">Complete</button>
                 <button class="danger" (click)="setStatus(b,'cancelled')">Cancel</button>
+                <button
+                  class="gmail"
+                  (click)="openGmailDraft(b)"
+                  [disabled]="!b.email"
+                  [title]="b.email ? 'Open Gmail draft for ' + b.email : 'No email on record'"
+                >Gmail Draft</button>
+                <button
+                  class="copy"
+                  (click)="copyEmailTemplate(b)"
+                  [disabled]="!b.email"
+                  title="Copy email template to clipboard"
+                >{{ copyDone() ? 'Copied!' : 'Copy' }}</button>
               </td>
             </tr>
           }

@@ -48,17 +48,20 @@
 
 .svc {
   position: relative;
-  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-top: 3px solid var(--color-primary);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
+  padding: clamp(1.5rem, 3vw, 2rem);
   overflow: hidden;
   transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  box-shadow: var(--shadow-sm);
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
     border-color: var(--color-border-strong);
-    box-shadow: var(--shadow-lg), inset 0 0 0 1px rgba(255, 255, 255, .02);
+    border-top-color: var(--color-primary);
+    box-shadow: var(--shadow-lg);
   }
 }
 
@@ -73,17 +76,16 @@
 .svc:hover .svc__glow { opacity: 1; }
 
 .svc__icon {
-  font-size: 1.8rem;
+  font-size: 2rem;
   line-height: 1;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   display: grid;
   place-items: center;
   border-radius: var(--radius-md);
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .03);
-  margin-bottom: .6rem;
+  background: rgba(255, 106, 0, .1);
+  border: 1px solid rgba(255, 106, 0, .25);
+  margin-bottom: .85rem;
 }
 
 .svc h2 {
@@ -153,9 +155,15 @@
 
 // ── Breakpoints ───────────────────────────────────────────
 @media (min-width: 640px) {
-  .services { grid-template-columns: repeat(2, 1fr); }
+  .services {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 480px));
+    justify-content: center;
+  }
 }
 
 @media (min-width: 1024px) {
-  .services { grid-template-columns: repeat(3, 1fr); }
+  .services {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 480px));
+    justify-content: center;
+  }
 }

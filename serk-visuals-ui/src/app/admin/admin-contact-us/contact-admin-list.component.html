@@ -69,8 +69,9 @@
         </select>
       </td>
       <td class="actions">
-        <button (click)="openModal(c)">Open</button>
-        <button (click)="delete(c)">Delete</button>
+        <button class="btn-open" (click)="openModal(c)">Open</button>
+        <button class="btn-reply" (click)="openGmailReply(c)" [disabled]="!c.email" title="Reply via Gmail">Reply</button>
+        <button class="btn-delete" (click)="delete(c)">Delete</button>
       </td>
     </tr>
   </tbody>
@@ -122,6 +123,9 @@
   </div>
 
   <footer class="modal__footer">
-    <button (click)="closeModal()">Close</button>
+    <div class="actions">
+      <button class="btn-reply" *ngIf="selected()?.email" (click)="openGmailReply(selected()!)">Reply via Gmail</button>
+    </div>
+    <button class="btn-close" (click)="closeModal()">Close</button>
   </footer>
 </section>

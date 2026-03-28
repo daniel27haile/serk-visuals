@@ -133,12 +133,11 @@
     &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(74, 127, 255, .18); }
   }
 
-  // ── Action buttons: Open + Delete ─────────────────────
+  // ── Action buttons: Open / Reply / Delete ─────────────
   .actions {
     display: flex; gap: .45rem; align-items: center;
 
-    // "Open" — first button: teal/cyan outline
-    button:first-child {
+    .btn-open {
       @extend %btn-base;
       border: 1px solid var(--color-secondary);
       background: rgba(124, 106, 255, .10);
@@ -150,8 +149,20 @@
       }
     }
 
-    // "Delete" — last button: red danger
-    button:last-child {
+    .btn-reply {
+      @extend %btn-base;
+      border: 1px solid rgba(255, 106, 0, .45);
+      background: rgba(255, 106, 0, .10);
+      color: var(--color-primary);
+      &:hover {
+        transform: translateY(-1px);
+        background: rgba(255, 106, 0, .20);
+        border-color: var(--color-primary);
+        box-shadow: 0 4px 12px rgba(255, 106, 0, .22);
+      }
+    }
+
+    .btn-delete {
       @extend %btn-base;
       border: 1px solid rgba(248, 113, 113, .45);
       background: rgba(248, 113, 113, .10);
@@ -227,8 +238,7 @@
   border-top: 1px solid var(--color-border);
   background: rgba(255, 255, 255, .02);
 
-  // "Close" button in footer
-  button {
+  .btn-close {
     @extend %btn-base;
     height: 40px; padding: 0 var(--spacing-md);
     border: 1px solid var(--color-border);
@@ -236,6 +246,21 @@
     color: var(--color-text-muted);
     border-radius: var(--radius-md);
     &:hover { transform: translateY(-1px); background: var(--color-surface-hover); color: var(--color-text); border-color: var(--color-border-strong); }
+  }
+
+  .btn-reply {
+    @extend %btn-base;
+    height: 40px; padding: 0 var(--spacing-md);
+    border: 1px solid rgba(255, 106, 0, .45);
+    background: rgba(255, 106, 0, .10);
+    color: var(--color-primary);
+    border-radius: var(--radius-md);
+    &:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 106, 0, .20);
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 12px rgba(255, 106, 0, .22);
+    }
   }
 }
 

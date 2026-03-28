@@ -1,38 +1,73 @@
-<footer class="site-footer" aria-labelledby="footer-title">
-  <!-- Decorative aurora / noise layers -->
-  <span class="footer-aurora" aria-hidden="true"></span>
-  <span class="footer-noise" aria-hidden="true"></span>
+<footer class="site-footer">
 
-  <div class="wrap">
-    <!-- Brand/About -->
-    <div class="footer-col footer-brand">
-      <!-- <h2 id="footer-title" class="brand" aria-label="Serk Visuals">Serk <span>Visuals</span></h2> -->
-        <a [routerLink]="['/home']" class="logo" aria-label="Serk Visuals — Home">
-      <span class="logo__img-wrap">
+  <div class="footer-inner">
+
+    <!-- Brand -->
+    <div class="footer-brand">
+      <a [routerLink]="['/home']" class="footer-logo" aria-label="Serk Visuals — Home">
         <img
-          class="logo__img"
           src="images/serkvisuals_logo.png"
-          alt="Serk Visuals logo"
-          width="150"
-          height="80"
+          alt="Serk Visuals"
+          width="140"
+          height="75"
         />
-      </span>
-    </a>
-      <p class="muted">
-        Photography &amp; Videography — capturing stories, emotions, and timeless moments
-        through creative visuals.
+      </a>
+      <p class="footer-brand__desc">
+        Photography &amp; Videography — capturing stories, emotions,
+        and timeless moments through creative visuals.
       </p>
-      <br>
-       <p class="muted">
-        We also craft modern, high-performance <strong>Web Development</strong> solutions for the
-        <strong>IT industry</strong> — from marketing sites to full web apps.
-      </p>
+      <div class="footer-socials" aria-label="Social media">
+        <a
+          href="https://instagram.com/serk_visuals"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Instagram"
+          class="social-icon"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm5 5a5 5 0 1 0 0 10A5 5 0 0 0 12 7Zm6.5-.88a1.13 1.13 0 1 0 0 2.26 1.13 1.13 0 0 0 0-2.26ZM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/>
+          </svg>
+        </a>
+        <a
+          href="https://facebook.com/serkvisuals/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Facebook"
+          class="social-icon"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M13 22v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3V2h-3a5 5 0 0 0-5 5v3H6v4h3v8h4Z"/>
+          </svg>
+        </a>
+        <a
+          href="https://youtube.com/@serkvisuals"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="YouTube"
+          class="social-icon"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M23 7.1a3 3 0 0 0-2.1-2.1C19 4.5 12 4.5 12 4.5s-7 0-8.9.5A3 3 0 0 0 1 7.1 31.5 31.5 0 0 0 .5 12a31.5 31.5 0 0 0 .5 4.9 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5A3 3 0 0 0 23 16.9 31.5 31.5 0 0 0 23.5 12 31.5 31.5 0 0 0 23 7.1ZM10 15.5v-7l6 3.5-6 3.5Z"/>
+          </svg>
+        </a>
+        <a
+          href="https://linkedin.com/company/serkvisuals"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn"
+          class="social-icon"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4.98 3.5a2.49 2.49 0 1 1 0 4.98A2.49 2.49 0 0 1 4.98 3.5ZM3 8.98h4V21H3V8.98ZM8.5 8.98H12v1.65h.05A3.85 3.85 0 0 1 15.51 9C19.06 9 19.75 11.29 19.75 14.3V21h-4v-6.05c0-1.44-.03-3.3-2.01-3.3-2.01 0-2.32 1.57-2.32 3.19V21h-4V8.98Z"/>
+          </svg>
+        </a>
+      </div>
     </div>
 
-    <!-- Quick Links -->
-    <nav class="footer-col footer-links" aria-label="Footer Navigation">
-      <h3 class="footer-heading">Quick Links</h3>
-      <ul>
+    <!-- Navigate -->
+    <nav class="footer-col" aria-label="Footer navigation">
+      <h4 class="footer-col__heading">Navigate</h4>
+      <ul class="footer-col__list">
         <li><a [routerLink]="['/about-us']">About Us</a></li>
         <li><a [routerLink]="['/services']">Services</a></li>
         <li><a [routerLink]="['/gallery']">Gallery</a></li>
@@ -41,50 +76,47 @@
       </ul>
     </nav>
 
-    <!-- Social -->
-    <div class="footer-col social">
-      <h3 class="footer-heading">Follow Us</h3>
-      <ul>
-        <li>
-          <a href="https://instagram.com/serk_visuals" target="_blank" rel="noopener noreferrer">
-            &#64;serk_visuals
-          </a>
-        </li>
-        <li>
-          <a href="https://facebook.com/serkvisuals/" target="_blank" rel="noopener noreferrer">
-            Facebook
-          </a>
-        </li>
-        <li>
-          <a href="https://youtube.com/@serkvisuals" target="_blank" rel="noopener noreferrer">
-            YouTube
-          </a>
-        </li>
+    <!-- Services -->
+    <div class="footer-col">
+      <h4 class="footer-col__heading">Services</h4>
+      <ul class="footer-col__list">
+        <li>Wedding Photography</li>
+        <li>Portrait Sessions</li>
+        <li>Wedding Films</li>
+        <li>Event Videography</li>
+        <li>Photo &amp; Video Editing</li>
       </ul>
     </div>
 
-     <!-- Contact -->
-    <div class="footer-col contact">
-      <h3 class="footer-heading">Contact</h3>
-      <p><a href="mailto:hello@serkvisuals.com">hello&#64;serkvisuals.com</a></p>
-      <p><a href="tel:+12065550123">+1 (206) 555-****</a></p>
+    <!-- Contact -->
+    <div class="footer-col">
+      <h4 class="footer-col__heading">Get in Touch</h4>
+      <ul class="footer-col__list footer-contact-list">
+        <li>
+          <a href="mailto:hello@serkvisuals.com">hello&#64;serkvisuals.com</a>
+        </li>
+        <li>
+          <a href="tel:+12065550123">+1 (206) 555-0123</a>
+        </li>
+      </ul>
+      <a [routerLink]="['/bookings']" class="footer-cta">Book a Session</a>
     </div>
 
   </div>
 
-  <!-- Bottom Bar -->
-  <div class="wrap copy">
-    <p>&copy; {{ year }} <strong>Serk Visuals</strong>. All rights reserved.</p>
-    <p class="muted small">
-  Developed by
-  <a
-    href="https://serkvisuals.com"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="credit-link"
-  >
-    Serk Visuals
-  </a>
-</p>
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <div class="footer-bottom__inner">
+      <p>&copy; {{ year }} <strong>Serk Visuals</strong>. All rights reserved.</p>
+      <p>
+        Developed by
+        <a
+          href="https://serkvisuals.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >Serk Visuals</a>
+      </p>
+    </div>
   </div>
+
 </footer>

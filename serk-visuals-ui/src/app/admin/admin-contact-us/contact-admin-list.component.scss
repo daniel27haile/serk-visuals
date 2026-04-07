@@ -67,13 +67,13 @@
       @extend %btn-base;
       height: 40px; padding: 0 var(--spacing-md);
       border-radius: var(--radius-md);
-      border: 1px solid var(--color-secondary);
-      background: linear-gradient(180deg, rgba(124, 106, 255, .22), rgba(124, 106, 255, .12));
-      color: var(--color-secondary);
+      border: 1px solid var(--color-border-strong);
+      background: var(--color-surface-2);
+      color: var(--color-text);
       &:hover {
         transform: translateY(-1px);
-        background: linear-gradient(180deg, rgba(124, 106, 255, .32), rgba(124, 106, 255, .20));
-        box-shadow: 0 4px 14px rgba(124, 106, 255, .22);
+        background: var(--color-surface-hover);
+        box-shadow: var(--shadow-sm);
       }
     }
   }

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderComponent } from "../../header/header.component";
 import { RouterOutlet } from "@angular/router";
 import { FooterComponent } from "../../footer/footer.component";
+import { AdminThemeService } from '../../admin/admin-shared/theme/admin-theme.service';
 
 @Component({
   selector: 'app-public-layouts',
@@ -11,5 +12,5 @@ import { FooterComponent } from "../../footer/footer.component";
   styleUrl: './public-layouts.component.scss'
 })
 export class PublicLayoutsComponent {
-
+  readonly themeService = inject(AdminThemeService);
 }

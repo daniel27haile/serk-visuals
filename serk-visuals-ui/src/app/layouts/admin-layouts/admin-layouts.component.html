@@ -1,5 +1,5 @@
 <!-- layouts/admin-layouts/admin-layouts.component.html -->
-<div class="admin-layout" [class.drawer-open]="sideOpen">
+<div class="admin-layout" [class.drawer-open]="sideOpen" [attr.data-admin-theme]="themeService.activeThemeId()">
   <!-- Off-canvas sidebar -->
   <aside
     class="sidebar"

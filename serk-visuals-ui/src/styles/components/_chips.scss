@@ -1,14 +1,16 @@
 // ============================================================
 // SERK VISUALS — Chips & badges
+// Base chip uses CSS variable tokens; status chips are overridden
+// per theme via scoped blocks in the layout SCSS files.
 // ============================================================
 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: .35rem;
-  background: #111723;
-  color: #b7c0d4;
-  border: 1px solid #253047;
+  background: var(--chip-bg);
+  color: var(--chip-color);
+  border: 1px solid var(--chip-border);
   padding: .2rem .5rem;
   border-radius: var(--radius-sm);
   font-size: var(--text-xs);
@@ -17,30 +19,27 @@
   line-height: 1.4;
 
   // ── Gallery / category variants ──────────────────────────
-  &.alt  { background: #0e1521; color: #9fb0cf; }
-  &.tone { background: #101b2a; color: #9fdcf2; border-color: #224058; }
-  &.warn { background: #3a2f1c; color: var(--color-warning); border-color: #5a4b2a; }
+  &.alt  { background: var(--chip-bg); color: var(--chip-color); opacity: .85; }
+  &.tone { background: var(--chip-bg); color: var(--color-accent); border-color: var(--color-accent-muted); }
+  &.warn { background: var(--color-warning-bg); color: var(--color-warning); border-color: rgba(0, 0, 0, .10); }
 }
 
-// ── Admin project-status variants ────────────────────────
+// ── Admin project-status variants ─────────────────────────
+// Theme 1 (dark) — deep tinted dark backgrounds
 .chip.s1 {
-  background: linear-gradient(180deg, #0b2036, #081628);
-  color: #8fb3ff; border-color: #28406b;
+  background: #081628; color: #8fb3ff; border-color: #28406b;
   text-transform: uppercase; letter-spacing: .4px;
 }
 .chip.s2 {
-  background: linear-gradient(180deg, #07241d, #061b16);
-  color: #7dd3fc; border-color: #1e5044;
+  background: #061b16; color: #7dd3fc; border-color: #1e5044;
   text-transform: uppercase; letter-spacing: .4px;
 }
 .chip.s3 {
-  background: linear-gradient(180deg, #0a2113, #071a10);
-  color: #86efac; border-color: #2b4a33;
+  background: #071a10; color: #86efac; border-color: #2b4a33;
   text-transform: uppercase; letter-spacing: .4px;
 }
 .chip.s4 {
-  background: linear-gradient(180deg, #2a1808, #1d0f05);
-  color: #fbbf24; border-color: #5a3a16;
+  background: #1d0f05; color: #fbbf24; border-color: #5a3a16;
   text-transform: uppercase; letter-spacing: .4px;
 }
 
@@ -51,11 +50,13 @@
   border-radius: var(--radius-sm);
   font-size: var(--text-xs);
   font-weight: var(--weight-semibold);
-  background: #2a2f3a;
+  background: var(--color-surface-2);
+  color: var(--color-text-muted);
   white-space: nowrap;
   text-transform: capitalize;
 }
-.badge--new        { background: #3a2f1c; color: var(--color-warning); }
-.badge--confirmed  { background: #123224; color: #9ee6c1; }
-.badge--completed  { background: #0f2a3a; color: #90d7ff; }
-.badge--cancelled  { background: #3a1b1b; color: #ff9e9e; }
+// Theme 1 booking-status badge variants
+.badge--new        { background: var(--color-warning-bg);    color: var(--color-warning); }
+.badge--confirmed  { background: var(--color-success-bg);    color: var(--color-success); }
+.badge--completed  { background: var(--color-accent-muted);  color: var(--color-accent); }
+.badge--cancelled  { background: var(--color-danger-bg);     color: var(--color-danger); }

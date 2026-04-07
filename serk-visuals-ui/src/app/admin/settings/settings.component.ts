@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { AdminThemeService } from '../admin-shared/theme/admin-theme.service';
 
 type ThemeMode = 'system' | 'dark' | 'light';
 
@@ -49,6 +50,7 @@ const DEFAULTS: AppSettings = {
 })
 export class SettingsComponent {
   private readonly fb = inject(FormBuilder);
+  readonly themeService = inject(AdminThemeService);
 
   savedBanner = '';
   saving = false;

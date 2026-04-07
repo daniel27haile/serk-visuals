@@ -1,14 +1,15 @@
 // ============================================================
-// Site Footer
+// Site Footer — all hardcoded dark colours replaced with
+// CSS variable tokens so Theme 2 (black footer) works.
 // ============================================================
 
 :host { display: block; }
 
 // ── Shell ─────────────────────────────────────────────────
 .site-footer {
-  background: #13131a;
-  border-top: 1px solid rgba(255, 255, 255, .1);
-  color: rgba(255, 255, 255, .68);
+  background: var(--footer-bg);
+  border-top: 1px solid var(--footer-border);
+  color: var(--footer-text);
   font-size: .9rem;
 }
 
@@ -63,7 +64,7 @@
   margin: 0;
   font-size: .875rem;
   line-height: 1.75;
-  color: rgba(255, 255, 255, .52);
+  color: var(--footer-desc);
   max-width: 30ch;
 }
 
@@ -79,8 +80,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, .14);
-  background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--footer-social-border);
+  background: var(--footer-social-bg);
   display: grid;
   place-items: center;
   text-decoration: none;
@@ -97,26 +98,22 @@
   &:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
   &:hover { transform: translateY(-3px); }
 
-  // ── Brand colours ──────────────────────────────────────
-  // Instagram — pink/rose
+  // ── Brand colours (kept as-is — platform identity) ─────
   &[aria-label="Instagram"] {
     color: #e1306c;
     &:hover { background: rgba(225, 48, 108, .15); border-color: #e1306c; box-shadow: 0 6px 18px rgba(225, 48, 108, .3); }
   }
 
-  // Facebook — blue
   &[aria-label="Facebook"] {
     color: #1877f2;
     &:hover { background: rgba(24, 119, 242, .15); border-color: #1877f2; box-shadow: 0 6px 18px rgba(24, 119, 242, .3); }
   }
 
-  // YouTube — red
   &[aria-label="YouTube"] {
     color: #ff0000;
     &:hover { background: rgba(255, 0, 0, .12); border-color: #ff0000; box-shadow: 0 6px 18px rgba(255, 0, 0, .28); }
   }
 
-  // LinkedIn — blue
   &[aria-label="LinkedIn"] {
     color: #0a66c2;
     &:hover { background: rgba(10, 102, 194, .15); border-color: #0a66c2; box-shadow: 0 6px 18px rgba(10, 102, 194, .3); }
@@ -130,7 +127,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .14em;
-  color: #fff;
+  color: var(--footer-heading);
   position: relative;
   padding-bottom: .65rem;
 
@@ -142,7 +139,7 @@
     width: 20px;
     height: 2px;
     border-radius: 2px;
-    background: var(--color-primary, #7c6aff);
+    background: var(--color-primary);
   }
 }
 
@@ -157,7 +154,7 @@
 
   li {
     font-size: .875rem;
-    color: rgba(255, 255, 255, .50);
+    color: var(--footer-link);
     line-height: 1.4;
   }
 
@@ -168,7 +165,7 @@
     display: inline-block;
 
     &:hover {
-      color: rgba(255, 255, 255, .92);
+      color: var(--footer-link-hover);
       padding-left: 4px;
     }
 
@@ -180,16 +177,16 @@
   }
 }
 
-// ── Contact list — brighter and clearly readable ──────────
-.footer-contact-list li { color: rgba(255, 255, 255, .82) !important; }
+// ── Contact list ─────────────────────────────────────────
+.footer-contact-list li { color: var(--footer-contact) !important; }
 
 .footer-contact-list a {
   display: inline-flex;
   align-items: center;
   gap: .55rem;
-  color: rgba(255, 255, 255, .82) !important;
+  color: var(--footer-contact) !important;
 
-  &:hover { color: #fff !important; }
+  &:hover { color: var(--footer-heading) !important; }
 }
 
 .footer-contact-list a[href^="mailto:"]::before,
@@ -219,19 +216,19 @@
   margin-top: 1.5rem;
   padding: .65rem 1.35rem;
   border-radius: var(--radius-md);
-  background: var(--color-primary, #7c6aff);
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--footer-cta-color);
   font-size: .85rem;
   font-weight: 600;
   text-decoration: none;
   letter-spacing: .015em;
   transition: opacity .2s, transform .18s, box-shadow .2s;
-  box-shadow: 0 4px 14px rgba(124, 106, 255, .28);
+  box-shadow: var(--footer-cta-shadow);
 
   &:hover {
-    opacity: .88;
+    opacity: .9;
     transform: translateY(-2px);
-    box-shadow: 0 8px 22px rgba(124, 106, 255, .38);
+    box-shadow: var(--footer-cta-shadow-hover);
   }
 
   &:active { transform: translateY(0); }
@@ -240,8 +237,8 @@
 
 // ── Bottom bar ────────────────────────────────────────────
 .footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, .08);
-  background: rgba(0, 0, 0, .25);
+  border-top: 1px solid var(--footer-bottom-border);
+  background: var(--footer-bottom-bg);
 }
 
 .footer-bottom__inner {
@@ -255,17 +252,17 @@
   p {
     margin: 0;
     font-size: .8rem;
-    color: rgba(255, 255, 255, .32);
+    color: var(--footer-bottom-text);
   }
 
-  strong { color: rgba(255, 255, 255, .55); font-weight: 600; }
+  strong { color: var(--footer-bottom-strong); font-weight: 600; }
 
   a {
-    color: rgba(255, 255, 255, .42);
+    color: var(--footer-bottom-link);
     text-decoration: none;
     transition: color .18s;
 
-    &:hover { color: rgba(255, 255, 255, .8); }
+    &:hover { color: var(--footer-bottom-link-hover); }
     &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: 2px; }
   }
 }

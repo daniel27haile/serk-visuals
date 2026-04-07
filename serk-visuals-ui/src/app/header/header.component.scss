@@ -1,5 +1,7 @@
 // ============================================================
 // Public Header — component-specific styles only.
+// All dark-theme-specific values replaced with CSS variables
+// so Theme 2 (white/black) overrides work automatically.
 // ============================================================
 
 // ── Site header shell ────────────────────────────────────
@@ -7,17 +9,12 @@
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-  color: var(--color-text);
+  color: var(--header-text);
   backdrop-filter: saturate(1.1) blur(10px);
   -webkit-backdrop-filter: saturate(1.1) blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  border-bottom: 1px solid var(--header-border);
   overflow: visible;
-
-  background:
-    radial-gradient(950px 160px at 10% 0%, rgba(255, 255, 255, .06), rgba(255, 255, 255, 0) 70%),
-    radial-gradient(800px 140px at 90% 0%, rgba(255, 255, 255, .04), rgba(255, 255, 255, 0) 70%),
-    linear-gradient(180deg, rgba(8, 12, 22, .85), rgba(8, 12, 22, .65)),
-    var(--color-bg);
+  background: var(--header-bg);
 
   .header__row {
     position: relative;
@@ -38,13 +35,13 @@
   display: inline-flex;
   align-items: center;
   text-decoration: none;
-  color: var(--color-text);
+  color: var(--header-text);
   transition: color var(--t-base);
   line-height: 0;
   -webkit-tap-highlight-color: transparent;
 
   &:hover,
-  &:focus-visible { color: var(--color-primary); outline: none; }
+  &:focus-visible { color: var(--header-link-hover); outline: none; }
 
   .logo__img-wrap {
     height: clamp(98px, 9vw, 160px);
@@ -83,7 +80,7 @@
 
   a {
     position: relative;
-    color: var(--color-text);
+    color: var(--header-link);
     text-decoration: none;
     font-weight: var(--weight-semibold);
     letter-spacing: .2px;
@@ -92,15 +89,15 @@
     white-space: nowrap;
 
     &:hover,
-    &:focus-visible { color: var(--color-primary); outline: none; }
+    &:focus-visible { color: var(--header-link-hover); outline: none; }
 
-    &.is-active { color: var(--color-primary); }
+    &.is-active { color: var(--header-link-active); }
     &.is-active::after {
       content: "";
       position: absolute;
       left: 0; right: 0; bottom: -6px;
       height: 2px;
-      background: var(--color-primary);
+      background: var(--header-link-active);
       border-radius: 2px;
     }
   }
@@ -119,25 +116,25 @@
   transition: transform var(--t-base), box-shadow var(--t-base), background var(--t-base);
 
   &--accent {
-    background: var(--color-primary);
-    color: var(--color-primary-ink);
-    border-color: var(--color-primary);
+    background: var(--header-cta-bg);
+    color: var(--header-cta-color);
+    border-color: var(--header-cta-border);
     &:hover,
     &:focus-visible {
       transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(255, 106, 0, .25);
+      box-shadow: var(--btn-accent-shadow);
       outline: none;
     }
-    &:active { transform: translateY(0); box-shadow: 0 6px 12px rgba(255, 106, 0, .18); }
+    &:active { transform: translateY(0); }
   }
 }
 
 // ── Mobile toggle (hamburger) ─────────────────────────────
 .menu-toggle {
   display: none;
-  border: 1px solid rgba(255, 255, 255, .25);
-  background: rgba(255, 255, 255, .04);
-  color: var(--color-text);
+  border: 1px solid var(--header-toggle-border);
+  background: var(--header-toggle-bg);
+  color: var(--header-text);
   padding: .45rem .6rem;
   border-radius: 10px;
   cursor: pointer;
@@ -147,7 +144,11 @@
   -webkit-tap-highlight-color: transparent;
 
   &:hover,
-  &:focus-visible { background: rgba(255, 255, 255, .09); border-color: rgba(255, 255, 255, .45); outline: none; }
+  &:focus-visible {
+    background: var(--header-toggle-hover-bg);
+    border-color: var(--header-toggle-hover-brd);
+    outline: none;
+  }
 
   .burger {
     position: relative;
@@ -158,7 +159,7 @@
       position: absolute;
       left: 0; right: 0;
       height: 2px;
-      background: var(--color-text);
+      background: var(--header-text);
       border-radius: 2px;
       transition: transform var(--t-base), opacity var(--t-base), top var(--t-base);
       width: 100%;
@@ -198,10 +199,8 @@
     align-items: stretch;
     gap: .5rem;
     padding: .75rem var(--container-pad) 1rem;
-    background:
-      linear-gradient(180deg, rgba(8, 12, 22, .95), rgba(8, 12, 22, .85)),
-      var(--color-bg);
-    border: 1px solid rgba(255, 255, 255, .08);
+    background: var(--header-nav-mob-bg);
+    border: 1px solid var(--header-nav-mob-border);
     border-radius: 12px;
     box-shadow: var(--shadow-md);
     z-index: 10;
@@ -217,7 +216,7 @@
       border-radius: 10px;
       white-space: normal;
       word-break: break-word;
-      &.is-active { background: rgba(255, 255, 255, .06); }
+      &.is-active { background: var(--header-nav-mob-active); }
     }
 
     .nav__cta { width: 100%; margin-top: .25rem; }

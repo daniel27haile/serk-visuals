@@ -1,5 +1,6 @@
 // ============================================================
 // SERK VISUALS — Feedback: skeleton, alerts
+// Hardcoded text colors replaced with CSS variable tokens.
 // ============================================================
 
 .skeleton,
@@ -24,7 +25,7 @@
     background: linear-gradient(
       90deg,
       transparent 0%,
-      rgba(255, 255, 255, .07) 50%,
+      var(--shimmer-highlight) 50%,
       transparent 100%
     );
     transform: translateX(-100%);
@@ -39,7 +40,7 @@
   background: linear-gradient(
     110deg,
     transparent 0%,
-    rgba(255, 255, 255, .07) 40%,
+    var(--shimmer-highlight) 40%,
     transparent 80%
   );
   transform: translateX(-100%);
@@ -54,17 +55,17 @@
 .alert--error {
   background: var(--color-danger-bg);
   border: 1px solid var(--color-danger-border);
-  color: #ffd0d0;   // warm light red — readable on danger-bg
+  color: var(--alert-error-text);
 }
 
 .alert--success {
   background: var(--color-success-bg);
   border: 1px solid var(--color-success-border);
-  color: #b0f0da;   // light green — readable on success-bg
+  color: var(--alert-success-text);
 }
 
 .alert--info {
   background: var(--color-accent-muted);
-  border: 1px solid rgba(74, 127, 255, .30);
-  color: #c8d9ff;   // light blue — readable on accent-muted bg
+  border: 1px solid var(--alert-info-border);
+  color: var(--alert-info-text);
 }

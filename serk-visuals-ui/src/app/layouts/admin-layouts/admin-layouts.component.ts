@@ -8,6 +8,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { AuthService } from '../../admin/auth/auth.service';
+import { AdminThemeService } from '../../admin/admin-shared/theme/admin-theme.service';
 
 @Component({
   selector: 'app-admin-layouts',
@@ -20,6 +21,7 @@ import { AuthService } from '../../admin/auth/auth.service';
 export class AdminLayoutsComponent {
   sideOpen = false;
 
+  readonly themeService = inject(AdminThemeService);
   private auth = inject(AuthService);
   private router = inject(Router);
 

@@ -5,10 +5,7 @@
 :host {
   display: block;
   color: var(--color-text);
-  background:
-    radial-gradient(1200px 600px at 20% -10%, rgba(99, 102, 241, .15), transparent 60%),
-    radial-gradient(1000px 500px at 120% 0%, rgba(34, 211, 238, .10), transparent 55%),
-    var(--color-bg);
+  background: var(--color-bg);
   padding-block: 2rem;
   padding-inline: 1rem;
 }
@@ -77,26 +74,23 @@
 // Pills
 .tab {
   scroll-snap-align: start;
-  --ring: rgba(124, 106, 255, .40);
-  --border-grad: linear-gradient(135deg, var(--color-accent), #a78bfa);
-  --pill-bg: var(--color-surface);
   display: inline-flex; align-items: center; gap: .5rem;
   padding: .55rem .9rem; border-radius: var(--radius-full);
   font-weight: var(--weight-bold); letter-spacing: .15px;
   cursor: pointer; user-select: none; white-space: nowrap;
   line-height: 1; color: var(--color-text);
-  background: linear-gradient(var(--pill-bg), var(--pill-bg)) padding-box, var(--border-grad) border-box;
-  border: 1px solid transparent;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
   transition: transform var(--t-fast), box-shadow var(--t-base), background var(--t-base), color var(--t-base);
   &:hover { transform: translateY(-1px); }
-  &:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--ring); }
-  .tab__icon { width: 1.1em; text-align: center; filter: drop-shadow(0 1px 0 rgba(0, 0, 0, .25)); }
+  &:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--color-accent-muted); }
+  .tab__icon { width: 1.1em; text-align: center; }
 }
 .tab.is-active {
-  color: #fff;
-  background: linear-gradient(135deg, var(--color-accent), #a78bfa 55%);
-  border-color: transparent;
-  box-shadow: 0 6px 18px rgba(124, 106, 255, .35), inset 0 0 0 1px rgba(255, 255, 255, .12);
+  color: var(--color-text-inverse);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-sm);
 }
 
 // ── Gallery grid ─────────────────────────────────────────

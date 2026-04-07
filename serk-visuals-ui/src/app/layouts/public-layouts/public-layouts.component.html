@@ -7,7 +7,7 @@
 <app-footer></app-footer> -->
 
 
-<div class="app-shell">
+<div class="app-shell" [attr.data-theme]="themeService.activeThemeId()">
   <app-header></app-header>
 
   <main class="app-content">

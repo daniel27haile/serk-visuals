@@ -1,55 +1,49 @@
 // ============================================================
-// SERK VISUALS — Design Tokens  ← EDIT THIS FILE TO RETHEME
+// SERK VISUALS — Design Tokens
 //
-// Palette: Warm Obsidian — 2026
-//  • Surfaces have a warm purple-tinted dark base (not cold blue-black)
-//    — photos look warmer and richer against these surfaces
-//  • Single brand color: orange (#ff6a00) for all CTAs and brand moments
-//  • Single interactive accent: indigo (#7c6aff) for buttons, focus, links
-//    — orange + indigo is a classic editorial/photography complementary pair
-//  • Cyan (#06b6d4) fully removed — was competing with orange and blue
-//  • Admin accent unified with brand orange (was #ff5722 — now #ff6a00)
-//  • All text passes WCAG AA: primary 14:1+, muted 5:1+, label 7:1+
+// Theme 1 (default): Warm Obsidian dark — warm purple base, orange brand, indigo interactive
+// Theme 2: Pure Black (#000) / Pure White (#fff) — no gradients, no off-tones
+//
+// To add Theme 3: add entry in admin-theme.service.ts,
+// add .app-shell[data-theme="theme-3"] block here, and matching
+// .admin-layout[data-admin-theme="theme-3"] block in admin-layouts.component.scss.
 // ============================================================
 
 :root {
   // ── Background layers ─────────────────────────────────────
-  --color-bg:            #111020;   // page bg — comfortable warm dark (lifted from near-black)
-  --color-surface:       #1c1a2c;   // cards / panels
-  --color-surface-2:     #252340;   // elevated card / modal
-  --color-surface-input: #181630;   // form input fields
-  --color-surface-hover: #2e2b48;   // hover state
+  --color-bg:            #111020;
+  --color-surface:       #1c1a2c;
+  --color-surface-2:     #252340;
+  --color-surface-input: #181630;
+  --color-surface-hover: #2e2b48;
 
   // ── Borders ───────────────────────────────────────────────
-  --color-border:        #3c3858;   // structural borders — clearly visible
-  --color-border-subtle: #2b2840;   // lighter dividers inside surfaces
-  --color-border-strong: #554e78;   // emphasis border
+  --color-border:        #3c3858;
+  --color-border-subtle: #2b2840;
+  --color-border-strong: #554e78;
 
   // ── Text ──────────────────────────────────────────────────
-  //    Warm whites — imperceptible lilac tint, softer than stark #fff
-  --color-text:          #f0eef8;   // primary — 15:1 on bg
-  --color-text-muted:    #9b98b5;   // secondary — 5.5:1 on bg
-  --color-text-dim:      #554f6a;   // placeholder / disabled
-  --color-text-label:    #c5c1da;   // form labels — 8:1 on surface
-  --color-text-inverse:  #0b0a10;   // text on bright/colored backgrounds
+  --color-text:          #f0eef8;
+  --color-text-muted:    #9b98b5;
+  --color-text-dim:      #554f6a;
+  --color-text-label:    #c5c1da;
+  --color-text-inverse:  #0b0a10;
 
-  // ── Brand — Orange (public CTAs, brand moments, nav hover) ─
+  // ── Brand — Orange ────────────────────────────────────────
   --color-primary:       #ff6a00;
   --color-primary-dark:  #e05e00;
-  --color-primary-ink:   #0b0a10;   // dark text on orange (7:1 contrast)
+  --color-primary-ink:   #0b0a10;
 
-  // ── Interactive accent — Indigo/Purple ────────────────────
-  //    Replaces both old cyan (#06b6d4) and old blue (#4a7fff)
-  //    Orange + Indigo = editorial/photography complementary pair
-  --color-secondary:     #7c6aff;   // primary interactive (was cyan #06b6d4)
+  // ── Interactive accent — Indigo ───────────────────────────
+  --color-secondary:     #7c6aff;
   --color-secondary-dark:#6655e8;
-  --color-accent:        #7c6aff;   // alias — links, focus rings, buttons
+  --color-accent:        #7c6aff;
   --color-accent-dark:   #6655e8;
-  --color-accent-muted:  rgba(124, 106, 255, .18);
+  --color-accent-muted:  rgba(124, 106, 255, .15);
 
-  // ── Semantic status colours ───────────────────────────────
-  --color-success:       #34d399;
-  --color-success-bg:    rgba(52, 211, 153, .10);
+  // ── Semantic status ───────────────────────────────────────
+  --color-success:        #34d399;
+  --color-success-bg:     rgba(52, 211, 153, .10);
   --color-success-border: rgba(52, 211, 153, .35);
 
   --color-warning:       #fbbf24;
@@ -59,31 +53,24 @@
   --color-danger-bg:     rgba(248, 113, 113, .12);
   --color-danger-border: rgba(248, 113, 113, .40);
 
-  // ── Admin shell — fully dark, unified orange accent ───────
-  --color-admin-bg:             #0e0c1a;   // sidebar background
-  --color-admin-deeper:         #0a0814;   // sidebar pressed / deeper
-  --color-admin-border:         #221f30;   // sidebar divider
-  --color-admin-text:           #f0eef8;   // sidebar text
-  --color-admin-muted:          #8e8aab;   // sidebar muted
-  --color-admin-accent:         #ff6a00;   // orange rail — unified with brand (was #ff5722)
-
-  --color-admin-surface:        #151320;   // topbar + main area (matches --color-surface)
-  --color-admin-surface-border: #302c44;   // topbar border (matches --color-border)
+  // ── Admin shell ───────────────────────────────────────────
+  --color-admin-bg:             #0e0c1a;
+  --color-admin-deeper:         #0a0814;
+  --color-admin-border:         #221f30;
+  --color-admin-text:           #f0eef8;
+  --color-admin-muted:          #8e8aab;
+  --color-admin-accent:         #ff6a00;
+  --color-admin-surface:        #151320;
+  --color-admin-surface-border: #302c44;
 
   // ── Utility ───────────────────────────────────────────────
   --color-glass:   rgba(255, 255, 255, .05);
   --color-overlay: rgba(0, 0, 0, .60);
 
-  // ── Spacing (4 pt base) ───────────────────────────────────
-  --space-1:  .25rem;
-  --space-2:  .5rem;
-  --space-3:  .75rem;
-  --space-4:  1rem;
-  --space-5:  1.25rem;
-  --space-6:  1.5rem;
-  --space-8:  2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
+  // ── Spacing (4pt base) ────────────────────────────────────
+  --space-1:  .25rem;  --space-2:  .5rem;  --space-3:  .75rem;
+  --space-4:  1rem;    --space-5:  1.25rem; --space-6:  1.5rem;
+  --space-8:  2rem;    --space-10: 2.5rem;  --space-12: 3rem;
 
   --spacing-xs:  var(--space-2);
   --spacing-sm:  var(--space-3);
@@ -100,12 +87,11 @@
   --radius-full: 999px;
 
   // ── Shadows ───────────────────────────────────────────────
-  --shadow-xs: 0 1px 4px rgba(0, 0, 0, .22);
+  --shadow-xs: 0 1px 4px  rgba(0, 0, 0, .22);
   --shadow-sm: 0 4px 16px rgba(0, 0, 0, .28);
   --shadow-md: 0 8px 30px rgba(0, 0, 0, .34);
   --shadow-lg: 0 16px 50px rgba(0, 0, 0, .40);
   --shadow-xl: 0 24px 64px rgba(0, 0, 0, .48);
-
   --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, .07);
 
   // ── Typography ────────────────────────────────────────────
@@ -113,41 +99,231 @@
   --font-display:   'Josefin Sans', system-ui, sans-serif;
   --font-editorial: 'Cormorant Garant', Georgia, serif;
 
-  --text-xs:   .75rem;
-  --text-sm:   .875rem;
-  --text-base: 1rem;
-  --text-lg:   1.125rem;
-  --text-xl:   1.25rem;
-  --text-2xl:  1.5rem;
+  --text-xs:   .75rem;   --text-sm:   .875rem;  --text-base: 1rem;
+  --text-lg:   1.125rem; --text-xl:   1.25rem;  --text-2xl:  1.5rem;
   --text-3xl:  clamp(1.75rem, 3vw + .5rem, 2.5rem);
 
-  --weight-normal:    400;
-  --weight-medium:    500;
-  --weight-semibold:  600;
-  --weight-bold:      700;
-  --weight-extrabold: 800;
-  --weight-black:     900;
+  --weight-normal:    400;  --weight-medium:    500;  --weight-semibold:  600;
+  --weight-bold:      700;  --weight-extrabold: 800;  --weight-black:     900;
 
-  --leading-tight:   1.25;
-  --leading-normal:  1.5;
-  --leading-relaxed: 1.7;
+  --leading-tight:   1.25;  --leading-normal:  1.5;  --leading-relaxed: 1.7;
 
   // ── Transitions ───────────────────────────────────────────
-  --t-fast: .12s ease;
-  --t-base: .2s ease;
-  --t-slow: .35s ease;
+  --t-fast: .12s ease;  --t-base: .2s ease;  --t-slow: .35s ease;
 
   // ── Layout ────────────────────────────────────────────────
   --container-max: 1200px;
   --container-pad: clamp(1rem, 2.4vw, 1.5rem);
   --sidebar-w:     260px;
-  // Sticky-header height: logo clamp(98px,9vw,160px) + padding-block 1.5rem
-  --header-h: calc(clamp(98px, 9vw, 160px) + 1.5rem);
+  --header-h:      calc(clamp(98px, 9vw, 160px) + 1.5rem);
 
   // ── Z-index scale ─────────────────────────────────────────
-  --z-header:  1000;
-  --z-sidebar:   40;
-  --z-topbar:    30;
-  --z-backdrop:  80;
-  --z-modal:     90;
+  --z-header:  1000;  --z-sidebar: 40;  --z-topbar:  30;
+  --z-backdrop: 80;   --z-modal:   90;
+
+  // ── Header shell tokens ───────────────────────────────────
+  // The complex dark overlay is expressed as a variable so Theme 2 can override it
+  --header-bg:
+    linear-gradient(180deg, rgba(8, 12, 22, .85), rgba(8, 12, 22, .65)),
+    var(--color-bg);
+  --header-border:           rgba(255, 255, 255, .08);
+  --header-text:             var(--color-text);
+  --header-link:             var(--color-text);
+  --header-link-hover:       var(--color-primary);
+  --header-link-active:      var(--color-primary);
+  --header-cta-bg:           var(--color-primary);
+  --header-cta-color:        var(--color-primary-ink);
+  --header-cta-border:       var(--color-primary);
+  --header-toggle-bg:        rgba(255, 255, 255, .04);
+  --header-toggle-border:    rgba(255, 255, 255, .25);
+  --header-toggle-hover-bg:  rgba(255, 255, 255, .09);
+  --header-toggle-hover-brd: rgba(255, 255, 255, .45);
+  --header-nav-mob-bg:
+    linear-gradient(180deg, rgba(8, 12, 22, .97), rgba(8, 12, 22, .90)),
+    var(--color-bg);
+  --header-nav-mob-border:   rgba(255, 255, 255, .08);
+  --header-nav-mob-active:   rgba(255, 255, 255, .06);
+
+  // ── Footer shell tokens ───────────────────────────────────
+  --footer-bg:               #13131a;
+  --footer-border:           rgba(255, 255, 255, .10);
+  --footer-text:             rgba(255, 255, 255, .68);
+  --footer-desc:             rgba(255, 255, 255, .52);
+  --footer-heading:          #ffffff;
+  --footer-link:             rgba(255, 255, 255, .50);
+  --footer-link-hover:       rgba(255, 255, 255, .92);
+  --footer-contact:          rgba(255, 255, 255, .82);
+  --footer-social-border:    rgba(255, 255, 255, .14);
+  --footer-social-bg:        rgba(255, 255, 255, .05);
+  --footer-cta-color:        #ffffff;
+  --footer-cta-shadow:       rgba(255, 106, 0, .28);
+  --footer-cta-shadow-hover: rgba(255, 106, 0, .38);
+  --footer-bottom-bg:        rgba(0, 0, 0, .25);
+  --footer-bottom-border:    rgba(255, 255, 255, .08);
+  --footer-bottom-text:      rgba(255, 255, 255, .32);
+  --footer-bottom-strong:    rgba(255, 255, 255, .55);
+  --footer-bottom-link:      rgba(255, 255, 255, .42);
+  --footer-bottom-link-hover:rgba(255, 255, 255, .80);
+
+  // ── Component tokens ─────────────────────────────────────
+  --chip-bg:     #111723;
+  --chip-color:  #b7c0d4;
+  --chip-border: #253047;
+
+  --btn-primary-shadow:       0 6px 22px rgba(124, 106, 255, .28);
+  --btn-primary-hover-shadow: 0 10px 28px rgba(124, 106, 255, .38);
+  --btn-ghost-hover-bg:       rgba(255, 255, 255, .05);
+  --btn-accent-shadow:        0 6px 20px rgba(255, 106, 0, .22);
+  --btn-accent-hover-shadow:  0 10px 24px rgba(255, 106, 0, .32);
+
+  --alert-error-text:   #ffd0d0;
+  --alert-success-text: #b0f0da;
+  --alert-info-text:    #c8d9ff;
+  --alert-info-border:  rgba(74, 127, 255, .30);
+  --shimmer-highlight:  rgba(255, 255, 255, .07);
+
+  --focus-shadow:       rgba(124, 106, 255, .22);
+  --field-error-text:   #fca5a5;
+  --field-error-border: #ef4444;
+  --field-error-shadow: rgba(239, 68, 68, .18);
+  --toggle-checked-bg:  #1d3f8f;
+  --date-color-scheme:  dark;
+  --date-icon-filter:   invert(1) brightness(1.2) contrast(1.05);
+  --date-icon-opacity:  .85;
+}
+
+// ── Theme 2: Pure Black / Pure White — public shell ────────
+.app-shell[data-theme="theme-2"] {
+
+  // ── Core colour tokens ─────────────────────────────────────
+  --color-bg:            #ffffff;
+  --color-surface:       #ffffff;
+  --color-surface-2:     #f0f0f0;
+  --color-surface-input: #ffffff;
+  --color-surface-hover: #f5f5f5;
+
+  --color-border:        rgba(0, 0, 0, .12);
+  --color-border-subtle: rgba(0, 0, 0, .06);
+  --color-border-strong: rgba(0, 0, 0, .24);
+
+  --color-text:          #000000;
+  --color-text-muted:    rgba(0, 0, 0, .55);
+  --color-text-dim:      rgba(0, 0, 0, .35);
+  --color-text-label:    rgba(0, 0, 0, .72);
+  --color-text-inverse:  #ffffff;
+
+  // Brand → pure black in monochrome theme
+  --color-primary:       #000000;
+  --color-primary-dark:  #000000;
+  --color-primary-ink:   #ffffff;
+
+  // Interactive accent → pure black
+  --color-secondary:      #000000;
+  --color-secondary-dark: #000000;
+  --color-accent:         #000000;
+  --color-accent-dark:    #000000;
+  --color-accent-muted:   rgba(0, 0, 0, .07);
+
+  // Semantic — readable on white backgrounds
+  --color-success:        #15803d;
+  --color-success-bg:     rgba(21, 128, 61, .08);
+  --color-success-border: rgba(21, 128, 61, .22);
+
+  --color-warning:       #b45309;
+  --color-warning-bg:    rgba(180, 83, 9, .07);
+
+  --color-danger:        #b91c1c;
+  --color-danger-bg:     rgba(185, 28, 28, .07);
+  --color-danger-border: rgba(185, 28, 28, .22);
+
+  --color-glass:   rgba(0, 0, 0, .04);
+  --color-overlay: rgba(0, 0, 0, .50);
+
+  --shadow-xs:   0 1px 3px  rgba(0, 0, 0, .06);
+  --shadow-sm:   0 4px 14px rgba(0, 0, 0, .08);
+  --shadow-md:   0 8px 28px rgba(0, 0, 0, .10);
+  --shadow-lg:   0 16px 44px rgba(0, 0, 0, .12);
+  --shadow-xl:   0 24px 60px rgba(0, 0, 0, .14);
+  --shadow-inset-top: inset 0 1px 0 rgba(0, 0, 0, .04);
+
+  // ── Header — pure black so white-text logo is always visible ──
+  --header-bg:               #000000;
+  --header-border:           rgba(255, 255, 255, .10);
+  --header-text:             #ffffff;
+  --header-link:             rgba(255, 255, 255, .85);
+  --header-link-hover:       #ffffff;
+  --header-link-active:      #ffffff;
+  // Book Now CTA on black header: white button, black text
+  --header-cta-bg:           #ffffff;
+  --header-cta-color:        #000000;
+  --header-cta-border:       #ffffff;
+  --header-toggle-bg:        rgba(255, 255, 255, .06);
+  --header-toggle-border:    rgba(255, 255, 255, .25);
+  --header-toggle-hover-bg:  rgba(255, 255, 255, .12);
+  --header-toggle-hover-brd: rgba(255, 255, 255, .50);
+  --header-nav-mob-bg:       #000000;
+  --header-nav-mob-border:   rgba(255, 255, 255, .10);
+  --header-nav-mob-active:   rgba(255, 255, 255, .08);
+
+  // ── Footer — black footer on white page (unchanged from T1 design intent)
+  --footer-bg:               #000000;
+  --footer-border:           rgba(255, 255, 255, .12);
+  --footer-text:             rgba(255, 255, 255, .75);
+  --footer-desc:             rgba(255, 255, 255, .55);
+  --footer-heading:          #ffffff;
+  --footer-link:             rgba(255, 255, 255, .55);
+  --footer-link-hover:       #ffffff;
+  --footer-contact:          rgba(255, 255, 255, .85);
+  --footer-social-border:    rgba(255, 255, 255, .18);
+  --footer-social-bg:        rgba(255, 255, 255, .08);
+  --footer-cta-color:        #000000;
+  --footer-cta-shadow:       rgba(0, 0, 0, .14);
+  --footer-cta-shadow-hover: rgba(0, 0, 0, .24);
+  --footer-bottom-bg:        #000000;
+  --footer-bottom-border:    rgba(255, 255, 255, .10);
+  --footer-bottom-text:      rgba(255, 255, 255, .35);
+  --footer-bottom-strong:    rgba(255, 255, 255, .60);
+  --footer-bottom-link:      rgba(255, 255, 255, .45);
+  --footer-bottom-link-hover:#ffffff;
+
+  // ── Component tokens ─────────────────────────────────────
+  --chip-bg:     #000000;
+  --chip-color:  #ffffff;
+  --chip-border: transparent;
+
+  --btn-primary-shadow:       0 6px 22px rgba(0, 0, 0, .14);
+  --btn-primary-hover-shadow: 0 10px 28px rgba(0, 0, 0, .22);
+  --btn-ghost-hover-bg:       rgba(0, 0, 0, .05);
+  --btn-accent-shadow:        0 6px 20px rgba(0, 0, 0, .14);
+  --btn-accent-hover-shadow:  0 10px 24px rgba(0, 0, 0, .22);
+
+  --alert-error-text:   #7f1d1d;
+  --alert-success-text: #064e3b;
+  --alert-info-text:    #1e3a8a;
+  --alert-info-border:  rgba(0, 0, 0, .12);
+  --shimmer-highlight:  rgba(0, 0, 0, .05);
+
+  --focus-shadow:       rgba(0, 0, 0, .18);
+  --field-error-text:   #991b1b;
+  --field-error-border: #dc2626;
+  --field-error-shadow: rgba(220, 38, 38, .15);
+  --toggle-checked-bg:  #000000;
+  --date-color-scheme:  light;
+  --date-icon-filter:   none;
+  --date-icon-opacity:  .55;
+
+  // Date / time inputs — light color-scheme, no inversion
+  input[type="date"],
+  input[type="time"] {
+    color-scheme: light;
+    &::-webkit-calendar-picker-indicator {
+      filter: none;
+      opacity: .55;
+    }
+  }
+
+  ::selection {
+    background: rgba(0, 0, 0, .12);
+    color: #000000;
+  }
 }

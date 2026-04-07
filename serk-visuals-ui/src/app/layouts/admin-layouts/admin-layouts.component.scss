@@ -220,6 +220,153 @@
   .admin-layout .sidebar__nav a::before { transition: none; }
 }
 
+// ── Theme 2: Pure Black / Pure White ─────────────────────
+.admin-layout[data-admin-theme="theme-2"] {
+
+  // ── Core colour tokens ──────────────────────────────────
+  --color-bg:             #ffffff;
+  --color-surface:        #ffffff;
+  --color-surface-2:      #f0f0f0;
+  --color-surface-input:  #ffffff;
+  --color-surface-hover:  #f5f5f5;
+  --color-text:           #000000;
+  --color-text-muted:     rgba(0, 0, 0, .55);
+  --color-text-dim:       rgba(0, 0, 0, .35);
+  --color-text-label:     rgba(0, 0, 0, .72);
+  --color-text-inverse:   #ffffff;
+  --color-border:         rgba(0, 0, 0, .12);
+  --color-border-subtle:  rgba(0, 0, 0, .06);
+  --color-border-strong:  rgba(0, 0, 0, .24);
+  --color-accent:         #000000;
+  --color-accent-dark:    #000000;
+  --color-accent-muted:   rgba(0, 0, 0, .07);
+  --color-primary:        #000000;
+  --color-primary-dark:   #000000;
+  --color-primary-ink:    #ffffff;
+  --color-secondary:      #000000;
+  --color-secondary-dark: #000000;
+
+  // ── Semantic tokens ──────────────────────────────────────
+  --color-success:        #15803d;
+  --color-success-bg:     rgba(21, 128, 61, .08);
+  --color-success-border: rgba(21, 128, 61, .22);
+  --color-warning:        #b45309;
+  --color-warning-bg:     rgba(180, 83, 9, .07);
+  --color-danger:         #b91c1c;
+  --color-danger-bg:      rgba(185, 28, 28, .07);
+  --color-danger-border:  rgba(185, 28, 28, .22);
+
+  // ── Admin-specific tokens ────────────────────────────────
+  --color-admin-bg:             #f0f0f0;
+  --color-admin-surface:        #ffffff;
+  --color-admin-surface-border: rgba(0, 0, 0, .12);
+  --color-admin-text:           #000000;
+  --color-admin-muted:          rgba(0, 0, 0, .55);
+  --color-admin-border:         rgba(0, 0, 0, .14);
+  --color-admin-accent:         #000000;
+
+  // ── Shadow overrides ─────────────────────────────────────
+  --shadow-xs:   0 1px 3px  rgba(0, 0, 0, .06);
+  --shadow-sm:   0 4px 14px rgba(0, 0, 0, .08);
+  --shadow-md:   0 8px 28px rgba(0, 0, 0, .10);
+  --shadow-lg:   0 16px 44px rgba(0, 0, 0, .12);
+  --shadow-xl:   0 24px 60px rgba(0, 0, 0, .14);
+  --shadow-inset-top: inset 0 1px 0 rgba(0, 0, 0, .04);
+
+  // ── Component tokens ─────────────────────────────────────
+  --chip-bg:     #000000;
+  --chip-color:  #ffffff;
+  --chip-border: transparent;
+
+  --btn-primary-shadow:       0 6px 22px rgba(0, 0, 0, .14);
+  --btn-primary-hover-shadow: 0 10px 28px rgba(0, 0, 0, .22);
+  --btn-ghost-hover-bg:       rgba(0, 0, 0, .05);
+  --btn-accent-shadow:        0 6px 20px rgba(0, 0, 0, .12);
+  --btn-accent-hover-shadow:  0 10px 24px rgba(0, 0, 0, .20);
+
+  --alert-error-text:   #7f1d1d;
+  --alert-success-text: #064e3b;
+  --alert-info-text:    #1e3a8a;
+  --alert-info-border:  rgba(0, 0, 0, .12);
+  --shimmer-highlight:  rgba(0, 0, 0, .05);
+
+  --focus-shadow:       rgba(0, 0, 0, .18);
+  --field-error-text:   #991b1b;
+  --field-error-border: #dc2626;
+  --field-error-shadow: rgba(220, 38, 38, .15);
+  --toggle-checked-bg:  #000000;
+  --date-color-scheme:  light;
+  --date-icon-filter:   none;
+  --date-icon-opacity:  .55;
+
+  // ── Sidebar ───────────────────────────────────────────────
+  .sidebar {
+    box-shadow: 1px 0 0 rgba(0, 0, 0, .10);
+
+    .sidebar__nav a {
+      &:hover {
+        background: rgba(0, 0, 0, .05);
+        border-color: rgba(0, 0, 0, .08);
+        color: var(--color-admin-text);
+      }
+
+      &.is-active {
+        background: #000000;
+        border-color: #000000;
+        color: #ffffff;
+        box-shadow: none;
+
+        &::before { background: #ffffff; }
+      }
+
+      &.is-active:hover {
+        background: rgba(0, 0, 0, .85);
+      }
+    }
+  }
+
+  // ── Topbar ────────────────────────────────────────────────
+  .topbar {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .08);
+
+    .logout-btn:hover { background: rgba(0, 0, 0, .05); }
+  }
+
+  // ── Hamburger hover ───────────────────────────────────────
+  .menu-btn:hover { background: rgba(0, 0, 0, .05); }
+
+  // ── Date / time inputs ────────────────────────────────────
+  input[type="date"],
+  input[type="time"] {
+    color-scheme: light;
+    &::-webkit-calendar-picker-indicator {
+      filter: none;
+      opacity: .55;
+    }
+  }
+
+  // ── Status chips — light tinted backgrounds ───────────────
+  .chip.s1 {
+    background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;
+  }
+  .chip.s2 {
+    background: #ecfeff; color: #0e7490; border-color: #a5f3fc;
+  }
+  .chip.s3 {
+    background: #f0fdf4; color: #15803d; border-color: #bbf7d0;
+  }
+  .chip.s4 {
+    background: #fefce8; color: #a16207; border-color: #fde68a;
+  }
+
+  // ── Status badges ─────────────────────────────────────────
+  .badge            { background: #f0f0f0; color: #000000; }
+  .badge--new       { background: #fefce8; color: #a16207; }
+  .badge--confirmed { background: #f0fdf4; color: #15803d; }
+  .badge--completed { background: #eff6ff; color: #1d4ed8; }
+  .badge--cancelled { background: #fef2f2; color: #b91c1c; }
+}
+
 // ── Sidebar scrollbar ─────────────────────────────────────
 @media (pointer: fine) {
   .sidebar {

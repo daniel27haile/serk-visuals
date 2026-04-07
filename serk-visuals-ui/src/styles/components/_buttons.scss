@@ -1,5 +1,6 @@
 // ============================================================
 // SERK VISUALS — Button system
+// All hardcoded rgba shadow values replaced with CSS variables.
 // ============================================================
 
 .btn {
@@ -44,16 +45,16 @@
 
   // ── Variants ──────────────────────────────────────────────
 
-  // Primary (indigo — CTA)
+  // Primary (accent colour — adapts to theme)
   &.primary {
-    background: linear-gradient(180deg, var(--color-accent), var(--color-accent-dark));
+    background: var(--color-accent);
     border-color: var(--color-accent);
-    color: #fff;
-    box-shadow: 0 6px 22px rgba(124, 106, 255, .28), var(--shadow-inset-top);
+    color: var(--color-text-inverse);
+    box-shadow: var(--btn-primary-shadow), var(--shadow-inset-top);
     &:hover {
       filter: brightness(1.10);
       transform: translateY(-1px);
-      box-shadow: 0 10px 28px rgba(124, 106, 255, .38), var(--shadow-inset-top);
+      box-shadow: var(--btn-primary-hover-shadow), var(--shadow-inset-top);
     }
   }
 
@@ -63,7 +64,7 @@
     border-color: var(--color-border-strong);
     color: var(--color-text-muted);
     &:hover {
-      background: rgba(255, 255, 255, .05);
+      background: var(--btn-ghost-hover-bg);
       border-color: var(--color-border-strong);
       color: var(--color-text);
     }
@@ -71,14 +72,14 @@
 
   // Danger
   &.danger {
-    background: linear-gradient(180deg, rgba(120, 40, 40, .6), rgba(80, 20, 20, .6));
-    border-color: rgba(248, 113, 113, .45);
-    color: #ffb3b3;
-    box-shadow: 0 4px 16px rgba(248, 113, 113, .15);
+    background: var(--color-danger-bg);
+    border-color: var(--color-danger-border);
+    color: var(--color-danger);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
     &:hover {
       border-color: var(--color-danger);
-      background: linear-gradient(180deg, rgba(140, 50, 50, .7), rgba(100, 25, 25, .7));
-      box-shadow: 0 6px 20px rgba(248, 113, 113, .25);
+      filter: brightness(1.05);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .12);
     }
   }
 
@@ -91,16 +92,16 @@
   }
 }
 
-// ── Brand CTA (orange) — public site hero buttons ──────────
+// ── Brand CTA (primary colour) — public site hero buttons ─
 .btn.accent {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-primary-ink);
   font-weight: var(--weight-extrabold);
-  box-shadow: 0 6px 20px rgba(255, 106, 0, .22);
+  box-shadow: var(--btn-accent-shadow);
   &:hover {
     filter: brightness(1.08);
     transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(255, 106, 0, .32);
+    box-shadow: var(--btn-accent-hover-shadow);
   }
 }

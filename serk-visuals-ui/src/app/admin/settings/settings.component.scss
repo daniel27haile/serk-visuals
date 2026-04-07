@@ -146,6 +146,114 @@ h1 {
   }
 }
 
+// ── Theme card picker ─────────────────────────────────────
+.theme-cards {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.theme-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  width: 180px;
+  padding: .75rem;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface-input);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color var(--t-base),
+    box-shadow var(--t-base),
+    transform var(--t-fast);
+
+  &:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .15);
+    transform: translateY(-2px);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  &--active {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(255, 106, 0, .18), 0 4px 16px rgba(0, 0, 0, .15);
+    transform: translateY(-2px);
+  }
+}
+
+.theme-preview {
+  width: 100%;
+  height: 80px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, .08);
+  overflow: hidden;
+  display: flex;
+
+  &__sidebar {
+    width: 28%;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(255, 255, 255, .06);
+  }
+
+  &__main {
+    flex: 1;
+    padding: .5rem .45rem;
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+  }
+
+  &__bar {
+    height: 6px;
+    border-radius: 3px;
+    width: 100%;
+    opacity: .9;
+
+    &--short   { width: 75%; }
+    &--shorter { width: 55%; }
+  }
+}
+
+.theme-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: .15rem;
+}
+
+.theme-card__name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-extrabold);
+  color: var(--color-text);
+}
+
+.theme-card__desc {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+.theme-card__check {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #fff;
+  display: grid;
+  place-items: center;
+
+  svg { width: 11px; height: 11px; }
+}
+
 // ── Footer row ───────────────────────────────────────────
 .footer {
   margin-top: var(--spacing-md);

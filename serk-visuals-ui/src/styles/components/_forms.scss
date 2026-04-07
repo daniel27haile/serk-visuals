@@ -1,5 +1,6 @@
 // ============================================================
 // SERK VISUALS — Form controls
+// Hardcoded colour values replaced with CSS variable tokens.
 // ============================================================
 
 // ── Label ────────────────────────────────────────────────
@@ -45,7 +46,7 @@ textarea {
 
   &:focus {
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(124, 106, 255, .22);
+    box-shadow: 0 0 0 3px var(--focus-shadow);
   }
 
   &:hover:not(:focus) { border-color: var(--color-border-strong); }
@@ -61,18 +62,18 @@ input[type="file"] {
   color: var(--color-text-muted);
 }
 
-// Date native icon — invert for dark backgrounds
+// Date / time native picker — color-scheme driven by CSS variable
 input[type="date"],
 input[type="time"] {
-  color-scheme: dark;
+  color-scheme: var(--date-color-scheme, dark);
   &::-webkit-calendar-picker-indicator {
-    filter: invert(1) brightness(1.2) contrast(1.05);
-    opacity: .85;
+    filter: var(--date-icon-filter, invert(1) brightness(1.2) contrast(1.05));
+    opacity: var(--date-icon-opacity, .85);
     cursor: pointer;
   }
 }
 
-// Custom select arrow
+// Custom select arrow — uses token for fill colour
 select {
   appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23b8cae0' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
@@ -115,9 +116,9 @@ select {
   }
 
   input:checked + .toggle {
-    background: #1d3f8f;
+    background: var(--toggle-checked-bg);
     border-color: var(--color-accent);
-    &::after { transform: translateX(16px); background: #fff; }
+    &::after { transform: translateX(16px); background: var(--color-text-inverse); }
   }
 }
 
@@ -131,7 +132,6 @@ select {
 }
 
 // ── Field validation error messages ──────────────────────
-// Wraps a label + its error messages so they stack correctly inside the grid.
 .field-wrap {
   display: flex;
   flex-direction: column;
@@ -139,8 +139,6 @@ select {
   min-width: 0;
 
   label { width: 100%; }
-
-  // Inherit full-width column span from any .full on the inner label
   &:has(label.full) { grid-column: 1 / -1; }
 }
 
@@ -152,17 +150,17 @@ select {
 
   small {
     font-size: var(--text-sm);
-    color: #fca5a5;
+    color: var(--field-error-text);
     line-height: 1.4;
   }
 }
 
-// Red border state on invalid + touched inputs/selects/textareas
+// Invalid input state
 input.is-invalid,
 select.is-invalid,
 textarea.is-invalid {
-  border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, .18) !important;
+  border-color: var(--field-error-border) !important;
+  box-shadow: 0 0 0 3px var(--field-error-shadow) !important;
 }
 
 // ── Actions row ───────────────────────────────────────────

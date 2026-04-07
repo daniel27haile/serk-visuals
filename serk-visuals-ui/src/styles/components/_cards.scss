@@ -11,12 +11,9 @@
   // Inner highlight gives a lifted appearance — helps cards pop on dark bg
   box-shadow: var(--shadow-inset-top), var(--shadow-sm);
 
-  // Fancy card — gradient glow from two corners
+  // Fancy card — slightly elevated surface
   &.fancy {
-    background:
-      radial-gradient(1200px 50% at -10% -30%, rgba(74, 127, 255, .10), transparent 48%),
-      radial-gradient(900px  50% at 120% -20%, rgba(6, 182, 212, .08), transparent 50%),
-      linear-gradient(180deg, var(--color-surface-2), var(--color-surface));
+    background: var(--color-surface-2);
     border: 1px solid var(--color-border-strong);
     box-shadow: var(--shadow-md), var(--shadow-inset-top);
   }

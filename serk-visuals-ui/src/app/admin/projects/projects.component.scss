@@ -25,10 +25,7 @@
   font-size: clamp(1.4rem, 2.6vw, 2.05rem);
   letter-spacing: .2px;
   display: inline-block;
-  background: linear-gradient(90deg, #ffffff, #c8e0ff);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-admin-text);
 
   &::after {
     content: "";
@@ -37,8 +34,7 @@
     width: min(320px, 52%);
     margin-top: .45rem;
     border-radius: var(--radius-full);
-    background: linear-gradient(90deg, var(--color-secondary), #5aa8ff);
-    box-shadow: 0 0 14px rgba(124, 106, 255, .35);
+    background: var(--color-admin-accent);
   }
 }
 

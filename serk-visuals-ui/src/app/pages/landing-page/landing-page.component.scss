@@ -259,7 +259,7 @@
 .stats-strip {
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
-  background: linear-gradient(180deg, var(--color-surface) 0%, transparent 100%);
+  background: var(--color-surface);
   padding-block: clamp(1.25rem, 3vw, 1.75rem);
 }
 
@@ -284,10 +284,7 @@
   font-size: clamp(1.6rem, 3vw, 2.4rem);
   font-weight: var(--weight-bold);
   line-height: 1;
-  background: linear-gradient(135deg, #fff 20%, var(--color-secondary, #7c6aff) 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-text);
 }
 
 .stat__plus,
@@ -324,7 +321,7 @@
 
 // ── Why Serk Visuals ──────────────────────────────────────
 .why-section {
-  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+  background: var(--color-surface);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
   padding-block: clamp(2rem, 5vw, 3.5rem);
@@ -400,8 +397,8 @@
 
 // ── Final CTA banner ──────────────────────────────────────
 .cta-banner {
-  background: linear-gradient(135deg, rgba(124, 106, 255, .12) 0%, rgba(90, 168, 255, .07) 100%);
-  border-top: 1px solid rgba(124, 106, 255, .2);
+  background: var(--color-surface-2);
+  border-top: 1px solid var(--color-border);
   padding-block: clamp(2.5rem, 5vw, 4rem);
 }
 
@@ -463,9 +460,9 @@
   inset: 0;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   pointer-events: none;
-  padding: 0 .5rem;
+  padding: clamp(.85rem, 2vw, 1.1rem) .5rem 0;
 }
 
 .t-arrow {
@@ -500,10 +497,10 @@
   }
 
   &:hover {
-    border-color: var(--color-secondary);
-    background: rgba(124, 106, 255, .22);
-    color: #c4b5fd;
-    box-shadow: 0 0 0 4px rgba(124, 106, 255, .18), 0 4px 18px rgba(0, 0, 0, .4);
+    border-color: var(--color-border-strong);
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, .4);
     transform: scale(1.1);
   }
 
@@ -525,8 +522,8 @@
   flex: 0 0 100%;
   margin: 0;
   padding: clamp(1.25rem, 3.5vw, 1.9rem) clamp(1.25rem, 3.5vw, 1.9rem) 2.5rem;
-  background: linear-gradient(135deg, var(--color-surface) 60%, rgba(124, 106, 255, .04) 100%);
-  border-left: 3px solid rgba(124, 106, 255, .5);
+  background: var(--color-surface);
+  border-left: 3px solid var(--color-border-strong);
   display: grid;
   gap: .85rem;
   position: relative;
@@ -541,11 +538,8 @@
     line-height: 1;
     font-family: Georgia, 'Times New Roman', serif;
     font-weight: 900;
-    background: linear-gradient(135deg, var(--color-secondary, #7c6aff) 0%, #a78bfa 60%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    opacity: .09;
+    color: var(--color-text-dim);
+    opacity: .18;
     pointer-events: none;
     user-select: none;
 
@@ -599,12 +593,7 @@
     left: 0;
     width: 70%;
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      rgba(124, 106, 255, .28),
-      rgba(255, 255, 255, .08) 65%,
-      transparent
-    );
+    background: var(--color-border);
   }
 }
 
@@ -637,16 +626,13 @@
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--color-secondary, #7c6aff) 10%, #5aa8ff 90%);
-  color: #fff;
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
   font-size: .9rem;
   font-weight: var(--weight-extrabold);
   letter-spacing: .4px;
   user-select: none;
-  box-shadow:
-    0 0 0 2px rgba(124, 106, 255, .22),
-    0 0 0 4px rgba(124, 106, 255, .08),
-    inset 0 1px 0 rgba(255, 255, 255, .2);
+  box-shadow: 0 0 0 2px var(--color-accent-muted), inset 0 1px 0 rgba(255, 255, 255, .15);
 }
 
 .t-dots {

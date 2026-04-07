@@ -25,19 +25,14 @@
     font-size: clamp(1.6rem, 2.6vw, 2.25rem);
     font-weight: var(--weight-black);
     letter-spacing: .4px;
-    background: linear-gradient(90deg, #8fdcff, #e8ecf4, #9af2ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    filter: drop-shadow(0 2px 12px rgba(134, 223, 255, .12));
+    color: var(--color-admin-text);
   }
 
   i {
     display: block;
     height: 3px; width: 100%;
     border-radius: var(--radius-full);
-    background: linear-gradient(90deg, transparent, rgba(134, 223, 255, .55), transparent);
-    animation: sweep 2.2s linear infinite;
+    background: var(--color-admin-accent);
     opacity: .55;
   }
 }
@@ -87,10 +82,10 @@
 }
 
 .tab.is-active {
-  color: #fff;
-  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-dark));
-  border-color: var(--color-accent);
-  box-shadow: 0 6px 20px rgba(124, 106, 255, .30), inset 0 -8px 16px rgba(0, 0, 0, .15);
+  color: var(--color-text-inverse);
+  background: var(--color-admin-accent);
+  border-color: var(--color-admin-accent);
+  box-shadow: var(--shadow-sm);
   .dot { background: rgba(255, 255, 255, .85); }
 }
 

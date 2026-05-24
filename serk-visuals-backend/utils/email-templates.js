@@ -59,50 +59,43 @@ We’ll review it and get back to you shortly.
 }
 
 function adminNotification(booking) {
-  const { name, email, phone, type, date, message, status, _id } =
+  const { name, email, phone, type, date, durationMinutes, message, status, createdAt, _id } =
     booking || {};
   const when = fmt(date);
+  const submittedAt = fmt(createdAt);
+  const duration = durationMinutes ? `${durationMinutes} min` : "N/A";
 
   const subject = `New booking: ${name || "Unknown"} — ${when}`;
   const text = `New booking received
 
-Client: ${name || "N/A"}
-Email: ${email || "N/A"}
-Phone: ${phone ?? "N/A"}
-Type: ${type || "N/A"}
-When: ${when}
-Status: ${status || "new"}
-Message: ${message || "—"}
-ID: ${_id || "N/A"}`;
+Client:    ${name || "N/A"}
+Email:     ${email || "N/A"}
+Phone:     ${phone ?? "N/A"}
+Service:   ${type || "N/A"}
+Date/Time: ${when}
+Duration:  ${duration}
+Message:   ${message || "—"}
+Status:    ${status || "new"}
+Submitted: ${submittedAt}
+ID:        ${_id || "N/A"}`;
+
+  const row = (label, value) =>
+    `<tr><td style="padding:8px;border-bottom:1px solid #eee;color:#555;">${label}</td><td style="padding:8px;border-bottom:1px solid #eee;"><strong>${value}</strong></td></tr>`;
 
   const html = `
   <div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:600px;margin:auto;padding:16px;color:#111;">
-    <h2>New booking received</h2>
+    <h2 style="margin-top:0;">New booking received</h2>
     <table style="border-collapse:collapse;width:100%;margin:12px 0;">
-      <tr><td style="padding:8px;border-bottom:1px solid #eee;">Client</td><td style="padding:8px;border-bottom:1px solid #eee;"><strong>${
-        name || "N/A"
-      }</strong></td></tr>
-      <tr><td style="padding:8px;border-bottom:1px solid #eee;">Email</td><td style="padding:8px;border-bottom:1px solid #eee;">${
-        email || "N/A"
-      }</td></tr>
-      <tr><td style="padding:8px;border-bottom:1px solid #eee;">Phone</td><td style="padding:8px;border-bottom:1px solid #eee;">${
-        phone ?? "N/A"
-      }</td></tr>
-      <tr><td style="padding:8px;border-bottom:1px solid #eee;">Type</td><td style="padding:8px;border-bottom:1px solid #eee;">${
-        type || "N/A"
-      }</td></tr>
-      <tr><td style="padding:8px;border-bottom:1px solid #eee;">When</td><td style="padding:8px;border-bottom:1px solid #eee;"><strong>${when}</strong></td></tr>
-      <tr><td style="padding:8px;border-bottom:1px solid #eee;">Status</td><td style="padding:8px;border-bottom:1px solid #eee;">${
-        status || "new"
-      }</td></tr>
-      <tr><td style="padding:8px;border-bottom:1px solid #eee;">Message</td><td style="padding:8px;border-bottom:1px solid #eee;">${(
-        message || "—"
-      )
-        .toString()
-        .replace(/</g, "&lt;")}</td></tr>
-      <tr><td style="padding:8px;border-bottom:1px solid #eee;">ID</td><td style="padding:8px;border-bottom:1px solid #eee;">${
-        _id || "N/A"
-      }</td></tr>
+      ${row("Client", name || "N/A")}
+      ${row("Email", email || "N/A")}
+      ${row("Phone", phone ?? "N/A")}
+      ${row("Service", type || "N/A")}
+      ${row("Date / Time", when)}
+      ${row("Duration", duration)}
+      <tr><td style="padding:8px;border-bottom:1px solid #eee;color:#555;">Message</td><td style="padding:8px;border-bottom:1px solid #eee;">${(message || "—").toString().replace(/</g, "&lt;")}</td></tr>
+      ${row("Status", status || "new")}
+      ${row("Submitted", submittedAt)}
+      ${row("Booking ID", _id || "N/A")}
     </table>
   </div>`;
 

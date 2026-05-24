@@ -1,15 +1,14 @@
 // utils/mailer.js
 const nodemailer = require("nodemailer");
 
-const {
-  SMTP_HOST,
-  SMTP_PORT,
-  SMTP_SECURE,
-  SMTP_USER,
-  SMTP_PASS,
-  MAIL_FROM,
-  NODE_ENV,
-} = process.env;
+// Support EMAIL_* names (preferred) with SMTP_* fallbacks for backward compat.
+const SMTP_HOST   = process.env.EMAIL_HOST   || process.env.SMTP_HOST;
+const SMTP_PORT   = process.env.EMAIL_PORT   || process.env.SMTP_PORT;
+const SMTP_SECURE = process.env.EMAIL_SECURE || process.env.SMTP_SECURE;
+const SMTP_USER   = process.env.EMAIL_USER   || process.env.SMTP_USER;
+const SMTP_PASS   = process.env.EMAIL_PASS   || process.env.SMTP_PASS;
+const MAIL_FROM   = process.env.EMAIL_FROM   || process.env.MAIL_FROM;
+const { NODE_ENV } = process.env;
 
 let transporter;
 let verified = false;

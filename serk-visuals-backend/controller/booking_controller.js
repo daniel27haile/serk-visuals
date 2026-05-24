@@ -6,7 +6,9 @@ const {
   adminNotification,
 } = require("../utils/email-templates");
 
-const { ADMIN_EMAIL } = process.env;
+// EMAIL_TO: dedicated notification recipient (preferred).
+// Falls back to ADMIN_EMAIL so existing configs keep working.
+const NOTIFY_EMAIL = process.env.EMAIL_TO || process.env.ADMIN_EMAIL;
 
 const ALLOWED_TYPES = [
   "Wedding",
@@ -213,10 +215,10 @@ async function create(req, res) {
     // Fire-and-forget emails
     (async () => {
       try {
-        if (ADMIN_EMAIL) {
+        if (NOTIFY_EMAIL) {
           const msg = adminNotification(doc.toObject());
           await sendMail({
-            to: ADMIN_EMAIL,
+            to: NOTIFY_EMAIL,
             subject: msg.subject,
             text: msg.text,
             html: msg.html,

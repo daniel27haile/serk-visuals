@@ -3,13 +3,17 @@
     <!-- Brand -->
     <a [routerLink]="['/home']" class="logo" aria-label="Serk Visuals — Home">
       <span class="logo__img-wrap">
-        <img
-          class="logo__img"
-          src="images/serkvisuals_logo.png"
-          alt="Serk Visuals logo"
-          width="220"
-          height="220"
-        />
+        <picture>
+          <source srcset="images/serkvisuals_logo.webp" type="image/webp" />
+          <img
+            class="logo__img"
+            src="images/serkvisuals_logo.png"
+            alt="Serk Visuals logo"
+            width="612"
+            height="408"
+            loading="eager"
+          />
+        </picture>
       </span>
     </a>
 

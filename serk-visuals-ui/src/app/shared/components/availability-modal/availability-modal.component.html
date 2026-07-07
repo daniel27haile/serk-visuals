@@ -53,7 +53,13 @@
               [class.cal-day--booked]="!day.isPast && !isSunday(day) && day.status === 'fully-booked'"
               [class.cal-day--unavailable]="!day.dayNum || day.isPast || isSunday(day) || day.status === 'unavailable'"
               [class.cal-day--clickable]="day.date && !day.isPast && !isSunday(day)"
+              [attr.role]="(day.date && !day.isPast && !isSunday(day)) ? 'button' : null"
+              [attr.tabindex]="(day.date && !day.isPast && !isSunday(day)) ? '0' : null"
+              [attr.aria-label]="day.dayNum ? (day.date + ' ' + day.status) : null"
+              [attr.aria-pressed]="day.isSelected ? 'true' : null"
               (click)="selectDay(day)"
+              (keydown.enter)="selectDay(day)"
+              (keydown.space)="selectDay(day)"
             >
               @if (day.dayNum) {
                 <span class="cal-day__num">{{ day.dayNum }}</span>

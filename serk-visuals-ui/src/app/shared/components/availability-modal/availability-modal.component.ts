@@ -128,8 +128,7 @@ export class AvailabilityModalComponent implements OnChanges, OnDestroy {
         this.monthData(), this.selectedDate(),
         new Date(),
       );
-    } catch (e) {
-      console.error('[modal] calendarGrid error:', e);
+    } catch {
       return [];
     }
   });
@@ -186,8 +185,7 @@ export class AvailabilityModalComponent implements OnChanges, OnDestroy {
         this.loadingMonth.set(false);
         this.apiFallback.set(false);
       },
-      error: err => {
-        console.warn('[modal] month API failed — using fallback:', err?.message ?? err);
+      error: () => {
         this.monthData.set(this.buildFallbackMonthDays(year, month));
         this.loadingMonth.set(false);
         this.apiFallback.set(true);
@@ -212,8 +210,7 @@ export class AvailabilityModalComponent implements OnChanges, OnDestroy {
         this.apiFallback.set(false);
         if (!res.availableSlots.length) this.loadNextAvail();
       },
-      error: err => {
-        console.warn('[modal] day API failed — using fallback slots:', err?.message ?? err);
+      error: () => {
         this.dayAvail.set({ date: dateStr, ...FALLBACK_SLOTS });
         this.loadingDay.set(false);
         this.apiFallback.set(true);

@@ -59,6 +59,14 @@
   object-position: center top;
   user-select: none;
   -webkit-user-drag: none;
+
+  // Logo placeholder: center it with contain so it doesn't stretch
+  &--placeholder {
+    object-fit: contain;
+    object-position: center center;
+    padding: 1.5rem;
+    background: var(--color-surface-2);
+  }
 }
 
 // Gradient overlay — fully transparent through the top 3/4 of the image;

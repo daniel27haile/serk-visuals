@@ -6,7 +6,7 @@ const { publicCache } = require("../middleware/cache");
 
 const router = express.Router();
 
-router.get("/", publicCache(30, 60), ctrl.list);
+router.get("/", publicCache(300, 600), ctrl.list);
 router.get("/:id", ctrl.getOne);
 
 // Admin-only for mutations

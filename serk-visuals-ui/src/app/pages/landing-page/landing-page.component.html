@@ -12,12 +12,26 @@
       class="hero-slides"
       [style.transform]="'translateX(' + -index() * 100 + '%)'"
     >
+      <!-- Static placeholder: shown immediately before API images load.
+           Fixes LCP by ensuring a local-CDN image paints without waiting
+           for the backend to respond. Hidden once API images are available. -->
+      <img
+        *ngIf="slider().length === 0"
+        class="hero-slide hero-slide--placeholder"
+        src="images/hero-placeholder.webp"
+        alt="Serk Visuals photography studio"
+        loading="eager"
+        fetchpriority="high"
+        width="800"
+        height="533"
+      />
       <img
         class="hero-slide"
         *ngFor="let s of slider(); trackBy: trackByGallery; let i = index"
         [src]="s.thumbnail || s.url"
         [alt]="s.title"
-        loading="eager"
+        [loading]="i === 0 ? 'eager' : 'lazy'"
+        [attr.fetchpriority]="i === 0 ? 'high' : null"
         width="1600"
         height="900"
         (error)="onImgError($event)"
@@ -107,8 +121,8 @@
       [src]="f.thumbnail || f.url"
       [alt]="f.title"
       loading="lazy"
-      width="1200"
-      height="800"
+      width="400"
+      height="267"
       (click)="lb.open(featured(), i)"
       (error)="onImgError($event)"
     />

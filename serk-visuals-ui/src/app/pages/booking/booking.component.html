@@ -86,15 +86,24 @@
         <div class="session-options" [formGroup]="bookingDetails">
           @for (field of currentConfig.fields; track field.key) {
             <div class="option-field" [class.option-field--full]="field.type === 'checkbox-group' || field.type === 'textarea'">
-              <span class="option-label">
-                {{ field.label }}
-                @if (field.required) { <span class="req" aria-hidden="true">*</span> }
-              </span>
+
+              <!-- For single controls use <label for>; for groups use <span> + aria-labelledby -->
+              @if (field.type === 'select' || field.type === 'textarea' || field.type === 'text') {
+                <label [for]="'field-' + field.key" class="option-label">
+                  {{ field.label }}
+                  @if (field.required) { <span class="req" aria-hidden="true">*</span> }
+                </label>
+              } @else {
+                <span class="option-label" [id]="'grp-' + field.key">
+                  {{ field.label }}
+                  @if (field.required) { <span class="req" aria-hidden="true">*</span> }
+                </span>
+              }
 
               @switch (field.type) {
 
                 @case ('select') {
-                  <select [formControlName]="field.key" class="option-select"
+                  <select [id]="'field-' + field.key" [formControlName]="field.key" class="option-select"
                     [class.is-invalid]="bookingDetails.get(field.key)?.touched && bookingDetails.get(field.key)?.invalid">
                     @for (opt of field.options ?? []; track opt.value) {
                       <option [value]="opt.value">
@@ -111,7 +120,7 @@
                 }
 
                 @case ('radio') {
-                  <div class="radio-group">
+                  <div class="radio-group" role="group" [attr.aria-labelledby]="'grp-' + field.key">
                     @for (opt of field.options ?? []; track opt.value) {
                       <label class="radio-item">
                         <input type="radio" [formControlName]="field.key" [value]="opt.value" />
@@ -122,7 +131,7 @@
                 }
 
                 @case ('checkbox-group') {
-                  <div class="checkbox-group">
+                  <div class="checkbox-group" role="group" [attr.aria-labelledby]="'grp-' + field.key">
                     @for (opt of field.options ?? []; track opt.value) {
                       <label class="checkbox-item">
                         <input type="checkbox"
@@ -142,7 +151,7 @@
                 }
 
                 @case ('textarea') {
-                  <textarea [formControlName]="field.key"
+                  <textarea [id]="'field-' + field.key" [formControlName]="field.key"
                     [rows]="field.rows ?? 3"
                     [placeholder]="field.placeholder ?? ''"
                     class="option-textarea"
@@ -150,7 +159,7 @@
                 }
 
                 @case ('text') {
-                  <input type="text" [formControlName]="field.key"
+                  <input [id]="'field-' + field.key" type="text" [formControlName]="field.key"
                     [placeholder]="field.placeholder ?? ''"
                     class="option-text"
                   />

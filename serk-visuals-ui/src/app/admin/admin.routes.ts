@@ -1,6 +1,4 @@
 import { Routes } from '@angular/router';
-import { ContactAdminListComponent } from './admin-contact-us/contact-admin-list.component';
-// (Detail component no longer used for "Open" flow)
 
 export const ADMIN_ROUTES: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
@@ -21,7 +19,13 @@ export const ADMIN_ROUTES: Routes = [
   },
 
   // Contacts: list only; "Open" uses modal on same page
-  { path: 'contact', component: ContactAdminListComponent },
+  {
+    path: 'contact',
+    loadComponent: () =>
+      import('./admin-contact-us/contact-admin-list.component').then(
+        (m) => m.ContactAdminListComponent
+      ),
+  },
 
   {
     path: 'projects',

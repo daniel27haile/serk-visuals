@@ -148,8 +148,10 @@ export class AdminGalleryComponent implements OnInit {
       if (v.image) {
         imageUpload = await this.uploadService.upload(v.image, 'uploads/gallery');
       }
-      if (v.thumb) {
-        thumbUpload = await this.uploadService.upload(v.thumb, 'uploads/gallery');
+      // Auto-generate thumbnail when none was explicitly provided
+      const thumbFile = v.thumb ?? (v.image ? await this.generateThumbnail(v.image) : null);
+      if (thumbFile) {
+        thumbUpload = await this.uploadService.upload(thumbFile, 'uploads/gallery');
       }
 
       const payload = {
@@ -234,6 +236,41 @@ export class AdminGalleryComponent implements OnInit {
       console.error(e);
       alert('Failed to delete.');
     }
+  }
+
+  /**
+   * Generates a compressed WebP thumbnail (max 800px wide) from a File
+   * using the browser Canvas API. Returns null if the browser doesn't
+   * support canvas-to-blob or the file isn't an image.
+   */
+  private generateThumbnail(file: File, maxWidth = 800, quality = 0.75): Promise<File | null> {
+    return new Promise(resolve => {
+      if (!file.type.startsWith('image/')) { resolve(null); return; }
+
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const scale = img.naturalWidth > maxWidth ? maxWidth / img.naturalWidth : 1;
+        const w = Math.round(img.naturalWidth * scale);
+        const h = Math.round(img.naturalHeight * scale);
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) { resolve(null); return; }
+        ctx.drawImage(img, 0, 0, w, h);
+
+        canvas.toBlob(blob => {
+          if (!blob) { resolve(null); return; }
+          const thumbName = file.name.replace(/\.[^.]+$/, '') + '_thumb.webp';
+          resolve(new File([blob], thumbName, { type: 'image/webp' }));
+        }, 'image/webp', quality);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+      img.src = url;
+    });
   }
 
   trackById = (_: number, it: GalleryItem) => it._id!;

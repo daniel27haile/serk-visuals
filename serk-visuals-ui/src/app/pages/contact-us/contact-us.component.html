@@ -86,8 +86,8 @@
         </button>
       </div>
 
-      <!-- Honeypot -->
-      <input formControlName="hp" class="hp" tabindex="-1" autocomplete="off" />
+      <!-- Honeypot — hidden from AT via aria-hidden -->
+      <input formControlName="hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
     </form>
   }
 
@@ -103,7 +103,7 @@
       </p>
       <p>
         Instagram:
-        <a href="https://instagram.com/serk_visuals" target="_blank" rel="noopener">
+        <a href="https://instagram.com/serk_visuals" target="_blank" rel="noopener noreferrer">
           &#64;serk_visuals
         </a>
       </p>

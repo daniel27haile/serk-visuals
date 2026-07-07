@@ -40,7 +40,7 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
   ];
   album = signal<Album | ''>(''); // '' = all
   page = signal(1);
-  limit = signal(24);
+  limit = signal(12);
   loading = signal(true);
   error = signal<string | null>(null);
 
@@ -113,7 +113,6 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
       this.items.set(res.items ?? []);
       this.total.set(res.total ?? 0);
     } catch (e: any) {
-      console.error(e);
       this.error.set(e?.error?.message || 'Failed to load gallery.');
       this.items.set([]);
       this.total.set(0);

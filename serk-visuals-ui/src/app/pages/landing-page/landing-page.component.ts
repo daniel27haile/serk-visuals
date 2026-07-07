@@ -102,7 +102,6 @@ export class LandingPageComponent implements OnDestroy {
       this.slider.set(items);
       if (this.index() >= items.length) this.index.set(0);
     } catch (e: any) {
-      console.error(e);
       this.errorSlider.set(e?.error?.message || 'Failed to load slider.');
       this.slider.set([]);
     } finally {
@@ -124,7 +123,6 @@ export class LandingPageComponent implements OnDestroy {
       );
       this.featured.set(res.items ?? []);
     } catch (e: any) {
-      console.error(e);
       this.errorFeatured.set(e?.error?.message || 'Failed to load featured.');
       this.featured.set([]);
     } finally {
@@ -147,7 +145,6 @@ export class LandingPageComponent implements OnDestroy {
       this.testimonials.set(items);
       if (this.tIndex() >= items.length) this.tIndex.set(0);
     } catch (e: any) {
-      console.error(e);
       this.errorTestimonials.set(
         e?.error?.message || 'Failed to load testimonials.'
       );

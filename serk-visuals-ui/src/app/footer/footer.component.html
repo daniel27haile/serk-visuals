@@ -5,12 +5,16 @@
     <!-- Brand -->
     <div class="footer-brand">
       <a [routerLink]="['/home']" class="footer-logo" aria-label="Serk Visuals — Home">
-        <img
-          src="images/serkvisuals_logo.png"
-          alt="Serk Visuals"
-          width="140"
-          height="75"
-        />
+        <picture>
+          <source srcset="images/serkvisuals_logo.webp" type="image/webp" />
+          <img
+            src="images/serkvisuals_logo.png"
+            alt="Serk Visuals"
+            width="140"
+            height="93"
+            loading="lazy"
+          />
+        </picture>
       </a>
       <p class="footer-brand__desc">
         Photography &amp; Videography — capturing stories, emotions,

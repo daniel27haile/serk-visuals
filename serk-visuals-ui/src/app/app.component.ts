@@ -65,8 +65,15 @@ export class AppComponent implements OnInit {
       this.meta.updateTag({ property: 'og:title', content: pageTitle });
       this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
 
-      // Canonical URL and og:url
+      // noindex for admin pages
       const path = e.urlAfterRedirects.split('?')[0].split('#')[0];
+      if (path.startsWith('/admin')) {
+        this.meta.updateTag({ name: 'robots', content: 'noindex, nofollow' });
+      } else {
+        this.meta.updateTag({ name: 'robots', content: 'index, follow' });
+      }
+
+      // Canonical URL and og:url
       const canonical = 'https://serkvisuals.com' + (path === '/' ? '' : path);
       this.meta.updateTag({ property: 'og:url', content: canonical });
 

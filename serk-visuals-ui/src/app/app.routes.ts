@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { PublicLayoutsComponent } from './layouts/public-layouts/public-layouts.component';
-import { AdminLayoutsComponent } from './layouts/admin-layouts/admin-layouts.component';
 import { ADMIN_ROUTES } from './admin/admin.routes';
 import { adminAuthGuard } from './admin/auth/admin-auth.guard';
 
@@ -97,7 +96,10 @@ export const routes = [
 
   {
     path: 'admin',
-    component: AdminLayoutsComponent,
+    loadComponent: () =>
+      import('./layouts/admin-layouts/admin-layouts.component').then(
+        (m) => m.AdminLayoutsComponent
+      ),
     canMatch: [adminAuthGuard],
     children: ADMIN_ROUTES,
   },

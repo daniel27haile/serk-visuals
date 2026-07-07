@@ -49,4 +49,12 @@ export const ADMIN_ROUTES: Routes = [
       ),
     title: 'Admin • Testimonials',
   },
+  {
+    path: 'pricing',
+    loadComponent: () =>
+      import('./admin-pricing/admin-pricing.component').then(
+        (m) => m.AdminPricingComponent
+      ),
+    title: 'Admin • Pricing',
+  },
 ];

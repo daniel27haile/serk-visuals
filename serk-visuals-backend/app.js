@@ -21,6 +21,8 @@ const contactUsRoutes = require("./routes/contactus_routes");
 const authRoutes = require("./routes/auth_routes");
 const testimonialRoutes = require("./routes/testimonial_routes");
 const uploadSignRoutes = require("./routes/upload_sign_routes");
+const pricingConfigRoutes = require("./routes/pricing_config_routes");
+const adminPricingConfigRoutes = require("./routes/admin_pricing_config_routes");
 
 const app = express();
 
@@ -33,7 +35,12 @@ const ALLOWLIST = rawOrigins.split(",").map((s) => s.trim());
 app.use(
   cors({
     origin: (origin, cb) => {
-      if (!origin || ALLOWLIST.includes(origin)) return cb(null, true);
+      // No origin = same-origin / server-to-server / curl — allow
+      if (!origin) return cb(null, true);
+      // Any localhost port — always allowed for local development
+      if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return cb(null, true);
+      // Production allowlist
+      if (ALLOWLIST.includes(origin)) return cb(null, true);
       return cb(new Error("Not allowed by CORS"));
     },
     credentials: true,
@@ -62,6 +69,8 @@ app.use("/api/contact", contactUsRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/uploads", uploadSignRoutes);
+app.use("/api/pricing-config", pricingConfigRoutes);
+app.use("/api/admin/pricing-config", adminPricingConfigRoutes);
 
 /** Health */
 app.get("/health", (_req, res) => res.status(200).send("OK"));
@@ -90,7 +99,7 @@ const PORT = process.env.PORT || 3500;
 
     // Optional: seed admin AFTER DB connected
     const User = require("./models/user");
-    const argon2 = require("argon2");
+    const bcrypt = require("bcryptjs");
 
     const email = (process.env.ADMIN_EMAIL || "").toLowerCase().trim();
     const password = process.env.ADMIN_PASSWORD;
@@ -99,7 +108,7 @@ const PORT = process.env.PORT || 3500;
     if (email && password) {
       // Always re-hash and upsert so that changing ADMIN_PASSWORD in env
       // and redeploying immediately takes effect without manual DB edits.
-      const passwordHash = await argon2.hash(password);
+      const passwordHash = await bcrypt.hash(password, 12);
       const existing = await User.findOne({ email });
       if (!existing) {
         await User.create({ email, passwordHash, role: "admin", name });

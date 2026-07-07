@@ -5,6 +5,10 @@ import {
   Booking,
   BookingCreateDto,
   BookingStatus,
+  SlotDay,
+  SlotsResponse,
+  DayAvailability,
+  MonthAvailability,
 } from '../models/booking.model';
 import { environment } from '../../../environments/environment';
 
@@ -32,6 +36,38 @@ export class BookingsService {
       `${BASE}/availability`,
       { params }
     );
+  }
+
+  /** GET /api/bookings/availability — returns available/taken/unavailable slots. duration in hours. */
+  getDayAvailability(date: string, durationHours: number): Observable<DayAvailability> {
+    const params = new HttpParams()
+      .set('date', date)
+      .set('duration', String(durationHours));
+    return this.http.get<DayAvailability>(`${BASE}/availability`, { params });
+  }
+
+  /** GET /api/bookings/month-availability — returns day statuses. duration in hours. */
+  getMonthAvailability(month: string, durationHours: number): Observable<MonthAvailability> {
+    const params = new HttpParams()
+      .set('month', month)
+      .set('duration', String(durationHours));
+    return this.http.get<MonthAvailability>(`${BASE}/month-availability`, { params });
+  }
+
+  /** GET /api/bookings/next-availability — duration in hours. */
+  getNextAvailability(durationHours: number, limit = 7): Observable<SlotDay[]> {
+    const params = new HttpParams()
+      .set('duration', String(durationHours))
+      .set('limit', String(limit));
+    return this.http.get<SlotDay[]>(`${BASE}/next-availability`, { params });
+  }
+
+  /** Legacy: GET /api/bookings/slots — duration in minutes. */
+  getSlots(date: string, durationMinutes: number): Observable<SlotsResponse> {
+    const params = new HttpParams()
+      .set('date', date)
+      .set('duration', String(durationMinutes));
+    return this.http.get<SlotsResponse>(`${BASE}/slots`, { params });
   }
 
   list(

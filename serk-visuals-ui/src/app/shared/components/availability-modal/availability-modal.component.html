@@ -1,0 +1,337 @@
+@if (open) {
+<div class="modal-backdrop" (click)="close()" role="dialog" aria-modal="true" aria-label="Select Date & Time">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <!-- ── Header ─────────────────────────────────────────── -->
+    <div class="modal__header">
+      <div class="modal__header-text">
+        <h2 class="modal__title">Select Date &amp; Time</h2>
+        <p class="modal__subtitle">Choose a date, duration, and available time for your session</p>
+      </div>
+      <button class="modal__close" (click)="close()" aria-label="Close modal">&#x2715;</button>
+    </div>
+
+    <!-- ── API fallback notice ───────────────────────────── -->
+    @if (apiFallback()) {
+      <div class="api-fallback-banner" role="alert">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        Availability may not reflect real-time data. Contact us to confirm your time slot.
+      </div>
+    }
+
+    <!-- ── Body: Calendar + Slots ────────────────────────── -->
+    <div class="modal__body">
+
+      <!-- Left: Calendar panel -->
+      <div class="cal-panel">
+
+        <!-- Month nav -->
+        <div class="cal-nav">
+          <button class="cal-nav__btn" (click)="prevMonth()" aria-label="Previous month">&#8249;</button>
+          <span class="cal-nav__label">{{ monthLabel }}</span>
+          <button class="cal-nav__btn" (click)="nextMonth()" aria-label="Next month">&#8250;</button>
+        </div>
+
+        <!-- Day-of-week headers -->
+        <div class="cal-grid">
+          @for (dow of DOW_HEADERS; track dow) {
+            <div class="cal-grid__dow">{{ dow }}</div>
+          }
+
+          <!-- Calendar days -->
+          @for (day of calendarGrid(); track $index) {
+            <div
+              class="cal-grid__day"
+              [class.cal-day--empty]="!day.dayNum"
+              [class.cal-day--today]="day.isToday"
+              [class.cal-day--selected]="day.isSelected"
+              [class.cal-day--past]="day.isPast"
+              [class.cal-day--sunday]="isSunday(day)"
+              [class.cal-day--available]="!day.isPast && !isSunday(day) && day.status === 'available'"
+              [class.cal-day--booked]="!day.isPast && !isSunday(day) && day.status === 'fully-booked'"
+              [class.cal-day--unavailable]="!day.dayNum || day.isPast || isSunday(day) || day.status === 'unavailable'"
+              [class.cal-day--clickable]="day.date && !day.isPast && !isSunday(day)"
+              (click)="selectDay(day)"
+            >
+              @if (day.dayNum) {
+                <span class="cal-day__num">{{ day.dayNum }}</span>
+                @if (!day.isPast) {
+                  <span
+                    class="cal-day__dot"
+                    [class.dot--available]="day.status === 'available'"
+                    [class.dot--booked]="day.status === 'fully-booked'"
+                    [class.dot--unavailable]="day.status === 'unavailable'"
+                  ></span>
+                }
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Legend -->
+        <div class="cal-legend">
+          <span class="legend-item">
+            <span class="legend-dot dot--available"></span>Available
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot dot--booked"></span>Fully Booked
+          </span>
+          <span class="legend-item">
+            <span class="legend-dot dot--unavailable"></span>Unavailable
+          </span>
+          <span class="legend-item">
+            <span class="legend-selected-swatch"></span>Selected
+          </span>
+        </div>
+
+        <!-- Business hours -->
+        <div class="cal-hours">
+          <svg class="cal-hours__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <div>
+            <div class="cal-hours__line">Mon – Sat &nbsp;·&nbsp; 10:00 AM – 6:00 PM</div>
+            <div class="cal-hours__line cal-hours__line--closed">Sunday: Closed</div>
+          </div>
+        </div>
+
+      </div><!-- /cal-panel -->
+
+      <!-- Right: Slots panel -->
+      <div class="slots-panel">
+
+        @if (!selectedDate()) {
+          <!-- Step 1: No date selected yet -->
+          <div class="slots-empty">
+            <svg class="slots-empty__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <p>Select a date from the calendar to get started</p>
+          </div>
+        }
+
+        @if (selectedDate()) {
+
+          <!-- Selected date heading -->
+          <div class="slots-date">{{ formatDateDisplay(selectedDate()!) }}</div>
+
+          <!-- ── Duration selector ──────────────────────── -->
+          <div class="duration-block">
+            <label class="duration-block__label" for="modal-duration">
+              Session Duration <span class="req">*</span>
+            </label>
+            <select
+              id="modal-duration"
+              class="duration-block__select"
+              [ngModel]="selectedDuration() ?? ''"
+              (ngModelChange)="onDurationChange($event)"
+            >
+              <option value="" disabled>Select session duration</option>
+              @for (opt of durationOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+            <p class="duration-block__hint">Required to calculate available time slots and estimated price.</p>
+          </div>
+
+          @if (!hasDuration()) {
+            <!-- Step 2: Date selected, waiting for duration -->
+            <div class="slots-need-duration">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <p>Select a session duration to view available time slots.</p>
+            </div>
+          }
+
+          @if (hasDuration()) {
+
+            @if (loadingDay()) {
+              <div class="slots-loading">
+                <span class="spinner"></span> Loading availability&hellip;
+              </div>
+            }
+
+            @if (!loadingDay() && dayAvail()) {
+
+              @if (allSlots().length === 0) {
+                <div class="slots-no-business">This date is not available for booking.</div>
+              }
+
+              @if (allSlots().length > 0) {
+
+                <!-- Fully booked message -->
+                @if (dayAvail()!.availableSlots.length === 0) {
+                  <div class="fully-booked">
+                    <div class="fully-booked__title">Fully booked on this date</div>
+                    <p class="fully-booked__text">Here are the next available sessions:</p>
+
+                    @if (loadingNext()) {
+                      <div class="slots-loading"><span class="spinner"></span> Finding slots&hellip;</div>
+                    }
+
+                    @if (!loadingNext() && nextAvailDays().length) {
+                      <div class="next-avail-chips">
+                        @for (day of nextAvailDays().slice(0, 4); track day.date) {
+                          <button class="next-chip" (click)="jumpToDate(day.date)">
+                            <span class="next-chip__date">{{ formatDateShort(day.date) }}</span>
+                            <span class="next-chip__slots">{{ day.slots.length }} slot{{ day.slots.length !== 1 ? 's' : '' }}</span>
+                          </button>
+                        }
+                      </div>
+                      <button class="btn-next-avail" (click)="jumpToNextAvailable()">
+                        Next Available
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                          <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                        </svg>
+                      </button>
+                    }
+
+                    @if (!loadingNext() && !nextAvailDays().length) {
+                      <p class="fully-booked__none">No availability found in the next 90 days.</p>
+                    }
+                  </div>
+                }
+
+                <!-- Time slot grid -->
+                @if (dayAvail()!.availableSlots.length > 0) {
+                  <div class="slots-heading">
+                    <span class="slots-heading__title">Available Time Slots</span>
+                    <span class="slots-heading__sub">Based on your selected session duration</span>
+                  </div>
+                }
+
+                <div class="slots-grid">
+                  @for (time of allSlots(); track time) {
+                    <button
+                      class="slot"
+                      [class.slot--available]="slotClass(time) === 'slot--available'"
+                      [class.slot--taken]="slotClass(time) === 'slot--taken'"
+                      [class.slot--unavailable]="slotClass(time) === 'slot--unavailable'"
+                      [class.slot--selected]="slotClass(time) === 'slot--selected'"
+                      [disabled]="isDisabled(time)"
+                      (click)="selectTime(time)"
+                      [attr.aria-pressed]="slotClass(time) === 'slot--selected'"
+                    >
+                      <span class="slot__range">{{ time }} – {{ calculateEndTimeFromAmPm(time, selectedDuration()!) }}</span>
+                      @if (slotClass(time) === 'slot--taken') {
+                        <span class="slot__tag slot__tag--taken">Booked</span>
+                      } @else if (slotClass(time) === 'slot--unavailable' && slotClass(time) !== 'slot--selected') {
+                        <span class="slot__tag slot__tag--unavail">N/A</span>
+                      }
+                    </button>
+                  }
+                </div>
+
+              }
+            }
+
+          }
+
+        }<!-- /selectedDate -->
+
+        <!-- ── Booking Summary (progressive, always at bottom) ── -->
+        <div class="slots-summary-area">
+          <div class="bsm">
+            <div class="bsm__header">
+              <svg class="bsm__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+              <span class="bsm__title">Booking Summary</span>
+            </div>
+
+            @if (!selectedDate()) {
+              <!-- Nothing selected -->
+              <p class="bsm__hint">Select a date, session duration, and available time to continue.</p>
+
+            } @else if (!hasDuration()) {
+              <!-- Date only -->
+              <div class="bsm__rows">
+                <div class="bsm__row">
+                  <span class="bsm__label">Date</span>
+                  <span class="bsm__value">{{ formatDateDisplay(selectedDate()!) }}</span>
+                </div>
+              </div>
+              <p class="bsm__waiting">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Select a session duration to continue.
+              </p>
+
+            } @else if (!selectedTime()) {
+              <!-- Date + Duration only -->
+              <div class="bsm__rows">
+                <div class="bsm__row">
+                  <span class="bsm__label">Date</span>
+                  <span class="bsm__value">{{ formatDateDisplay(selectedDate()!) }}</span>
+                </div>
+                <div class="bsm__row">
+                  <span class="bsm__label">Duration</span>
+                  <span class="bsm__value">{{ durationLabel(selectedDuration()!) }}</span>
+                </div>
+              </div>
+              <p class="bsm__waiting">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Select an available time slot to continue.
+              </p>
+
+            } @else {
+              <!-- All selected — full summary -->
+              @if (sessionType) {
+                <div class="bsm__session">{{ sessionType }} Session</div>
+              }
+              <div class="bsm__rows">
+                <div class="bsm__row">
+                  <span class="bsm__label">Date</span>
+                  <span class="bsm__value">{{ formatDateDisplay(selectedDate()!) }}</span>
+                </div>
+                <div class="bsm__row">
+                  <span class="bsm__label">Time</span>
+                  <span class="bsm__value bsm__value--accent">{{ selectedTime() }} – {{ calculateEndTimeFromAmPm(selectedTime()!, selectedDuration()!) }}</span>
+                </div>
+                <div class="bsm__row">
+                  <span class="bsm__label">Duration</span>
+                  <span class="bsm__value">{{ durationLabel(selectedDuration()!) }}</span>
+                </div>
+                @if (estimatedPrice() !== null) {
+                  <div class="bsm__row bsm__row--price">
+                    <span class="bsm__label">Estimated Price</span>
+                    <span class="bsm__value bsm__value--price">${{ estimatedPrice() }}</span>
+                  </div>
+                  <div class="bsm__row">
+                    <span class="bsm__label">Travel Fee</span>
+                    <span class="bsm__value bsm__value--dim">Included</span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+      </div><!-- /slots-panel -->
+    </div><!-- /modal__body -->
+
+    <!-- ── Footer ─────────────────────────────────────────── -->
+    <div class="modal__footer">
+      @if (validationError()) {
+        <p class="footer-error" role="alert" aria-live="assertive">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ validationError() }}
+        </p>
+      }
+      <button class="btn-cancel" (click)="close()">Cancel</button>
+      <button class="btn-confirm" [disabled]="!hasSelection()" (click)="confirm()">
+        Use This Time
+      </button>
+    </div>
+
+  </div><!-- /modal -->
+</div><!-- /modal-backdrop -->
+}

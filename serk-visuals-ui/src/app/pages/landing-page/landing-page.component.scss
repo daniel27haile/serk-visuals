@@ -731,6 +731,66 @@
   }
 }
 
+// ── Services Overview section ─────────────────────────────
+.services-overview__intro {
+  max-width: 60ch;
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.services-overview__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+
+  @media (min-width: 480px) { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 900px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.overview-card {
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+
+  h3 {
+    margin: 0;
+    font-size: var(--text-lg);
+    font-weight: var(--weight-bold);
+    color: var(--color-text);
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--text-base);
+    color: var(--color-text-muted);
+    line-height: 1.6;
+  }
+}
+
+.overview-card__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  margin-bottom: .25rem;
+}
+
+// ── Service Area section ──────────────────────────────────
+.service-area {
+  border-top: 1px solid var(--color-border);
+
+  .lead { max-width: 68ch; }
+}
+
 // Tablet (640px–1023px)
 @media (min-width: 640px) {
   .hero-slider  { height: clamp(340px, 50vh, 520px); }

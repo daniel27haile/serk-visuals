@@ -11,10 +11,10 @@ export const routes = [
     children: [
       {
         path: '',
-        title: 'Serk Visuals | Professional Photography & Videography',
+        title: 'Serk Visuals | Wedding & Portrait Photographer in Seattle, WA',
         data: {
           description:
-            'Serk Visuals — professional photography and videography for weddings, events, portraits, and brands. Book your session today.',
+            'Serk Visuals — professional photography and videography for weddings, portraits, events, branding, and real estate in Seattle, Mill Creek, Everett, and across the greater Puget Sound region.',
         },
         loadComponent: () =>
           import('./pages/landing-page/landing-page.component').then(
@@ -25,10 +25,10 @@ export const routes = [
 
       {
         path: 'contact',
-        title: 'Contact Us | Serk Visuals',
+        title: 'Contact Serk Visuals | Seattle Photography Studio',
         data: {
           description:
-            'Get in touch with Serk Visuals to book a session or ask about photography and videography services.',
+            'Get in touch with Serk Visuals to book a session or ask about photography and videography services in Seattle, Bellevue, Everett, Kirkland, and surrounding areas.',
         },
         loadComponent: () =>
           import('./pages/contact-us/contact-us.component').then(
@@ -37,10 +37,10 @@ export const routes = [
       },
       {
         path: 'about-us',
-        title: 'About Us | Serk Visuals',
+        title: 'About Serk Visuals | Seattle Photography & Videography Studio',
         data: {
           description:
-            'Learn about Serk Visuals — a passionate photography and videography studio dedicated to capturing your most meaningful moments.',
+            'Meet the team behind Serk Visuals — a passionate photography and videography studio based in the Seattle area, dedicated to capturing weddings, portraits, events, and brands with intention.',
         },
         loadComponent: () =>
           import('./pages/about-us/about-us.component').then(
@@ -49,10 +49,10 @@ export const routes = [
       },
       {
         path: 'gallery',
-        title: 'Gallery | Serk Visuals',
+        title: 'Photography Portfolio | Weddings, Portraits & Events — Serk Visuals',
         data: {
           description:
-            'Browse the Serk Visuals portfolio — weddings, events, portraits, product photography, and more.',
+            'Browse the Serk Visuals portfolio — wedding photography, portrait sessions, corporate events, branding shoots, real estate photography, and videography across the Seattle and Puget Sound area.',
         },
         loadComponent: () =>
           import('./pages/gallery/gallery.component').then(
@@ -61,10 +61,10 @@ export const routes = [
       },
       {
         path: 'services',
-        title: 'Services | Serk Visuals',
+        title: 'Photography & Videography Services in Seattle | Serk Visuals',
         data: {
           description:
-            'Explore Serk Visuals services — photography, videography, photo & video editing, and website development.',
+            'Explore all Serk Visuals services — wedding photography, event photography, portrait sessions, branding shoots, real estate photography, videography, and professional photo and video editing.',
         },
         loadComponent: () =>
           import('./pages/services/services.component').then(
@@ -73,10 +73,10 @@ export const routes = [
       },
       {
         path: 'bookings',
-        title: 'Book a Session | Serk Visuals',
+        title: 'Book a Photography Session | Serk Visuals Seattle',
         data: {
           description:
-            'Book your photography or videography session with Serk Visuals. Weddings, events, portraits, and commercial work.',
+            'Ready to book? Schedule your wedding, portrait, event, branding, or real estate photography session with Serk Visuals. Serving Seattle, Bellevue, Kirkland, Everett, and surrounding Washington communities.',
         },
         loadComponent: () =>
           import('./pages/booking/booking.component').then(

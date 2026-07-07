@@ -1,8 +1,8 @@
 import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { Meta } from '@angular/platform-browser';
-import { ViewportScroller, isPlatformBrowser } from '@angular/common';
-import { filter, map } from 'rxjs/operators';
+import { Meta, Title } from '@angular/platform-browser';
+import { DOCUMENT, ViewportScroller, isPlatformBrowser } from '@angular/common';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +15,8 @@ export class AppComponent implements OnInit {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
   private meta = inject(Meta);
+  private titleService = inject(Title);
+  private doc = inject(DOCUMENT);
   private scroller = inject(ViewportScroller);
   private platformId = inject(PLATFORM_ID);
 
@@ -43,19 +45,38 @@ export class AppComponent implements OnInit {
       });
     }
 
-    // Update meta description on every navigation.
+    // Update meta tags and canonical on every navigation.
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
-      map(() => {
-        let route = this.activatedRoute;
-        while (route.firstChild) route = route.firstChild;
-        return route.snapshot.data['description'] as string | undefined;
-      }),
-    ).subscribe(description => {
+    ).subscribe((e: NavigationEnd) => {
+      let route = this.activatedRoute;
+      while (route.firstChild) route = route.firstChild;
+      const data = route.snapshot.data;
+      const description = data['description'] as string | undefined;
+
       if (description) {
         this.meta.updateTag({ name: 'description', content: description });
         this.meta.updateTag({ property: 'og:description', content: description });
+        this.meta.updateTag({ name: 'twitter:description', content: description });
       }
+
+      // Sync og:title and twitter:title with the page <title>
+      const pageTitle = this.titleService.getTitle();
+      this.meta.updateTag({ property: 'og:title', content: pageTitle });
+      this.meta.updateTag({ name: 'twitter:title', content: pageTitle });
+
+      // Canonical URL and og:url
+      const path = e.urlAfterRedirects.split('?')[0].split('#')[0];
+      const canonical = 'https://serkvisuals.com' + (path === '/' ? '' : path);
+      this.meta.updateTag({ property: 'og:url', content: canonical });
+
+      let canonicalEl = this.doc.querySelector("link[rel='canonical']") as HTMLLinkElement | null;
+      if (!canonicalEl) {
+        canonicalEl = this.doc.createElement('link');
+        canonicalEl.setAttribute('rel', 'canonical');
+        this.doc.head.appendChild(canonicalEl);
+      }
+      canonicalEl.setAttribute('href', canonical);
     });
   }
 }

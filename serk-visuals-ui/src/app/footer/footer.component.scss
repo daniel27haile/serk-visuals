@@ -68,6 +68,15 @@
   max-width: 30ch;
 }
 
+.footer-brand__area {
+  margin: 0;
+  font-size: .78rem;
+  line-height: 1.6;
+  color: var(--footer-desc);
+  opacity: .75;
+  max-width: 34ch;
+}
+
 // ── Social icons ──────────────────────────────────────────
 .footer-socials {
   display: flex;

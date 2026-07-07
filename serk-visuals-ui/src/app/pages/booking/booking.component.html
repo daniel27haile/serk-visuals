@@ -1,14 +1,25 @@
 <section class="wrap">
-  <h2>Book a Session</h2>
+  <h1 class="booking-title">Book a Photography Session</h1>
 
-  <!-- Show the form until submitted -->
+  <!-- Availability Modal -->
+  <app-availability-modal
+    [open]="modalOpen()"
+    [durationMinutes]="form.controls.durationMinutes.value"
+    [sessionType]="form.controls.type.value"
+    (closed)="onModalClosed()"
+    (slotSelected)="onSlotSelected($event)"
+  ></app-availability-modal>
+
+  <!-- Form / Success toggle -->
   <ng-container *ngIf="!submitted(); else successTpl">
     <form [formGroup]="form" (ngSubmit)="submit()" class="card" novalidate>
+
+      <!-- ── Section: Contact Info ─────────────────────────── -->
+      <p class="section-label">Your Information</p>
       <div class="grid">
         <div class="field-wrap">
-          <label for="name">
-            Name *
-            <input id="name" formControlName="name" placeholder="Your full name..." autocomplete="name"
+          <label for="name">Name *
+            <input id="name" formControlName="name" placeholder="Your full name" autocomplete="name"
               [class.is-invalid]="form.controls['name'].touched && form.controls['name'].invalid" />
           </label>
           <div class="field-errors" *ngIf="form.controls['name'].touched && form.controls['name'].invalid">
@@ -18,9 +29,8 @@
         </div>
 
         <div class="field-wrap">
-          <label for="email">
-            Email *
-            <input id="email" formControlName="email" type="email" placeholder="Your Email..." autocomplete="email"
+          <label for="email">Email *
+            <input id="email" formControlName="email" type="email" placeholder="your@email.com" autocomplete="email"
               [class.is-invalid]="form.controls['email'].touched && form.controls['email'].invalid" />
           </label>
           <div class="field-errors" *ngIf="form.controls['email'].touched && form.controls['email'].invalid">
@@ -29,82 +39,280 @@
           </div>
         </div>
 
-        <label for="phone">
-          Phone
-          <input id="phone" formControlName="phone" type="tel" placeholder="Your Phone Number..." autocomplete="tel" />
+        <label for="phone">Phone
+          <input id="phone" formControlName="phone" type="tel" placeholder="(206) 000-0000" autocomplete="tel" />
         </label>
 
-        <label for="type">
-          Type
+        <label for="preferred-contact">Preferred Contact
+          <select id="preferred-contact" formControlName="preferredContactMethod">
+            <option value="">Select a method</option>
+            <option *ngFor="let m of contactMethods" [value]="m">{{ m }}</option>
+          </select>
+        </label>
+      </div>
+
+      <!-- ── Section: Session Details ──────────────────────── -->
+      <p class="section-label">Session Details</p>
+      <div class="grid">
+        <label for="type">Session Type
           <select id="type" formControlName="type">
-            <option *ngFor="let t of types" [value]="t.value">{{ t.label }}</option>
+            <option *ngFor="let t of sessionTypes" [value]="t.value">{{ t.label }}</option>
           </select>
         </label>
 
-        <div class="field-wrap">
-          <label for="date">
-            Date *
-            <input id="date" formControlName="date" type="date" autocomplete="off"
-              [class.is-invalid]="form.controls['date'].touched && form.controls['date'].invalid" />
+        <div class="field-wrap full">
+          <label for="location">Location / Venue *
+            <input id="location" formControlName="location" placeholder="Address, park, studio, etc."
+              [class.is-invalid]="form.controls['location'].touched && form.controls['location'].invalid" />
           </label>
-          <div class="field-errors" *ngIf="form.controls['date'].touched && form.controls['date'].invalid">
-            <small *ngIf="form.controls['date'].errors?.['required']">Date is required.</small>
+          <div class="field-errors" *ngIf="form.controls['location'].touched && form.controls['location'].invalid">
+            <small>Location is required.</small>
           </div>
         </div>
+      </div>
 
-        <div class="field-wrap">
-          <label for="time">
-            Time *
-            <input id="time" formControlName="time" type="time" step="60" autocomplete="off"
-              [class.is-invalid]="form.controls['time'].touched && form.controls['time'].invalid" />
-          </label>
-          <div class="field-errors" *ngIf="form.controls['time'].touched && form.controls['time'].invalid">
-            <small *ngIf="form.controls['time'].errors?.['required']">Time is required.</small>
+      <!-- ── Section: Session Options (dynamic per type) ───── -->
+      @if (currentConfig.fields.length > 0) {
+        <p class="section-label">{{ currentConfig.label }} Options</p>
+
+        <!-- Dynamic pricing config loading/error (Real Estate + Product) -->
+        @if ((isRealEstate || isProduct) && pricingConfigLoading()) {
+          <p class="pricing-loading">Loading pricing…</p>
+        }
+        @if ((isRealEstate || isProduct) && pricingConfigError()) {
+          <p class="pricing-error">{{ pricingConfigError() }}</p>
+        }
+
+        <div class="session-options" [formGroup]="bookingDetails">
+          @for (field of currentConfig.fields; track field.key) {
+            <div class="option-field" [class.option-field--full]="field.type === 'checkbox-group' || field.type === 'textarea'">
+              <span class="option-label">
+                {{ field.label }}
+                @if (field.required) { <span class="req" aria-hidden="true">*</span> }
+              </span>
+
+              @switch (field.type) {
+
+                @case ('select') {
+                  <select [formControlName]="field.key" class="option-select"
+                    [class.is-invalid]="bookingDetails.get(field.key)?.touched && bookingDetails.get(field.key)?.invalid">
+                    @for (opt of field.options ?? []; track opt.value) {
+                      <option [value]="opt.value">
+                        {{ opt.label }}
+                        @if (getPriceLabel(field.key, opt.value)) {
+                          &nbsp;({{ getPriceLabel(field.key, opt.value) }})
+                        }
+                      </option>
+                    }
+                  </select>
+                  @if (bookingDetails.get(field.key)?.touched && bookingDetails.get(field.key)?.invalid) {
+                    <small class="field-error-msg">{{ field.label }} is required.</small>
+                  }
+                }
+
+                @case ('radio') {
+                  <div class="radio-group">
+                    @for (opt of field.options ?? []; track opt.value) {
+                      <label class="radio-item">
+                        <input type="radio" [formControlName]="field.key" [value]="opt.value" />
+                        <span>{{ opt.label }}</span>
+                      </label>
+                    }
+                  </div>
+                }
+
+                @case ('checkbox-group') {
+                  <div class="checkbox-group">
+                    @for (opt of field.options ?? []; track opt.value) {
+                      <label class="checkbox-item">
+                        <input type="checkbox"
+                          [checked]="isChecked(field.key, opt.value)"
+                          (change)="onCheckboxChange(field.key, opt.value, $any($event.target).checked)"
+                        />
+                        <span class="checkbox-item__label">{{ opt.label }}</span>
+                        @if (getPriceLabel(field.key, opt.value); as priceLabel) {
+                          <span class="checkbox-item__price"
+                            [class.checkbox-item__price--included]="priceLabel === 'Included'">
+                            {{ priceLabel }}
+                          </span>
+                        }
+                      </label>
+                    }
+                  </div>
+                }
+
+                @case ('textarea') {
+                  <textarea [formControlName]="field.key"
+                    [rows]="field.rows ?? 3"
+                    [placeholder]="field.placeholder ?? ''"
+                    class="option-textarea"
+                  ></textarea>
+                }
+
+                @case ('text') {
+                  <input type="text" [formControlName]="field.key"
+                    [placeholder]="field.placeholder ?? ''"
+                    class="option-text"
+                  />
+                }
+
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Section: Schedule ─────────────────────────────── -->
+      <p class="section-label">Schedule</p>
+      <div class="schedule-area">
+
+        @if (selectedSlot(); as slot) {
+          <div class="slot-selected">
+            <app-booking-summary
+              [compact]="true"
+              [sessionType]="form.controls.type.value"
+              [durationMinutes]="slot.durationMinutes"
+              [selectedDate]="slot.date"
+              [startTime]="slot.timeDisplay"
+              [estimatedPrice]="estimatedPrice()"
+              [pricingLabel]="pricingLabel"
+              [summaryDetails]="currentSummaryDetails"
+            ></app-booking-summary>
+            <div class="slot-selected__actions">
+              <button type="button" class="btn-change" (click)="openModal()">Change</button>
+              <button type="button" class="btn-clear" (click)="clearSlot()" aria-label="Remove selected slot">&#x2715;</button>
+            </div>
+          </div>
+        } @else {
+          <button type="button" class="btn-availability" (click)="openModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            Select Date &amp; Time
+          </button>
+          <p class="schedule-hint">Choose a date, duration, and available time slot.</p>
+        }
+
+      </div>
+
+      <!-- ── Real Estate: price breakdown card ─────────────── -->
+      @if (isRealEstate && pricingBreakdown(); as bd) {
+        <div class="price-breakdown">
+          <div class="price-breakdown__header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Price Breakdown
+          </div>
+
+          <div class="price-breakdown__rows">
+            <div class="price-breakdown__row">
+              <span>Base price</span>
+              <span>${{ bd.basePrice }}</span>
+            </div>
+
+            @if (bd.propertyTypeLabel && bd.propertyTypeAdjustment !== 0) {
+              <div class="price-breakdown__row">
+                <span>{{ bd.propertyTypeLabel }}</span>
+                <span class="price-breakdown__adj">
+                  {{ bd.propertyTypeAdjustment > 0 ? '+' : '' }}${{ bd.propertyTypeAdjustment }}
+                </span>
+              </div>
+            }
+
+            @if (bd.propertySizeLabel && bd.propertySizeAdjustment !== 0) {
+              <div class="price-breakdown__row">
+                <span>{{ bd.propertySizeLabel }}</span>
+                <span class="price-breakdown__adj">
+                  {{ bd.propertySizeAdjustment > 0 ? '+' : '' }}${{ bd.propertySizeAdjustment }}
+                </span>
+              </div>
+            }
+
+            @for (svc of bd.selectedServices; track svc.label) {
+              <div class="price-breakdown__row">
+                <span>{{ svc.label }}</span>
+                @if (svc.included) {
+                  <span class="price-breakdown__included">Included</span>
+                } @else {
+                  <span class="price-breakdown__adj">+${{ svc.price }}</span>
+                }
+              </div>
+            }
+
+            @if (bd.selectedServices.length === 0) {
+              <div class="price-breakdown__row price-breakdown__row--muted">
+                <span>Services</span>
+                <span>Select services above</span>
+              </div>
+            }
+          </div>
+
+          <div class="price-breakdown__total">
+            <span>Estimated Total</span>
+            <span>${{ bd.estimatedTotal }}</span>
           </div>
         </div>
+      }
 
-        <label title="How long you need for the session">
-          Duration
-          <div class="duration-stepper" role="group" aria-label="Session duration in hours">
-            <button
-              type="button"
-              (click)="decrementDuration()"
-              [disabled]="form.controls.durationMinutes.value <= minDurationMinutes"
-              aria-label="Decrease duration by one hour">−</button>
-            <span aria-live="polite" aria-atomic="true">{{ durationLabel }}</span>
-            <button
-              type="button"
-              (click)="incrementDuration()"
-              [disabled]="form.controls.durationMinutes.value >= maxDurationMinutes"
-              aria-label="Increase duration by one hour">+</button>
+      <!-- ── Product Photography: price breakdown card ────────── -->
+      @if (isProduct && productPricingBreakdown(); as bd) {
+        <div class="price-breakdown">
+          <div class="price-breakdown__header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Price Breakdown
           </div>
-        </label>
 
-        <label for="message" class="full">
-          Message
-          <textarea id="message" rows="4" formControlName="message" placeholder="Tell us about your shoot"></textarea>
-        </label>
-      </div>
+          <div class="price-breakdown__rows">
+            @if (bd.deliverableLabel) {
+              <div class="price-breakdown__row">
+                <span>{{ bd.deliverableLabel }}</span>
+                <span>${{ bd.deliverablePrice }}</span>
+              </div>
+            } @else {
+              <div class="price-breakdown__row price-breakdown__row--muted">
+                <span>Deliverables</span>
+                <span>Select deliverables above</span>
+              </div>
+            }
 
-      <div *ngIf="checkingSlot()" class="checking" aria-live="polite">
-        Checking availability…
-      </div>
-      <div *ngIf="!checkingSlot() && slotAvailable() === false" class="err" aria-live="assertive">
-        ❌ This time slot is already booked. Please choose another.
-      </div>
-      <div *ngIf="!checkingSlot() && slotAvailable() === true" class="ok" aria-live="polite">
-        ✅ This time is available.
-      </div>
+            @if (bd.categoryLabel && bd.categoryAdjustment !== 0) {
+              <div class="price-breakdown__row">
+                <span>{{ bd.categoryLabel }}</span>
+                <span class="price-breakdown__adj">
+                  {{ bd.categoryAdjustment > 0 ? '+' : '' }}${{ bd.categoryAdjustment }}
+                </span>
+              </div>
+            }
+          </div>
 
-      <button type="submit" [disabled]="submitting() || checkingSlot() || slotAvailable() === false">
-        {{ submitting() ? 'Submitting...' : 'Submit' }}
+          @if (bd.deliverablePrice > 0) {
+            <div class="price-breakdown__total">
+              <span>Estimated Total</span>
+              <span>${{ bd.estimatedTotal }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Message ───────────────────────────────────────── -->
+      <label for="message" class="msg-label">Additional Notes
+        <textarea id="message" rows="4" formControlName="message" placeholder="Tell us more about your vision, any special requests, or questions..."></textarea>
+      </label>
+
+      <!-- ── Errors / Submit ───────────────────────────────── -->
+      <p class="err" *ngIf="err()" aria-live="assertive">{{ err() }}</p>
+
+      <button type="submit" class="btn-submit" [disabled]="submitting()">
+        {{ submitting() ? 'Submitting…' : 'Request Booking' }}
       </button>
-
-      <p class="err" *ngIf="err()" aria-live="assertive">❌ {{ err() }}</p>
     </form>
   </ng-container>
 
-  <!-- Thank-you view -->
+  <!-- ── Thank-you ─────────────────────────────────────────── -->
   <ng-template #successTpl>
     <div class="success-card">
       <div class="success-glow"></div>
@@ -115,10 +323,8 @@
         </svg>
       </div>
 
-      <h3 class="success-title">Booking Request Sent!</h3>
-      <p class="success-subtitle">
-        We'll review your request and get back to you shortly.
-      </p>
+      <h2 class="success-title">Booking Request Sent!</h2>
+      <p class="success-subtitle">We'll review your request and get back to you shortly.</p>
 
       <div class="success-details" *ngIf="success() as s">
         <div class="success-row">
@@ -126,7 +332,14 @@
             <svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             Requested time
           </span>
-          <span class="success-value">{{ s.when }} &nbsp;·&nbsp; {{ s.duration / 60 === 1 ? '1 hr' : (s.duration / 60) + ' hrs' }}</span>
+          <span class="success-value">{{ s.when }} &nbsp;&middot;&nbsp; {{ s.duration / 60 === 1 ? '1 hr' : (s.duration / 60) + ' hrs' }}</span>
+        </div>
+        <div class="success-row" *ngIf="s.location">
+          <span class="success-label">
+            <svg class="row-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Location
+          </span>
+          <span class="success-value">{{ s.location }}</span>
         </div>
         <div class="success-row" *ngIf="s.email">
           <span class="success-label">
@@ -137,7 +350,7 @@
         </div>
       </div>
 
-      <a [routerLink]="['/']" class="btn-home">
+      <a routerLink="/" class="btn-home">
         Back to Home
         <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
       </a>

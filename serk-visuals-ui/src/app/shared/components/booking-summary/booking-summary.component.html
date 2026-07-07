@@ -1,0 +1,108 @@
+@if (compact) {
+
+  <!-- ── Compact mode: inside the booking form schedule card ── -->
+  <div class="bsc">
+    <div class="bsc__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+    <div class="bsc__body">
+      <div class="bsc__date">{{ dateDisplay }}</div>
+      <div class="bsc__time">{{ startTime }} – {{ endTime }}</div>
+      <div class="bsc__tags">
+        @if (sessionType) {
+          <span class="bsc__tag">{{ sessionLabel }}</span>
+        }
+        <span class="bsc__tag">{{ durationLabel }}</span>
+        @for (detail of summaryDetails; track detail.label) {
+          <span class="bsc__tag bsc__tag--detail">{{ detail.value }}</span>
+        }
+        @if (estimatedPrice !== null) {
+          <span class="bsc__tag bsc__tag--price">
+            @if (pricingLabel) { {{ pricingLabel }} } ${{ estimatedPrice }}
+          </span>
+        }
+      </div>
+    </div>
+  </div>
+
+} @else {
+
+  <!-- ── Full mode: inside the scheduling modal ── -->
+  <div class="bsf">
+    <div class="bsf__header">
+      <svg class="bsf__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="1.75" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span class="bsf__title">Booking Summary</span>
+    </div>
+
+    @if (!hasSchedule) {
+
+      <p class="bsf__empty">No schedule selected yet.</p>
+
+      <div class="bsf__rows">
+        <div class="bsf__row bsf__row--price">
+          <span class="bsf__label">Estimated Price</span>
+          <span class="bsf__value bsf__value--price">
+            @if (estimatedPrice !== null) {
+              @if (pricingLabel) { {{ pricingLabel }} } ~${{ estimatedPrice }}
+            } @else { — }
+          </span>
+        </div>
+      </div>
+
+    } @else {
+
+      @if (sessionLabel) {
+        <div class="bsf__session">{{ sessionLabel }}</div>
+      }
+
+      <div class="bsf__rows">
+        <div class="bsf__row">
+          <span class="bsf__label">Date</span>
+          <span class="bsf__value">{{ dateDisplay }}</span>
+        </div>
+        <div class="bsf__row">
+          <span class="bsf__label">Time</span>
+          <span class="bsf__value bsf__value--time">{{ startTime }} – {{ endTime }}</span>
+        </div>
+        <div class="bsf__row">
+          <span class="bsf__label">Duration</span>
+          <span class="bsf__value">{{ durationLabel }}</span>
+        </div>
+        <div class="bsf__row bsf__row--price">
+          <span class="bsf__label">Estimated Price</span>
+          <span class="bsf__value bsf__value--price">
+            @if (estimatedPrice !== null) {
+              @if (pricingLabel) { {{ pricingLabel }} } ${{ estimatedPrice }}
+            } @else { — }
+          </span>
+        </div>
+        <div class="bsf__row">
+          <span class="bsf__label">Travel Fee</span>
+          <span class="bsf__value bsf__value--dim">Included</span>
+        </div>
+        <!--
+          Future rows (uncomment when implemented):
+          <div class="bsf__row">
+            <span class="bsf__label">Deposit</span>
+            <span class="bsf__value">—</span>
+          </div>
+          <div class="bsf__row bsf__row--total">
+            <span class="bsf__label">Total</span>
+            <span class="bsf__value bsf__value--total">—</span>
+          </div>
+        -->
+      </div>
+
+    }
+  </div>
+
+}

@@ -1,29 +1,46 @@
 <section id="about" class="about">
   <div class="about__container">
     <div class="about__image">
-<!-- dynamic -->
-<img
-  src="images/serkvisuals_logo.png"
-  alt="Dynamic image"
-  class="about-image"
-/>
+      <img
+        src="images/serkvisuals_logo.png"
+        alt="Serk Visuals photography and videography studio logo"
+        class="about-image"
+      />
     </div>
 
     <div class="about__content">
       <h1 class="about__title">About Serk Visuals</h1>
       <p class="about__text">
-        At <strong>Serk Visuals</strong>, we believe every story deserves to be captured with clarity and creativity. 
-        Specializing in <em>photography</em> and <em>videography</em>, our team blends artistry with technology to 
-        deliver timeless visuals for weddings, events, brands, and personal projects.
+        At <strong>Serk Visuals</strong>, we believe every story deserves to be captured with clarity and creativity.
+        Specializing in <em>photography</em> and <em>videography</em>, we blend artistry with technology to
+        deliver timeless visuals — from weddings and events to portraits, brands, and real estate.
       </p>
 
       <p class="about__text">
-        With years of experience and a passion for storytelling, we work closely with our clients to 
-        transform ideas into captivating memories. Whether it’s a family portrait, corporate campaign, or 
-        cinematic wedding film, Serk Visuals ensures every detail shines.
+        With years of experience and a genuine passion for storytelling, we work closely with every client to
+        transform ideas into lasting memories. Whether it’s a family portrait, a corporate event, or a cinematic
+        wedding film, every detail is crafted with intention.
       </p>
 
-      <a [routerLink]="['/bookings']" class="btn btn--primary">Book a Session</a>
+      <p class="about__text">
+        We’re proud to serve clients throughout the greater Seattle area — including
+        <strong>Mill Creek</strong>, <strong>Everett</strong>, <strong>Lynnwood</strong>,
+        <strong>Bellevue</strong>, <strong>Redmond</strong>, <strong>Kirkland</strong>,
+        and <strong>Snohomish</strong>, Washington.
+      </p>
+
+      <div class="about__actions">
+        <a routerLink="/bookings" class="btn btn--primary">Book a Session</a>
+        <a routerLink="/services" class="btn btn--ghost">View Our Services</a>
+      </div>
     </div>
   </div>
+
+  <!-- NAP -->
+  <address class="about__nap visually-hidden" aria-label="Contact information">
+    <span>Serk Visuals</span> —
+    <a href="tel:+12068059405">+1 (206) 805-9405</a> —
+    <a href="mailto:serkvisuals&#64;gmail.com">serkvisuals&#64;gmail.com</a> —
+    Seattle, WA
+  </address>
 </section>

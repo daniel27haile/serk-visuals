@@ -3,175 +3,452 @@ import {
   NonNullableFormBuilder,
   ReactiveFormsModule,
   Validators,
+  FormGroup,
+  FormControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs';
 
 import { BookingsService } from '../../shared/services/booking.service';
-import { Booking, BookingType } from '../../shared/models/booking.model';
+import { PricingConfigService } from '../../shared/services/pricing-config.service';
+import { Booking, SessionType, PreferredContactMethod } from '../../shared/models/booking.model';
+import { PricingConfig, PricingBreakdown, ProductPricingBreakdown } from '../../shared/models/pricing-config.model';
 import { formatBookingDate } from '../../shared/utils/booking-format.util';
+import { AvailabilityModalComponent, SelectedSlot } from '../../shared/components/availability-modal/availability-modal.component';
+import { BookingSummaryComponent } from '../../shared/components/booking-summary/booking-summary.component';
+import { SESSION_CONFIGS, SessionConfig } from '../../shared/config/session-config';
 
 @Component({
   selector: 'app-booking-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, AvailabilityModalComponent, BookingSummaryComponent],
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.scss'],
 })
 export class BookingFormPage {
-  private readonly fb  = inject(NonNullableFormBuilder);
-  private readonly api = inject(BookingsService);
+  private readonly fb          = inject(NonNullableFormBuilder);
+  private readonly api         = inject(BookingsService);
+  private readonly pricingApi  = inject(PricingConfigService);
 
-  readonly types: { value: BookingType; label: string }[] = [
-    { value: 'Wedding',  label: 'Wedding'  },
-    { value: 'Event',    label: 'Event'    },
-    { value: 'Birthday', label: 'Birthday' },
-    { value: 'Product',  label: 'Product'  },
-    { value: 'Personal', label: 'Personal' },
-    { value: 'Other',    label: 'Other'    },
+  readonly sessionTypes: { value: SessionType; label: string }[] = [
+    { value: 'Portrait',      label: 'Portrait Session'       },
+    { value: 'Family',        label: 'Family Session'         },
+    { value: 'Wedding',       label: 'Wedding Photography'    },
+    { value: 'Event',         label: 'Event Coverage'         },
+    { value: 'Graduation',    label: 'Graduation Session'     },
+    { value: 'Real Estate',   label: 'Real Estate Photography'},
+    { value: 'Commercial',    label: 'Commercial / Branding'  },
+    { value: 'Engagement',    label: 'Engagement Session'     },
+    { value: 'Birthday',      label: 'Birthday Session'       },
+    { value: 'Product',       label: 'Product Photography'    },
+    { value: 'Personal',      label: 'Personal Session'       },
+    { value: 'Other',         label: 'Other'                  },
   ];
-  readonly minDurationMinutes  = 60;
-  readonly maxDurationMinutes  = 480;
-  readonly durationStepMinutes = 60;
 
-  get durationLabel(): string {
-    const hours = (this.form.controls.durationMinutes.value ?? 60) / 60;
-    return hours === 1 ? '1 hour' : `${hours} hours`;
-  }
+  readonly contactMethods = ['Email', 'Phone', 'Text Message'];
 
-  decrementDuration(): void {
-    const next = Math.max(
-      this.minDurationMinutes,
-      this.form.controls.durationMinutes.value - this.durationStepMinutes,
-    );
-    this.form.controls.durationMinutes.setValue(next);
-  }
+  // Modal state
+  modalOpen    = signal(false);
+  selectedSlot = signal<SelectedSlot | null>(null);
+  estimatedPrice   = signal<number | null>(null);
 
-  incrementDuration(): void {
-    const next = Math.min(
-      this.maxDurationMinutes,
-      this.form.controls.durationMinutes.value + this.durationStepMinutes,
-    );
-    this.form.controls.durationMinutes.setValue(next);
-  }
+  submitting = signal(false);
+  submitted  = signal(false);
+  err        = signal<string | null>(null);
+  success    = signal<{ when: string; duration: number; email?: string; location?: string; type?: string } | null>(null);
 
-  submitting    = signal(false);
-  submitted     = signal(false);
-  err           = signal<string | null>(null);
-  slotAvailable = signal<boolean | null>(null);
-  checkingSlot  = signal(false);
+  // Dynamic pricing (Real Estate + Product Photography)
+  pricingConfig            = signal<PricingConfig | null>(null);
+  pricingConfigLoading     = signal(false);
+  pricingConfigError       = signal<string | null>(null);
+  pricingBreakdown         = signal<PricingBreakdown | null>(null);
+  productPricingBreakdown  = signal<ProductPricingBreakdown | null>(null);
 
-  success = signal<{ when: string; duration: number; email?: string } | null>(null);
+  private readonly defaultType: SessionType = 'Portrait';
 
-  private readonly defaultType: BookingType = 'Event';
+  // Session-type-specific dynamic fields — rebuilt when type changes
+  readonly bookingDetails: FormGroup = new FormGroup({});
 
   form = this.fb.group({
-    name:            this.fb.control('', [Validators.required, Validators.minLength(2)]),
-    email:           this.fb.control('', [Validators.required, Validators.email]),
-    phone:           this.fb.control(''),
-    type:            this.fb.control<BookingType>(this.defaultType),
-    date:            this.fb.control('', [Validators.required]),
-    time:            this.fb.control('', [Validators.required]),
-    durationMinutes: this.fb.control(60),
-    message:         this.fb.control(''),
+    name:                   this.fb.control('', [Validators.required, Validators.minLength(2)]),
+    email:                  this.fb.control('', [Validators.required, Validators.email]),
+    phone:                  this.fb.control(''),
+    type:                   this.fb.control<SessionType>(this.defaultType),
+    location:               this.fb.control('', [Validators.required]),
+    preferredContactMethod: this.fb.control<PreferredContactMethod>(''),
+    durationMinutes:        this.fb.control(60),
+    message:                this.fb.control(''),
   });
 
   constructor() {
-    // Live availability check whenever date / time / duration changes
-    this.form.valueChanges
-      .pipe(
-        debounceTime(400),
-        map((v) => ({
-          date:            v.date,
-          time:            v.time,
-          durationMinutes: v.durationMinutes,
-        })),
-        distinctUntilChanged(
-          (a, b) =>
-            a.date === b.date &&
-            a.time === b.time &&
-            a.durationMinutes === b.durationMinutes,
-        ),
-        filter((v) => !!v.date && !!v.time && !!v.durationMinutes),
-      )
-      .subscribe((v) => {
-        this.slotAvailable.set(null);
-        this.checkingSlot.set(true);
-        const iso = this.toLocalISO(v.date!, v.time!);
-        this.api
-          .checkAvailability({ date: iso, durationMinutes: v.durationMinutes! })
-          .subscribe({
-            next: (r) => {
-              this.checkingSlot.set(false);
-              this.slotAvailable.set(r.available);
-            },
-            error: () => {
-              this.checkingSlot.set(false);
-              this.slotAvailable.set(null);
-            },
-          });
-      });
+    this.form.controls.type.valueChanges.subscribe(type => {
+      this.rebuildDetailsGroup(type as SessionType);
+      if (type === 'Real Estate' || type === 'Product') {
+        this.fetchPricingConfig();
+      } else {
+        this.pricingConfig.set(null);
+        this.pricingBreakdown.set(null);
+        this.productPricingBreakdown.set(null);
+      }
+      this.updateEstimate();
+    });
+
+    this.form.controls.durationMinutes.valueChanges.subscribe(() => this.updateEstimate());
+    this.bookingDetails.valueChanges.subscribe(() => this.updateEstimate());
+
+    this.rebuildDetailsGroup(this.defaultType);
+    this.updateEstimate();
   }
 
-  // ---------- UTILS ----------
-  private toLocalISO(dateStr: string, timeStr?: string): string {
-    const [y, m, d] = dateStr.split('-').map(Number);
-    let hh = 0, mm = 0;
-    if (timeStr) {
-      const [H, M] = timeStr.split(':').map(Number);
-      hh = H ?? 0; mm = M ?? 0;
+  // ── Config helpers ──────────────────────────────────────
+
+  get currentConfig(): SessionConfig {
+    const type = this.form.controls.type.value as SessionType;
+    return SESSION_CONFIGS[type] ?? SESSION_CONFIGS['Other'];
+  }
+
+  get pricingLabel(): string {
+    return this.currentConfig.pricing.startingLabel ?? '';
+  }
+
+  get isRealEstate(): boolean {
+    return this.form.controls.type.value === 'Real Estate';
+  }
+
+  get isProduct(): boolean {
+    return this.form.controls.type.value === 'Product';
+  }
+
+  get currentSummaryDetails(): { label: string; value: string }[] {
+    const cfg     = this.currentConfig;
+    const details = this.bookingDetails.getRawValue() as Record<string, unknown>;
+    return cfg.summaryFields
+      .filter(key => key !== 'services' || !this.isRealEstate) // services shown in breakdown for RE
+      .map(key => {
+        const raw   = details[key];
+        const value = Array.isArray(raw) ? (raw as string[]).join(', ') : String(raw ?? '');
+        const field = cfg.fields.find(f => f.key === key);
+        return { label: field?.label ?? key, value };
+      })
+      .filter(e => e.value.trim() !== '');
+  }
+
+  // ── Dynamic pricing ─────────────────────────────────────
+
+  private fetchPricingConfig(): void {
+    const type = this.form.controls.type.value;
+    if (type !== 'Real Estate' && type !== 'Product') return;
+    this.pricingConfigLoading.set(true);
+    this.pricingConfigError.set(null);
+    this.pricingApi.getConfig(type).subscribe({
+      next: cfg => {
+        this.pricingConfig.set(cfg);
+        this.pricingConfigLoading.set(false);
+        this.updateEstimate();
+      },
+      error: () => {
+        this.pricingConfigLoading.set(false);
+        this.pricingConfigError.set('Could not load pricing. Prices shown are estimates.');
+      },
+    });
+  }
+
+  /** Returns "+$X", "Included", "$X", or "" for a field option — used in template. */
+  getPriceLabel(fieldKey: string, optValue: string): string {
+    const pricing = this.pricingConfig();
+    if (!pricing || !optValue) return '';
+
+    // Real Estate fields
+    if (fieldKey === 'services') {
+      const addOn = pricing.serviceAddOns?.find(a => a.value === optValue);
+      if (!addOn) return '';
+      return addOn.included ? 'Included' : `+$${addOn.price}`;
     }
-    return new Date(y, (m || 1) - 1, d || 1, hh, mm, 0, 0).toISOString();
+    if (fieldKey === 'propertyType') {
+      const adj = pricing.propertyTypeAdjustments?.find(a => a.value === optValue);
+      if (!adj || adj.priceAdjustment === 0) return '';
+      return adj.priceAdjustment > 0 ? `+$${adj.priceAdjustment}` : `-$${Math.abs(adj.priceAdjustment)}`;
+    }
+    if (fieldKey === 'propertySize') {
+      const adj = pricing.propertySizeAdjustments?.find(a => a.value === optValue);
+      if (!adj || adj.priceAdjustment === 0) return '';
+      return adj.priceAdjustment > 0 ? `+$${adj.priceAdjustment}` : `-$${Math.abs(adj.priceAdjustment)}`;
+    }
+
+    // Product Photography fields
+    if (fieldKey === 'deliverables') {
+      const tier = pricing.deliverableTiers?.find(t => t.value === optValue);
+      if (!tier) return '';
+      return `$${tier.price}`;
+    }
+    if (fieldKey === 'productType') {
+      const adj = pricing.categoryAdjustments?.find(a => a.value === optValue);
+      if (!adj || adj.priceAdjustment === 0) return '';
+      return adj.priceAdjustment > 0 ? `+$${adj.priceAdjustment}` : `-$${Math.abs(adj.priceAdjustment)}`;
+    }
+
+    return '';
+  }
+
+  // ── Dynamic fields ──────────────────────────────────────
+
+  private rebuildDetailsGroup(type: SessionType): void {
+    Object.keys(this.bookingDetails.controls).forEach(k =>
+      this.bookingDetails.removeControl(k)
+    );
+
+    const cfg = SESSION_CONFIGS[type] ?? SESSION_CONFIGS['Other'];
+    for (const field of cfg.fields) {
+      if (field.type === 'checkbox-group') {
+        this.bookingDetails.addControl(field.key, new FormControl<string[]>([]));
+      } else {
+        const validators = field.required ? [Validators.required] : [];
+        this.bookingDetails.addControl(field.key, new FormControl('', validators));
+      }
+    }
+  }
+
+  isChecked(key: string, value: string): boolean {
+    const ctrl = this.bookingDetails.get(key);
+    return Array.isArray(ctrl?.value) && (ctrl.value as string[]).includes(value);
+  }
+
+  onCheckboxChange(key: string, value: string, checked: boolean): void {
+    const ctrl = this.bookingDetails.get(key);
+    if (!ctrl || !Array.isArray(ctrl.value)) return;
+    const current = [...(ctrl.value as string[])];
+    if (checked) {
+      if (!current.includes(value)) current.push(value);
+    } else {
+      const idx = current.indexOf(value);
+      if (idx > -1) current.splice(idx, 1);
+    }
+    ctrl.setValue(current);
+  }
+
+  // ── Modal ───────────────────────────────────────────────
+
+  openModal(): void  { this.modalOpen.set(true); }
+  onModalClosed(): void { this.modalOpen.set(false); }
+
+  onSlotSelected(slot: SelectedSlot): void {
+    this.selectedSlot.set(slot);
+    this.form.controls.durationMinutes.setValue(slot.durationMinutes);
+    this.err.set(null);
+    this.updateEstimate();
+  }
+
+  clearSlot(): void { this.selectedSlot.set(null); }
+
+  // ── Pricing ─────────────────────────────────────────────
+
+  private updateEstimate(): void {
+    const cfg      = this.currentConfig;
+    const duration = this.form.controls.durationMinutes.value ?? 60;
+
+    if (cfg.pricing.strategy === 'dynamic') {
+      this.updateDynamicEstimate();
+      return;
+    }
+
+    this.pricingBreakdown.set(null);
+
+    switch (cfg.pricing.strategy) {
+      case 'hourly':
+        this.estimatedPrice.set(
+          Math.round((cfg.pricing.hourlyRate ?? 175) * (duration / 60))
+        );
+        break;
+
+      case 'package': {
+        let price: number | null = null;
+        const details = this.bookingDetails.getRawValue() as Record<string, unknown>;
+        for (const field of cfg.fields) {
+          const val = details[field.key] as string;
+          const pkg = cfg.pricing.packages?.find(p => p.value === val);
+          if (pkg) { price = pkg.price; break; }
+        }
+        this.estimatedPrice.set(price);
+        break;
+      }
+
+      case 'starting':
+        this.estimatedPrice.set(cfg.pricing.startingPrice ?? null);
+        break;
+    }
+  }
+
+  private updateDynamicEstimate(): void {
+    const pricing = this.pricingConfig();
+    if (!pricing) {
+      this.estimatedPrice.set(null);
+      this.pricingBreakdown.set(null);
+      this.productPricingBreakdown.set(null);
+      return;
+    }
+    if (this.isRealEstate) {
+      this.updateRealEstateEstimate(pricing);
+    } else if (this.isProduct) {
+      this.updateProductEstimate(pricing);
+    }
+  }
+
+  private updateRealEstateEstimate(pricing: PricingConfig): void {
+    const details      = this.bookingDetails.getRawValue() as Record<string, unknown>;
+    const propertyType = (details['propertyType'] as string) || '';
+    const propertySize = (details['propertySize'] as string) || '';
+    const services     = (details['services'] as string[]) || [];
+
+    const typeAdj    = pricing.propertyTypeAdjustments?.find(a => a.value === propertyType);
+    const sizeAdj    = pricing.propertySizeAdjustments?.find(a => a.value === propertySize);
+    const typeAdjAmt = typeAdj?.priceAdjustment ?? 0;
+    const sizeAdjAmt = sizeAdj?.priceAdjustment ?? 0;
+
+    let total = pricing.basePrice + typeAdjAmt + sizeAdjAmt;
+
+    const selectedServices: { label: string; price: number; included: boolean }[] = [];
+    for (const svc of services) {
+      const addOn = pricing.serviceAddOns?.find(a => a.value === svc);
+      if (addOn) {
+        const price = addOn.included ? 0 : addOn.price;
+        total += price;
+        selectedServices.push({ label: addOn.label, price, included: addOn.included });
+      }
+    }
+
+    const breakdown: PricingBreakdown = {
+      basePrice:              pricing.basePrice,
+      propertyTypeLabel:      typeAdj?.label ?? null,
+      propertyTypeAdjustment: typeAdjAmt,
+      propertySizeLabel:      sizeAdj?.label ?? null,
+      propertySizeAdjustment: sizeAdjAmt,
+      selectedServices,
+      totalServicePrice:      selectedServices.reduce((s, x) => s + x.price, 0),
+      estimatedTotal:         total,
+    };
+
+    this.pricingBreakdown.set(breakdown);
+    this.productPricingBreakdown.set(null);
+    this.estimatedPrice.set(total);
+  }
+
+  private updateProductEstimate(pricing: PricingConfig): void {
+    const details        = this.bookingDetails.getRawValue() as Record<string, unknown>;
+    const deliverableVal = (details['deliverables'] as string) || '';
+    const categoryVal    = (details['productType']  as string) || '';
+
+    const tier   = pricing.deliverableTiers?.find(t => t.value === deliverableVal);
+    const catAdj = pricing.categoryAdjustments?.find(a => a.value === categoryVal);
+
+    const deliverablePrice  = tier?.price            ?? 0;
+    const categoryAdjAmount = catAdj?.priceAdjustment ?? 0;
+    const total             = deliverablePrice + categoryAdjAmount;
+
+    const breakdown: ProductPricingBreakdown = {
+      deliverableLabel:   tier?.label   ?? null,
+      deliverablePrice,
+      categoryLabel:      catAdj?.label ?? null,
+      categoryAdjustment: categoryAdjAmount,
+      estimatedTotal:     total,
+    };
+
+    this.productPricingBreakdown.set(breakdown);
+    this.pricingBreakdown.set(null);
+    this.estimatedPrice.set(total > 0 ? total : null);
+  }
+
+  // ── Submit ──────────────────────────────────────────────
+
+  private toLocalISO(dateStr: string, timeStr: string): string {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const [hh, mm]  = timeStr.split(':').map(Number);
+    return new Date(y, (m || 1) - 1, d || 1, hh ?? 0, mm ?? 0, 0, 0).toISOString();
   }
 
   submit(): void {
     this.form.markAllAsTouched();
-    if (this.form.invalid || this.submitting()) return;
-    if (this.slotAvailable() === false) {
-      this.err.set('This time slot is already booked. Please choose another.');
+    this.bookingDetails.markAllAsTouched();
+    if (this.form.invalid || this.bookingDetails.invalid || this.submitting()) return;
+
+    if (!this.selectedSlot()) {
+      this.err.set('Please select a date and time by clicking "Select Date & Time".');
       return;
+    }
+
+    // Real Estate: at least one service required
+    if (this.isRealEstate) {
+      const services = (this.bookingDetails.get('services')?.value as string[]) || [];
+      if (services.length === 0) {
+        this.err.set('Please select at least one service for Real Estate Photography.');
+        return;
+      }
     }
 
     this.submitting.set(true);
     this.err.set(null);
 
-    const v = this.form.getRawValue();
-    const iso = this.toLocalISO(v.date, v.time);
-    const phoneTrimmed = v.phone.trim();
+    const v        = this.form.getRawValue();
+    const slot     = this.selectedSlot()!;
+    const iso      = this.toLocalISO(slot.date, slot.time);
+    const duration = slot.durationMinutes;
+
+    const rawDetails    = this.bookingDetails.getRawValue() as Record<string, unknown>;
+    const cleanDetails: Record<string, unknown> = {};
+    for (const [k, val] of Object.entries(rawDetails)) {
+      if (val === '' || (Array.isArray(val) && val.length === 0)) continue;
+      cleanDetails[k] = val;
+    }
+    // Include pricing snapshot for auditing (backend will recalculate and overwrite total)
+    const breakdown = this.pricingBreakdown();
+    if (breakdown) {
+      cleanDetails['pricingSnapshot'] = breakdown;
+    }
 
     const payload = {
-      name:            v.name,
-      email:           v.email,
-      phone:           phoneTrimmed ? Number(phoneTrimmed) : undefined,
-      type:            v.type,
-      date:            iso,
-      durationMinutes: v.durationMinutes,
-      message:         v.message || undefined,
+      name:                   v.name,
+      email:                  v.email,
+      phone:                  v.phone.trim() || undefined,
+      type:                   v.type,
+      location:               v.location,
+      preferredContactMethod: v.preferredContactMethod || undefined,
+      estimatedPrice:         this.estimatedPrice() ?? undefined,
+      date:                   iso,
+      durationMinutes:        duration,
+      message:                v.message || undefined,
+      bookingDetails:         Object.keys(cleanDetails).length > 0 ? cleanDetails : undefined,
     };
 
     this.api.create(payload).subscribe({
       next: (created: Booking) => {
         this.submitting.set(false);
+        const when = created.date ? formatBookingDate(created.date) : formatBookingDate(iso);
         this.success.set({
-          when:     created.date ? formatBookingDate(created.date) : formatBookingDate(iso),
-          duration: created.durationMinutes ?? v.durationMinutes,
+          when,
+          duration: created.durationMinutes ?? duration,
           email:    v.email,
+          location: v.location,
+          type:     v.type,
         });
         this.submitted.set(true);
         this.form.reset({
           name: '', email: '', phone: '', type: this.defaultType,
-          date: '', time: '', durationMinutes: 60, message: '',
+          location: '', preferredContactMethod: '',
+          durationMinutes: 60, message: '',
         });
-        this.slotAvailable.set(null);
+        this.selectedSlot.set(null);
+        this.pricingConfig.set(null);
+        this.pricingBreakdown.set(null);
+        this.productPricingBreakdown.set(null);
+        this.rebuildDetailsGroup(this.defaultType);
+        this.updateEstimate();
       },
       error: (e) => {
         this.submitting.set(false);
         this.err.set(
           e?.status === 409
-            ? 'This time slot is already booked. Please choose another.'
+            ? 'This time slot is already booked. Please choose another time.'
             : e?.status === 0
-              ? 'Unable to connect to the server. Please check your connection and try again.'
+              ? 'Unable to connect to the server. Please check your connection.'
               : e?.error?.message || 'Failed to submit booking. Please try again.',
         );
       },

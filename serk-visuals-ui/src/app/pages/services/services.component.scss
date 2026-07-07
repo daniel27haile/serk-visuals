@@ -143,6 +143,21 @@
   }
 }
 
+// ── Service area note ─────────────────────────────────────
+.service-area-section {
+  border-top: 1px solid var(--color-border);
+  padding-block: clamp(1rem, 3vw, 1.75rem);
+}
+
+.service-area-text {
+  max-width: 72ch;
+  text-align: center;
+  margin-inline: auto;
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+}
+
 // ── Breakpoints ───────────────────────────────────────────
 @media (min-width: 640px) {
   .services {

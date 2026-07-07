@@ -17,7 +17,8 @@ async function verifyPassword(storedHash, plain) {
   // default to argon2
   try {
     return await argon2.verify(storedHash, String(plain));
-  } catch {
+  } catch (e) {
+    console.error("[argon2.verify error]", e.message);
     return false;
   }
 }

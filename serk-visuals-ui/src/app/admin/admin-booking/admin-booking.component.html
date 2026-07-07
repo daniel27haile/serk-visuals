@@ -5,6 +5,7 @@
       <input type="search" [formControl]="q" placeholder="Search name, email, message…" />
       <select [formControl]="status" aria-label="Status">
         <option value="">All statuses</option>
+        <option value="pending">Pending</option>
         <option value="new">New</option>
         <option value="confirmed">Confirmed</option>
         <option value="completed">Completed</option>
@@ -12,13 +13,18 @@
       </select>
       <select [formControl]="type" aria-label="Type">
         <option value="">All types</option>
-        <option value="wedding">Wedding</option>
-        <option value="event">Event</option>
-        <option value="portrait">Portrait</option>
-        <option value="product">Product</option>
-        <option value="birthday">Birthday</option>
-        <option value="personal">Personal</option>
-        <option value="other">Other</option>
+        <option value="Portrait">Portrait</option>
+        <option value="Family">Family</option>
+        <option value="Wedding">Wedding</option>
+        <option value="Event">Event</option>
+        <option value="Graduation">Graduation</option>
+        <option value="Real Estate">Real Estate</option>
+        <option value="Commercial">Commercial</option>
+        <option value="Engagement">Engagement</option>
+        <option value="Birthday">Birthday</option>
+        <option value="Product">Product</option>
+        <option value="Personal">Personal</option>
+        <option value="Other">Other</option>
       </select>
       <input type="date" [formControl]="from" />
       <input type="date" [formControl]="to" />
@@ -60,8 +66,13 @@
             </th>
             <th (click)="sortBy('name')">Client</th>
             <th (click)="sortBy('date')">Date</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Duration</th>
             <th (click)="sortBy('status')">Status</th>
             <th (click)="sortBy('type')">Type</th>
+            <th>Location</th>
+            <th>Details</th>
             <th>Email</th>
             <th>Actions</th>
           </tr>
@@ -79,13 +90,44 @@
                 />
               </td>
               <td><strong>{{ b.name }}</strong></td>
-              <td>{{ b.date ? (b.date | date:'medium') : '—' }}</td>
+              <td>{{ b.date ? (b.date | date:'mediumDate') : '—' }}</td>
+              <td>{{ b.date ? (b.date | date:'shortTime') : '—' }}</td>
+              <td>{{ b.end  ? (b.end  | date:'shortTime') : '—' }}</td>
+              <td class="muted">{{ b.durationMinutes ? (b.durationMinutes / 60) + ' hr' : '—' }}</td>
               <td>
                 <span class="badge" [ngClass]="'badge--'+(b.status ?? 'new')">
                   {{ b.status ?? 'new' }}
                 </span>
               </td>
               <td class="muted">{{ b.type || '—' }}</td>
+              <td class="muted">{{ b.location || '—' }}</td>
+              <td class="muted details-cell">
+                @if (getDetailsEntries(b).length > 0) {
+                  @for (entry of getDetailsEntries(b); track entry.label) {
+                    <span class="detail-entry">
+                      <span class="detail-entry__label">{{ entry.label }}:</span>
+                      {{ entry.value }}
+                    </span>
+                  }
+                  @if (getPricingSnapshot(b); as snap) {
+                    <span class="detail-entry pricing-snap">
+                      <span class="detail-entry__label">Base:</span> ${{ snap.basePrice }}
+                      @if (snap.propertyTypeAdjustment) {
+                        &nbsp;· Type: +${{ snap.propertyTypeAdjustment }}
+                      }
+                      @if (snap.propertySizeAdjustment) {
+                        &nbsp;· Size: +${{ snap.propertySizeAdjustment }}
+                      }
+                      @if (snap.totalServicePrice) {
+                        &nbsp;· Services: +${{ snap.totalServicePrice }}
+                      }
+                      &nbsp;= <strong>${{ snap.estimatedTotal }}</strong>
+                    </span>
+                  }
+                } @else {
+                  —
+                }
+              </td>
               <td class="muted">{{ b.email }}</td>
               <td class="actions">
                 <button (click)="setStatus(b,'confirmed')">Confirm</button>

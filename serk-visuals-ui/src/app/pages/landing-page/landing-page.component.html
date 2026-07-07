@@ -240,6 +240,65 @@
   <p class="hint error" *ngIf="errorTestimonials()">{{ errorTestimonials() }}</p>
 </section>
 
+<!-- SERVICES OVERVIEW -->
+<section class="services-overview container section">
+  <h2 class="section-heading">What We Offer</h2>
+  <p class="lead services-overview__intro">
+    Whether you're planning a wedding, growing your brand, or updating your headshot, we've got you covered.
+    Serk Visuals offers a full range of photography and videography services across the Seattle metro area.
+  </p>
+  <div class="services-overview__grid">
+    <div class="overview-card">
+      <span class="overview-card__icon" aria-hidden="true">💍</span>
+      <h3>Wedding Photography</h3>
+      <p>Authentic, cinematic coverage of your entire wedding day — from getting ready to the last dance.</p>
+    </div>
+    <div class="overview-card">
+      <span class="overview-card__icon" aria-hidden="true">🎉</span>
+      <h3>Event Photography</h3>
+      <p>Corporate events, milestone celebrations, fundraisers, and everything in between.</p>
+    </div>
+    <div class="overview-card">
+      <span class="overview-card__icon" aria-hidden="true">🖼️</span>
+      <h3>Portrait Sessions</h3>
+      <p>Headshots, family portraits, senior photos, and creative studio or outdoor sessions.</p>
+    </div>
+    <div class="overview-card">
+      <span class="overview-card__icon" aria-hidden="true">✨</span>
+      <h3>Branding Photography</h3>
+      <p>Polished imagery for your website, social media, and marketing — tailored to your brand.</p>
+    </div>
+    <div class="overview-card">
+      <span class="overview-card__icon" aria-hidden="true">🏡</span>
+      <h3>Real Estate Photography</h3>
+      <p>Crisp, well-lit property photos that help listings stand out and sell faster.</p>
+    </div>
+    <div class="overview-card">
+      <span class="overview-card__icon" aria-hidden="true">🎬</span>
+      <h3>Videography</h3>
+      <p>Cinematic wedding films, event recaps, brand stories, and social content — beautifully edited.</p>
+    </div>
+  </div>
+  <div class="button-group">
+    <a [routerLink]="['/services']" class="btn btn--ghost">See All Services</a>
+  </div>
+</section>
+
+<!-- SERVICE AREA -->
+<section class="service-area container section">
+  <h2 class="section-heading">Serving the Seattle Area &amp; Beyond</h2>
+  <p class="lead">
+    We're based in the greater Seattle area and proudly work with clients across Washington — including
+    <strong>Mill Creek</strong>, <strong>Everett</strong>, <strong>Lynnwood</strong>, <strong>Bellevue</strong>,
+    <strong>Redmond</strong>, <strong>Kirkland</strong>, <strong>Snohomish</strong>, and the surrounding
+    Puget Sound region. Travel to other locations is available for weddings and larger projects.
+  </p>
+  <div class="button-group">
+    <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+    <a [routerLink]="['/contact']" class="btn btn--ghost">Ask a Question</a>
+  </div>
+</section>
+
 <!-- FINAL CTA BANNER -->
 <section class="cta-banner">
   <div class="container cta-banner__inner">

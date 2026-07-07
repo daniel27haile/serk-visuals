@@ -8,6 +8,9 @@ import {
   PagedResult,
 } from '../admin-shared/booking/models';
 import { formatBookingDate } from '../../shared/utils/booking-format.util';
+import { SESSION_CONFIGS } from '../../shared/config/session-config';
+import { SessionType } from '../../shared/models/booking.model';
+import { PricingBreakdown } from '../../shared/models/pricing-config.model';
 
 @Component({
   selector: 'app-admin-booking',
@@ -190,8 +193,14 @@ export class AdminBookingComponent implements OnInit {
       `Name:      ${b.name}`,
       `Email:     ${b.email}`,
     ];
-    if (b.phone)   details.push(`Phone:     ${b.phone}`);
-    if (b.message) details.push(`Notes:     ${b.message}`);
+    if (b.phone)                  details.push(`Phone:     ${b.phone}`);
+    if (b.location)               details.push(`Location:  ${b.location}`);
+    if (b.preferredContactMethod) details.push(`Contact:   ${b.preferredContactMethod}`);
+    if (b.estimatedPrice)         details.push(`Est. price: $${b.estimatedPrice}`);
+    for (const entry of this.getDetailsEntries(b)) {
+      details.push(`${entry.label.padEnd(10)} ${entry.value}`);
+    }
+    if (b.message)                details.push(`Notes:     ${b.message}`);
 
     return [
       `Hi ${b.name},`,
@@ -210,6 +219,29 @@ export class AdminBookingComponent implements OnInit {
       'Serk Visuals',
       'serkvisuals@gmail.com',
     ].join('\n');
+  }
+
+  /** Returns formatted label/value pairs from bookingDetails for the given booking. */
+  getDetailsEntries(b: Booking): { label: string; value: string }[] {
+    if (!b.bookingDetails || !b.type) return [];
+    const cfg = SESSION_CONFIGS[b.type as SessionType];
+    if (!cfg) return [];
+    return cfg.summaryFields
+      .map(key => {
+        const raw   = (b.bookingDetails as Record<string, unknown>)[key];
+        const value = Array.isArray(raw)
+          ? (raw as string[]).join(', ')
+          : String(raw ?? '');
+        const field = cfg.fields.find(f => f.key === key);
+        return { label: field?.label ?? key, value };
+      })
+      .filter(e => e.value.trim() !== '');
+  }
+
+  /** Returns the pricing snapshot for Real Estate bookings, if saved. */
+  getPricingSnapshot(b: Booking): PricingBreakdown | null {
+    if (b.type !== 'Real Estate' || !b.bookingDetails) return null;
+    return ((b.bookingDetails as Record<string, unknown>)['pricingSnapshot'] as PricingBreakdown) ?? null;
   }
 
   openGmailDraft(b: Booking): void {

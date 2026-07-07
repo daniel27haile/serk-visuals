@@ -1,0 +1,214 @@
+<section class="container section">
+  <header class="head">
+    <div>
+      <h1>Pricing Configuration</h1>
+      <p class="head__sub">Changes take effect immediately for new bookings.</p>
+    </div>
+  </header>
+
+  <!-- ── Tab switcher ────────────────────────────────────── -->
+  <div class="tabs">
+    <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'Real Estate'" (click)="switchTab('Real Estate')">
+      Real Estate
+    </button>
+    <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'Product'" (click)="switchTab('Product')">
+      Product Photography
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════
+       REAL ESTATE TAB
+       ════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'Real Estate') {
+    @if (reLoading()) {
+      <div class="skeleton">Loading pricing config…</div>
+    } @else if (reError()) {
+      <div class="alert alert--error">{{ reError() }}</div>
+    } @else {
+      <form [formGroup]="reForm" (ngSubmit)="saveRealEstate()">
+
+        <!-- ── Base Price ───────────────────────────────── -->
+        <div class="config-section">
+          <h2 class="config-section__title">Base Price</h2>
+          <p class="config-section__desc">Starting price before any adjustments or add-ons.</p>
+          <div class="price-field">
+            <span class="price-field__prefix">$</span>
+            <input type="number" formControlName="basePrice" min="0" step="5" class="price-field__input" />
+          </div>
+        </div>
+
+        <!-- ── Property Type Adjustments ───────────────── -->
+        <div class="config-section">
+          <h2 class="config-section__title">Property Type Adjustments</h2>
+          <p class="config-section__desc">Price added to base for each property type. Use 0 for no adjustment.</p>
+          <div class="adj-table">
+            <div class="adj-table__head">
+              <span>Property Type</span>
+              <span>Price Adjustment ($)</span>
+            </div>
+            <div formArrayName="propertyTypeAdjustments">
+              @for (ctrl of propertyTypeAdjustments.controls; track $index) {
+                <div class="adj-table__row" [formGroupName]="$index">
+                  <span class="adj-table__label">{{ ctrl.get('label')?.value }}</span>
+                  <div class="price-field price-field--sm">
+                    <span class="price-field__prefix">+$</span>
+                    <input type="number" formControlName="priceAdjustment" min="0" step="5" class="price-field__input" />
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Property Size Adjustments ───────────────── -->
+        <div class="config-section">
+          <h2 class="config-section__title">Property Size Adjustments</h2>
+          <p class="config-section__desc">Price added to base for each size tier. Use 0 for no adjustment.</p>
+          <div class="adj-table">
+            <div class="adj-table__head">
+              <span>Property Size</span>
+              <span>Price Adjustment ($)</span>
+            </div>
+            <div formArrayName="propertySizeAdjustments">
+              @for (ctrl of propertySizeAdjustments.controls; track $index) {
+                <div class="adj-table__row" [formGroupName]="$index">
+                  <span class="adj-table__label">{{ ctrl.get('label')?.value }}</span>
+                  <div class="price-field price-field--sm">
+                    <span class="price-field__prefix">+$</span>
+                    <input type="number" formControlName="priceAdjustment" min="0" step="5" class="price-field__input" />
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Service Add-ons ──────────────────────────── -->
+        <div class="config-section">
+          <h2 class="config-section__title">Service Add-ons</h2>
+          <p class="config-section__desc">
+            Set the price for each service. Toggle "Included" to show it as included in the base price
+            (price shown as "Included" to the client — $0 is added).
+          </p>
+          <div class="addon-table">
+            <div class="addon-table__head">
+              <span>Service</span>
+              <span>Price ($)</span>
+              <span>Included in base?</span>
+            </div>
+            <div formArrayName="serviceAddOns">
+              @for (ctrl of serviceAddOns.controls; track $index) {
+                <div class="addon-table__row" [formGroupName]="$index">
+                  <span class="addon-table__label">{{ ctrl.get('label')?.value }}</span>
+                  <div class="price-field price-field--sm"
+                       [class.price-field--disabled]="ctrl.get('included')?.value">
+                    <span class="price-field__prefix">+$</span>
+                    <input type="number" formControlName="price" min="0" step="5" class="price-field__input"
+                           [disabled]="ctrl.get('included')?.value" />
+                  </div>
+                  <label class="toggle">
+                    <input type="checkbox" formControlName="included" />
+                    <span class="toggle__track"></span>
+                    <span class="toggle__label">{{ ctrl.get('included')?.value ? 'Included' : 'Add-on' }}</span>
+                  </label>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Save footer ──────────────────────────────── -->
+        <div class="form-footer">
+          @if (reError()) {
+            <p class="form-footer__error">{{ reError() }}</p>
+          }
+          @if (reSaved()) {
+            <span class="saved-badge">Saved</span>
+          }
+          <button type="submit" class="btn-save" [disabled]="reSaving()">
+            {{ reSaving() ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+
+      </form>
+    }
+  }
+
+  <!-- ════════════════════════════════════════════════════════
+       PRODUCT PHOTOGRAPHY TAB
+       ════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'Product') {
+    @if (productLoading()) {
+      <div class="skeleton">Loading pricing config…</div>
+    } @else if (productError()) {
+      <div class="alert alert--error">{{ productError() }}</div>
+    } @else {
+      <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+
+        <!-- ── Deliverable Tiers ────────────────────────── -->
+        <div class="config-section">
+          <h2 class="config-section__title">Deliverable Tiers</h2>
+          <p class="config-section__desc">
+            Each tier is a standalone price — the client selects one. Category adjustments are added on top.
+          </p>
+          <div class="adj-table">
+            <div class="adj-table__head">
+              <span>Deliverables</span>
+              <span>Price ($)</span>
+            </div>
+            <div formArrayName="deliverableTiers">
+              @for (ctrl of deliverableTiers.controls; track $index) {
+                <div class="adj-table__row" [formGroupName]="$index">
+                  <span class="adj-table__label">{{ ctrl.get('label')?.value }}</span>
+                  <div class="price-field price-field--sm">
+                    <span class="price-field__prefix">$</span>
+                    <input type="number" formControlName="price" min="0" step="25" class="price-field__input" />
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Category Adjustments ────────────────────── -->
+        <div class="config-section">
+          <h2 class="config-section__title">Category Adjustments</h2>
+          <p class="config-section__desc">
+            Extra price added to the tier for specialty product categories. Use 0 for no adjustment.
+          </p>
+          <div class="adj-table">
+            <div class="adj-table__head">
+              <span>Product Category</span>
+              <span>Price Adjustment ($)</span>
+            </div>
+            <div formArrayName="categoryAdjustments">
+              @for (ctrl of categoryAdjustments.controls; track $index) {
+                <div class="adj-table__row" [formGroupName]="$index">
+                  <span class="adj-table__label">{{ ctrl.get('label')?.value }}</span>
+                  <div class="price-field price-field--sm">
+                    <span class="price-field__prefix">+$</span>
+                    <input type="number" formControlName="priceAdjustment" min="0" step="5" class="price-field__input" />
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Save footer ──────────────────────────────── -->
+        <div class="form-footer">
+          @if (productError()) {
+            <p class="form-footer__error">{{ productError() }}</p>
+          }
+          @if (productSaved()) {
+            <span class="saved-badge">Saved</span>
+          }
+          <button type="submit" class="btn-save" [disabled]="productSaving()">
+            {{ productSaving() ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+
+      </form>
+    }
+  }
+</section>

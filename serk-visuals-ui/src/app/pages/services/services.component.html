@@ -1,16 +1,16 @@
 <!-- PAGE HERO -->
 <header class="services-hero">
   <div class="container">
-    <h1 class="page-title">Our Services</h1>
+    <h1 class="page-title">Photography &amp; Videography Services</h1>
     <p class="lead">
-      From cinematic photography and videography to polished editing —
-      everything you need to tell your story.
+      From wedding films and portrait sessions to branding shoots and real estate photography —
+      we offer everything you need to tell your story, right here in Seattle and the greater Pacific Northwest.
     </p>
   </div>
 </header>
 
 <!-- SERVICE CARDS -->
-<section class="container section">
+<section class="container section" aria-label="Our services">
   <div class="grid services">
     <article class="svc" *ngFor="let svc of services">
       <div class="svc__glow"></div>
@@ -23,6 +23,16 @@
       <a [routerLink]="svc.ctaLink" class="svc__cta">{{ svc.ctaText }}</a>
     </article>
   </div>
+</section>
+
+<!-- SERVICE AREA NOTE -->
+<section class="container section service-area-section">
+  <p class="lead service-area-text">
+    Based in the Seattle area, we regularly work in <strong>Mill Creek</strong>, <strong>Everett</strong>,
+    <strong>Lynnwood</strong>, <strong>Bellevue</strong>, <strong>Redmond</strong>, <strong>Kirkland</strong>,
+    <strong>Snohomish</strong>, and throughout <strong>King</strong> and <strong>Snohomish Counties</strong>.
+    Travel to other locations is available — just ask.
+  </p>
 </section>
 
 <!-- BOTTOM CTA -->

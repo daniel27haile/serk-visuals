@@ -13,6 +13,9 @@ const validateId = (req, res, next) => {
 // Sanity
 [
   "availability",
+  "getSlots",
+  "getNextAvailability",
+  "getMonthAvailability",
   "getStats",
   "getAll",
   "getOne",
@@ -28,8 +31,11 @@ const validateId = (req, res, next) => {
     throw new Error(`Controller "${k}" is not a function`);
 });
 
-/** NEW: availability */
+/** Availability */
 router.get("/availability", ctrl.availability);
+router.get("/month-availability", ctrl.getMonthAvailability);
+router.get("/slots", ctrl.getSlots);
+router.get("/next-availability", ctrl.getNextAvailability);
 
 /** Stats & export */
 router.get("/stats", ctrl.getStats);

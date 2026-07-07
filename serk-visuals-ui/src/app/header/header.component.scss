@@ -50,6 +50,15 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+
+    // <picture> sits between the wrap and <img>; give it the same height
+    // so that .logo__img { height: 100% } resolves against the wrap, not
+    // against <picture>'s default auto height.
+    picture {
+      display: inline-flex;
+      height: 100%;
+      align-items: center;
+    }
   }
 
   .logo__img {

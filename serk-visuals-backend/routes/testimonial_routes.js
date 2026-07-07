@@ -12,7 +12,7 @@ const validateId = (req, res, next) => {
   next();
 };
 
-router.get("/", publicCache(300, 600), ctrl.list);
+router.get("/", publicCache(60, 120), ctrl.list);
 router.get("/:id", validateId, ctrl.getOne);
 
 // Admin-only mutations

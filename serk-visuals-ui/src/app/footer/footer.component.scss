@@ -49,6 +49,12 @@
   display: inline-block;
   line-height: 0;
 
+  // <picture> wrapper — keep it inline so it doesn't add extra layout space
+  picture {
+    display: inline-block;
+    line-height: 0;
+  }
+
   img {
     height: 54px;
     width: auto;

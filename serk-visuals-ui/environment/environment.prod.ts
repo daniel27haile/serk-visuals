@@ -1,5 +1,7 @@
+// NOTE: This file is NOT used by angular.json.
+// The active environment files are in src/environments/.
+// Kept here only to avoid confusion — DO NOT import from this path.
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://serk-visuals-api.onrender.com',
-  CDN_URL: 'https://d19gnizvws4w1d.cloudfront.net'
+  apiUrl: '', // Nginx reverse-proxy: /api/* → localhost:5000
 };

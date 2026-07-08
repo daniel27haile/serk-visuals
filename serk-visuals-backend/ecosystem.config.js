@@ -8,7 +8,8 @@ module.exports = {
   apps: [
     {
       name: 'serkvisuals-api',
-      script: 'app.js',
+      script: 'npm',
+      args:   'start',
       cwd: '/var/www/serkvisuals/serk-visuals/serk-visuals-backend',
 
       // Single process — scale with instances: 'max' if needed later

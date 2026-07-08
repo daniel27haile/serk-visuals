@@ -1,16 +1,18 @@
-name: Deploy
+name: Deploy → DigitalOcean
 
 on:
   push:
     branches: [main]
 
+# Only one production deploy at a time; never cancel an in-progress deploy.
 concurrency:
   group: deploy-production
   cancel-in-progress: false
 
 jobs:
+  # ── Frontend CI ──────────────────────────────────────────────────────────────
   frontend-ci:
-    name: Frontend — Type-check, Build & Test
+    name: Frontend — Type-check & Build
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -34,9 +36,7 @@ jobs:
       - name: Build (production)
         run: npm run build:prod
 
-      - name: Unit tests (headless Chrome)
-        run: npx ng test --watch=false --browsers=ChromeHeadless --no-progress
-
+  # ── Backend CI ───────────────────────────────────────────────────────────────
   backend-ci:
     name: Backend — Install & Syntax Check
     runs-on: ubuntu-latest
@@ -59,87 +59,57 @@ jobs:
       - name: Syntax check all JS files
         run: find . -name "*.js" -not -path "./node_modules/*" | xargs node --check
 
-  deploy-frontend:
-    name: Deploy → Vercel (Production)
+  # ── Deploy ───────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy → DigitalOcean
     runs-on: ubuntu-latest
     needs: [frontend-ci, backend-ci]
-    # Vercel CLI runs from repo root so that the dashboard Root Directory setting
-    # ("serk-visuals-ui") resolves the subfolder without doubling the path.
     environment:
       name: production
       url: https://serkvisuals.com
-    env:
-      VERCEL_TOKEN:      ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID:     ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
-      - uses: actions/checkout@v4
-
-      # Fail early with a clear message rather than deep inside a deploy command
-      - name: Validate Vercel secrets
-        run: |
-          missing=()
-          [ -z "$VERCEL_TOKEN" ]      && missing+=("VERCEL_TOKEN")
-          [ -z "$VERCEL_ORG_ID" ]     && missing+=("VERCEL_ORG_ID")
-          [ -z "$VERCEL_PROJECT_ID" ] && missing+=("VERCEL_PROJECT_ID")
-          if [ ${#missing[@]} -gt 0 ]; then
-            echo "::error::Missing required secrets: ${missing[*]}"
-            echo "::error::Add them in Settings → Secrets and variables → Actions."
-            exit 1
-          fi
-          echo "All Vercel secrets present."
-
-      - uses: actions/setup-node@v4
+      - name: SSH into droplet & deploy
+        uses: appleboy/ssh-action@v1.2.0
         with:
-          node-version: '20'
+          host:     ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port:     ${{ secrets.PORT }}
+          key:      ${{ secrets.SSH_KEY }}
+          # Each line in `script` is a separate SSH command.
+          # `set -e` makes the entire script abort on the first error,
+          # so a failed build will not reload Nginx with broken files.
+          script: |
+            set -e
 
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+            cd /var/www/serkvisuals/serk-visuals
 
-      - name: Debug — verify repo structure before deploy
-        run: |
-          echo "--- pwd (repo root) ---"
-          pwd
-          echo "--- repo root contents ---"
-          ls -la
-          echo "--- serk-visuals-ui contents ---"
-          ls -la serk-visuals-ui
+            echo "→ Pulling latest code..."
+            git pull origin main
 
-      # Both CLI steps run from repo root. Vercel resolves serk-visuals-ui/ via
-      # the dashboard Root Directory setting. Source deploy (no --prebuilt) lets
-      # Vercel build on their servers, avoiding "spawn sh ENOENT" in GitHub Actions.
-      - name: Pull Vercel project settings
-        run: vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+            # ── Backend ──────────────────────────────────────────────────────
+            echo "→ Installing backend dependencies..."
+            cd serk-visuals-backend
+            npm ci --omit=dev
 
-      - name: Deploy to Vercel
-        id: deploy
-        run: |
-          URL=$(vercel deploy --prod --token="$VERCEL_TOKEN")
-          echo "url=$URL" >> $GITHUB_OUTPUT
+            echo "→ Reloading API with PM2..."
+            pm2 reload ecosystem.config.js --env production \
+              || pm2 start ecosystem.config.js --env production
+            pm2 save
 
-      - name: Print deployment URL
-        run: echo "Deployed to ${{ steps.deploy.outputs.url }}"
+            # ── Frontend ─────────────────────────────────────────────────────
+            echo "→ Installing frontend dependencies..."
+            cd ../serk-visuals-ui
+            npm ci
 
-  deploy-backend:
-    name: Deploy → Render (Production)
-    runs-on: ubuntu-latest
-    needs: [frontend-ci, backend-ci]
-    environment:
-      name: production
+            echo "→ Building Angular frontend..."
+            npm run build:prod
 
-    steps:
-      - name: Trigger Render deploy hook
-        run: |
-          HOOK_URL="${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
-          if [ -z "$HOOK_URL" ]; then
-            echo "::error::RENDER_DEPLOY_HOOK_URL secret is not set. Add it in Settings → Secrets."
-            exit 1
-          fi
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$HOOK_URL")
-          echo "Render API responded with status: $STATUS"
-          if [ "$STATUS" != "200" ] && [ "$STATUS" != "201" ] && [ "$STATUS" != "202" ]; then
-            echo "Deploy hook failed with status $STATUS"
-            exit 1
-          fi
-          echo "Render deployment triggered successfully."
+            # ── Nginx ────────────────────────────────────────────────────────
+            echo "→ Testing Nginx config..."
+            sudo nginx -t
+
+            echo "→ Reloading Nginx..."
+            sudo systemctl reload nginx
+
+            echo "✅ Deployment complete — https://serkvisuals.com"

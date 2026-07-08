@@ -17,6 +17,7 @@ const GalleryItemSchema = new Schema(
       index: true,
     },
     order: { type: Number, default: 0, index: true }, // new
+    isCover: { type: Boolean, default: false }, // marks the representative cover image for this album
     url: { type: String, required: true }, // absolute CDN/S3 URL — derived from imageKey
     thumbnail: { type: String }, // optional absolute CDN/S3 URL — derived from thumbKey
     imageKey: { type: String }, // S3 object key — source of truth for URL derivation

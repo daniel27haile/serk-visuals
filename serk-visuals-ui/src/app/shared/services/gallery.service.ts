@@ -2,7 +2,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Album, GalleryItem, Paged, Placement } from '../models/gallery.model';
+import { Album, AlbumSummary, GalleryItem, Paged, Placement } from '../models/gallery.model';
 import { environment } from '../../../environments/environment';
 
 const baseUrl = `${environment.apiUrl}/api/gallery`;
@@ -72,5 +72,27 @@ export class GalleryService {
   remove(id: string) {
     return this.http.delete<void>(`${this.base}/${id}`, { withCredentials: true })
       .pipe(tap(() => this._changed$.next()));
+  }
+
+  /** Returns album summaries grouped by placement+album. Pass placement to narrow results. */
+  getAlbums(opts?: { placement?: Placement }): Observable<{ albums: AlbumSummary[] }> {
+    let params = new HttpParams();
+    if (opts?.placement) params = params.set('placement', opts.placement);
+    return this.http.get<{ albums: AlbumSummary[] }>(`${this.base}/albums`, { params });
+  }
+
+  /** Sets this item as the cover for its album+placement group. */
+  setCover(id: string): Observable<GalleryItem> {
+    return this.http.post<GalleryItem>(`${this.base}/${id}/cover`, {}, { withCredentials: true })
+      .pipe(tap(() => this._changed$.next()));
+  }
+
+  /** Bulk-update order values. */
+  reorder(items: { id: string; order: number }[]): Observable<{ matched: number; modified: number }> {
+    return this.http.post<{ matched: number; modified: number }>(
+      `${this.base}/reorder`,
+      { items },
+      { withCredentials: true }
+    );
   }
 }

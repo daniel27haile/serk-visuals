@@ -1,20 +1,18 @@
 import {
   Component,
   computed,
-  effect,
   inject,
   signal,
   ViewChild,
-  ElementRef,
-  AfterViewInit,
+  OnInit,
   OnDestroy,
   PLATFORM_ID,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { GalleryService } from '../../shared/services/gallery.service';
-import { Album, GalleryItem } from '../../shared/models/gallery.model';
-import { firstValueFrom, fromEvent, Subscription } from 'rxjs';
-import { skip, throttleTime } from 'rxjs/operators';
+import { Album, AlbumSummary, GalleryItem } from '../../shared/models/gallery.model';
+import { firstValueFrom, Subscription } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { LightboxComponent } from '../../shared/components/lightbox/lightbox.component';
 
 @Component({
@@ -24,96 +22,113 @@ import { LightboxComponent } from '../../shared/components/lightbox/lightbox.com
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.scss'],
 })
-export class GalleryPage implements AfterViewInit, OnDestroy {
+export class GalleryPage implements OnInit, OnDestroy {
   private api = inject(GalleryService);
   private platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  // ------- filters / paging -------
-  albums: Album[] = [
-    'Wedding',
-    'Event',
-    'Birthday',
-    'Product',
-    'Personal',
-    'Other',
-  ];
-  album = signal<Album | ''>(''); // '' = all
-  page = signal(1);
-  limit = signal(12);
-  loading = signal(true);
-  error = signal<string | null>(null);
+  readonly albums: Album[] = ['Wedding', 'Event', 'Birthday', 'Product', 'Personal', 'Other'];
 
+  // ── View state ────────────────────────────────────────────
+  view = signal<'albums' | 'images'>('albums');
+  selectedAlbum = signal<Album | ''>('');
+
+  // ── Album summary data ────────────────────────────────────
+  albumStats = signal<AlbumSummary[]>([]);
+  albumsLoading = signal(true);
+  albumsError = signal<string | null>(null);
+  totalAllImages = signal(0);
+
+  // ── Image grid data ───────────────────────────────────────
+  readonly limit = 12;
+  page = signal(1);
+  loading = signal(false);
+  error = signal<string | null>(null);
   items = signal<GalleryItem[]>([]);
   total = signal(0);
-  pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit())));
+  pages = computed(() => Math.max(1, Math.ceil(this.total() / this.limit)));
 
-  /** pill icons */
-  private readonly albumIcons: Record<Album, string> = {
-    Wedding: '💍',
-    Event: '🎪',
-    Birthday: '🎂',
-    Product: '📷',
-    Personal: '👤',
-    Other: '✨',
-  };
-  albumIcon = (a: Album): string => this.albumIcons[a] ?? '✨';
-
-  // ------- tabs overflow state -------
-  @ViewChild('tabWrap') tabWrap?: ElementRef<HTMLDivElement>;
   @ViewChild(LightboxComponent) lb!: LightboxComponent;
-  canScrollLeft = signal(false);
-  canScrollRight = signal(false);
-  private resizeSub?: Subscription;
-  private galleryChangedSub?: Subscription;
+  private changeSub?: Subscription;
 
-  constructor() {
-    effect(
-      () => {
-        void this.fetch();
-      },
-      { allowSignalWrites: true }
-    );
+  private readonly albumIcons: Record<Album, string> = {
+    Wedding: '💍', Event: '🎪', Birthday: '🎂',
+    Product: '📷', Personal: '👤', Other: '✨',
+  };
 
-    // Re-fetch when admin mutates gallery items in the same SPA session.
-    // skip(1) avoids a double-fetch on component init.
-    this.galleryChangedSub = this.api.changed$
-      .pipe(skip(1))
-      .subscribe(() => void this.fetch());
+  private readonly albumDescs: Record<Album, string> = {
+    Wedding: 'Weddings & engagements',
+    Event: 'Corporate & social events',
+    Birthday: 'Birthday sessions',
+    Product: 'Product & commercial',
+    Personal: 'Portraits & personal',
+    Other: 'Specialty & mixed',
+  };
+
+  albumIcon = (a: Album): string => this.albumIcons[a] ?? '✨';
+  albumDesc = (a: Album): string => this.albumDescs[a] ?? '';
+
+  statsFor(album: Album): AlbumSummary | undefined {
+    return this.albumStats().find(s => s.album === album && s.placement === 'gallery');
   }
 
-  ngAfterViewInit(): void {
-    if (!this.isBrowser) return;
-    setTimeout(() => this.updateTabsOverflow(), 0);
-    this.resizeSub = fromEvent(window, 'resize')
-      .pipe(throttleTime(100))
-      .subscribe(() => this.updateTabsOverflow());
+  get selectedAlbumLabel(): string {
+    const a = this.selectedAlbum();
+    return a || 'All Photos';
+  }
+
+  get selectedAlbumIcon(): string {
+    const a = this.selectedAlbum();
+    return a ? this.albumIcon(a as Album) : '⭐';
+  }
+
+  // ── Lifecycle ─────────────────────────────────────────────
+  ngOnInit(): void {
+    void this.loadAlbums();
+    this.changeSub = this.api.changed$.pipe(skip(1)).subscribe(() => {
+      if (this.view() === 'albums') void this.loadAlbums();
+      else void this.fetchImages();
+    });
   }
 
   ngOnDestroy(): void {
-    this.resizeSub?.unsubscribe();
-    this.galleryChangedSub?.unsubscribe();
+    this.changeSub?.unsubscribe();
   }
 
-  // ------- data load -------
-  private async fetch() {
+  // ── Data loading ──────────────────────────────────────────
+  async loadAlbums(): Promise<void> {
+    this.albumsLoading.set(true);
+    this.albumsError.set(null);
+    try {
+      const res = await firstValueFrom(this.api.getAlbums({ placement: 'gallery' }));
+      this.albumStats.set(res.albums);
+      this.totalAllImages.set(res.albums.reduce((n, s) => n + s.publishedCount, 0));
+    } catch {
+      this.albumsError.set('Could not load albums.');
+    } finally {
+      this.albumsLoading.set(false);
+    }
+  }
+
+  async fetchImages(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
     try {
+      const album = this.selectedAlbum();
       const res = await firstValueFrom(
         this.api.list({
           placement: 'gallery',
-          album: (this.album() || undefined) as Album | undefined,
+          album: (album || undefined) as Album | undefined,
           published: true,
           page: this.page(),
-          limit: this.limit(),
-          sort: '-createdAt',
+          limit: this.limit,
+          sort: 'order,-createdAt',
         })
       );
       this.items.set(res.items ?? []);
       this.total.set(res.total ?? 0);
     } catch (e: any) {
-      this.error.set(e?.error?.message || 'Failed to load gallery.');
+      this.error.set(e?.error?.message || 'Failed to load images.');
       this.items.set([]);
       this.total.set(0);
     } finally {
@@ -121,62 +136,38 @@ export class GalleryPage implements AfterViewInit, OnDestroy {
     }
   }
 
-  // ------- tabs / overflow helpers -------
-  private updateTabsOverflow() {
-    if (!this.isBrowser) return;
-    const el = this.tabWrap?.nativeElement;
-    if (!el) return;
-    const left = el.scrollLeft > 0;
-    const right = Math.ceil(el.scrollLeft + el.clientWidth) < el.scrollWidth;
-    this.canScrollLeft.set(left);
-    this.canScrollRight.set(right);
-  }
-  onTabsScroll() {
-    this.updateTabsOverflow();
-  }
-  scrollTabs(direction: 'left' | 'right') {
-    if (!this.isBrowser) return;
-    const el = this.tabWrap?.nativeElement;
-    if (!el) return;
-    const delta =
-      Math.round(el.clientWidth * 0.8) * (direction === 'left' ? -1 : 1);
-    el.scrollBy({ left: delta, behavior: 'smooth' });
-  }
-
-  // ------- filters / paging -------
-  setAlbum(a: Album | '') {
-    this.album.set(a);
+  // ── Navigation ────────────────────────────────────────────
+  openAlbum(album: Album | ''): void {
+    this.selectedAlbum.set(album);
     this.page.set(1);
-    if (!this.isBrowser) return;
-    setTimeout(() => {
-      const wrap = this.tabWrap?.nativeElement;
-      if (!wrap) return;
-      const active = wrap.querySelector<HTMLButtonElement>('.tab.is-active');
-      active?.scrollIntoView({
-        inline: 'center',
-        block: 'nearest',
-        behavior: 'smooth',
-      });
-      this.updateTabsOverflow();
-    }, 0);
+    this.view.set('images');
+    void this.fetchImages();
   }
-  goto(p: number) {
-    if (p >= 1 && p <= this.pages()) this.page.set(p);
-  }
-  trackById = (_: number, it: GalleryItem) => it._id!;
 
-  /** Hide broken images gracefully instead of showing the browser's broken-icon */
+  backToAlbums(): void {
+    this.view.set('albums');
+    this.items.set([]);
+    this.error.set(null);
+    if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  goto(p: number): void {
+    if (p < 1 || p > this.pages()) return;
+    this.page.set(p);
+    void this.fetchImages();
+    if (this.isBrowser) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Helpers ───────────────────────────────────────────────
+  openLightbox(index: number): void {
+    this.lb.open(this.items(), index);
+  }
+
   onImgError(event: Event): void {
     const img = event.target as HTMLImageElement;
     img.classList.add('img--broken');
     img.removeAttribute('src');
   }
-  joinTags(tags?: string[] | null): string {
-    return Array.isArray(tags) && tags.length ? tags.join(', ') : '';
-  }
 
-  // ------- LIGHTBOX -------
-  openLightbox(index: number) {
-    this.lb.open(this.items(), index);
-  }
+  trackById = (_: number, it: GalleryItem) => it._id!;
 }

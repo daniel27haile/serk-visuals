@@ -1,5 +1,5 @@
 // ============================================================
-// Public Gallery — component-specific styles only.
+// Public Gallery — album cards → images grid two-state view
 // ============================================================
 
 :host {
@@ -7,110 +7,220 @@
   color: var(--color-text);
   background: var(--color-bg);
   padding-block: 2rem;
-  padding-inline: 1rem;
+  padding-inline: clamp(1rem, 3vw, 2rem);
 }
 
-.gallery h1 {
+// ── Page header ───────────────────────────────────────────
+.gallery-page__header {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto clamp(2rem, 4vw, 3rem);
+}
+
+.gallery-page__header h1 {
   font-size: clamp(1.6rem, 1.2rem + 1.8vw, 2.4rem);
   font-weight: var(--weight-extrabold);
-  text-align: center;
-  margin-bottom: var(--spacing-sm);
+  margin: 0 0 .6rem;
   letter-spacing: .2px;
 }
 
-.gallery__intro {
-  text-align: center;
-  max-width: 680px;
-  margin: 0 auto var(--spacing-md);
+.gallery-page__intro {
   color: var(--color-text-muted);
   line-height: var(--leading-relaxed);
+  margin: 0;
+  font-size: clamp(.9rem, 1vw + .4rem, 1.05rem);
 }
 
-// ── Tabs (glass pills with scroll + chevrons) ─────────────
-.tabs {
-  position: sticky; top: 0; z-index: 5;
-  margin: .5rem auto var(--spacing-lg);
-  max-width: 1100px;
-  display: grid;
-  grid-template-columns: 40px 1fr 40px;
+// ── Shared helpers ────────────────────────────────────────
+.hint        { text-align: center; color: var(--color-text-label); margin: 1rem 0; }
+.hint.error  { color: #ffc6c6; }
+
+.state-center {
+  display: flex;
   align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
 }
 
-.tabs--frosted .tabs__wrap {
-  display: flex; gap: .5rem; align-items: center;
-  padding: .5rem; border-radius: 16px;
-  backdrop-filter: blur(8px);
-  background: rgba(8, 11, 17, .45);
-  border: 1px solid rgba(255, 255, 255, .07);
-  overflow-x: auto; -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
-  justify-content: flex-start;
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid var(--color-border-strong);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
 }
 
-@media (min-width: 769px) {
-  .tabs.is-centered .tabs__wrap { justify-content: space-evenly; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Album cards grid ──────────────────────────────────────
+.album-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  max-width: 1100px;
+  margin-inline: auto;
+
+  @media (min-width: 640px)  { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }
 }
 
-// Edge fade gradients
-.tabs--frosted::before,
-.tabs--frosted::after {
-  content: ""; position: absolute; inset-block: .4rem;
-  width: 22px; pointer-events: none; z-index: 6; opacity: 0; transition: opacity var(--t-base);
-}
-.tabs--frosted::before { left: 48px;  background: linear-gradient(90deg, var(--color-bg), transparent); }
-.tabs--frosted::after  { right: 48px; background: linear-gradient(270deg, var(--color-bg), transparent); }
-.tabs.can-left.tabs--frosted::before { opacity: .9; }
-.tabs.can-right.tabs--frosted::after { opacity: .9; }
-
-.tabs__wrap::-webkit-scrollbar { height: 8px; }
-.tabs__wrap::-webkit-scrollbar-thumb { background: transparent; }
-
-// Chevron nav buttons
-.tabs__chev {
-  width: 36px; height: 36px; display: grid; place-items: center;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, .08);
-  background: rgba(8, 11, 17, .55); color: #e7ebf3; cursor: pointer;
-  transition: transform var(--t-fast), background var(--t-base), opacity var(--t-base);
-  backdrop-filter: blur(8px); opacity: 0; pointer-events: none; font-size: 20px; line-height: 1;
-  &:hover { transform: translateY(-1px); }
-  &:disabled { opacity: .25; cursor: not-allowed; }
-}
-.tabs.can-left  .tabs__chev--left,
-.tabs.can-right .tabs__chev--right { opacity: 1; pointer-events: auto; }
-
-// Pills
-.tab {
-  scroll-snap-align: start;
-  display: inline-flex; align-items: center; gap: .5rem;
-  padding: .55rem .9rem; border-radius: var(--radius-full);
-  font-weight: var(--weight-bold); letter-spacing: .15px;
-  cursor: pointer; user-select: none; white-space: nowrap;
-  line-height: 1; color: var(--color-text);
+// ── Album card ────────────────────────────────────────────
+.album-card {
   background: var(--color-surface);
-  border: 1px solid var(--color-border-strong);
-  transition: transform var(--t-fast), box-shadow var(--t-base), background var(--t-base), color var(--t-base);
-  &:hover { transform: translateY(-1px); }
-  &:focus-visible { outline: 0; box-shadow: 0 0 0 3px var(--color-accent-muted); }
-  .tab__icon { width: 1.1em; text-align: center; }
-}
-.tab.is-active {
-  color: var(--color-text-inverse);
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  text-align: left;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, .22);
+    border-color: var(--color-border-strong);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+  }
 }
 
-// ── Gallery grid ─────────────────────────────────────────
-.hint { text-align: center; margin: var(--spacing-sm) 0; color: var(--color-text-label); }
-.hint.error { color: #ffc6c6; }
+// Cover area — fixed aspect ratio
+.album-card__cover {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--color-surface-2);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform .5s ease;
+  }
+}
+
+.album-card:hover .album-card__cover img { transform: scale(1.05); }
+
+.album-card__placeholder-icon,
+.album-card__all-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  opacity: .55;
+}
+
+// "All Photos" card — slightly accent-tinted cover
+.album-card--all .album-card__cover {
+  background: linear-gradient(135deg, var(--color-surface-2) 0%, rgba(var(--color-primary-rgb, 255, 106, 0), .08) 100%);
+}
+
+// Info section below cover
+.album-card__info {
+  padding: .85rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  flex: 1;
+}
+
+.album-card__name {
+  font-weight: var(--weight-bold);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.album-card__icon { font-size: .95em; line-height: 1; }
+
+.album-card__count {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  font-weight: var(--weight-semibold);
+}
+
+.album-card__desc {
+  font-size: .8rem;
+  color: var(--color-text-label);
+  line-height: 1.45;
+}
+
+// ── Images view header ────────────────────────────────────
+.images-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto 1.75rem;
+}
+
+.back-btn {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  padding: .45rem .9rem;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: border-color .18s, color .18s;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  &:hover { border-color: var(--color-border-strong); color: var(--color-text); }
+  &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 3px; }
+}
+
+.images-header__title {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  flex-wrap: wrap;
+}
+
+.images-header__icon { font-size: 1.35rem; line-height: 1; }
+
+.images-header__label {
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  font-weight: var(--weight-extrabold);
+  color: var(--color-text);
+}
+
+.images-header__count {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: .2rem .65rem;
+  font-weight: var(--weight-semibold);
+}
+
+// ── Image grid ────────────────────────────────────────────
 .gallery__grid {
   display: grid;
   gap: 1.1rem;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   max-width: 1200px;
   margin-inline: auto;
+
+  @media (min-width: 640px)  { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  @media (min-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
 }
 
 .gallery__item {
@@ -120,19 +230,59 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform var(--t-fast), box-shadow var(--t-base), border-color var(--t-base);
+  cursor: zoom-in;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
 
-  &:hover { transform: translateY(-2px); border-color: var(--color-border-strong); box-shadow: var(--shadow-lg); }
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
 .thumb { position: relative; overflow: hidden; }
-.thumb img {
-  width: 100%; height: 220px; object-fit: cover; display: block;
-  transform: scale(1); transition: transform .6s ease;
-}
-.zoomable { cursor: zoom-in; }
 
-// Graceful placeholder when an S3 image fails to load
+.thumb img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transform: scale(1);
+  transition: transform .55s ease;
+}
+
+.gallery__item:hover .thumb img { transform: scale(1.05); }
+
+.thumb__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, .35) 100%);
+  opacity: .5;
+  transition: opacity .25s;
+  pointer-events: none;
+}
+
+.gallery__item:hover .thumb__overlay { opacity: .65; }
+
+.gallery__item-body {
+  padding: .65rem 1rem .85rem;
+
+  h4 {
+    margin: 0;
+    font-size: var(--text-base);
+    font-weight: var(--weight-bold);
+    line-height: var(--leading-tight);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    word-break: break-word;
+    hyphens: auto;
+  }
+}
+
+// ── Broken image placeholder ──────────────────────────────
 .img--broken {
   display: block !important;
   width: 100%;
@@ -140,21 +290,35 @@
   background: var(--color-surface-2);
   cursor: default;
 }
-.thumb__overlay {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(60% 50% at 50% 30%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, .25) 60%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, .35) 100%);
-  opacity: .55; transition: opacity var(--t-slow);
-  pointer-events: none; /* must not intercept clicks destined for the img below */
-}
-.gallery__item:hover .thumb img { transform: scale(1.05); }
-.gallery__item:hover .thumb__overlay { opacity: .65; }
 
-.gallery__item-body { padding: .75rem 1rem 1rem; display: grid; gap: .35rem; }
-.gallery__item h4 {
-  margin: 0; font-size: var(--text-base); font-weight: var(--weight-extrabold); line-height: var(--leading-tight);
-  overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
-  word-break: break-word; hyphens: auto;
-}
+// ── Pagination ────────────────────────────────────────────
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
 
+  button {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    border-radius: var(--radius-md);
+    padding: .5rem 1.1rem;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    transition: border-color .18s, background .18s;
+
+    &:hover:not(:disabled) { background: var(--color-surface-2); border-color: var(--color-border-strong); }
+    &:disabled { opacity: .38; cursor: not-allowed; }
+    &:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+  }
+
+  span {
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+}

@@ -13,14 +13,25 @@ export interface GalleryItem {
   _id?: string;
   title: string;
   album: Album;
-  url: string; // absolute from API
-  thumbnail?: string; // absolute from API
+  url: string;
+  thumbnail?: string;
   tags?: string[];
   published?: boolean;
-  placement?: Placement; // 👈 new
-  order?: number; // 👈 new
+  placement?: Placement;
+  order?: number;
+  isCover?: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+/** Summary returned by GET /api/gallery/albums, grouped by placement+album */
+export interface AlbumSummary {
+  placement: Placement;
+  album: Album;
+  count: number;
+  publishedCount: number;
+  coverUrl: string | null;
+  coverThumbUrl: string | null;
 }
 
 export interface Paged<T> {

@@ -35,6 +35,52 @@ const absolutize = (_req, item) => {
   return out;
 };
 
+/**
+ * GET /api/gallery/albums
+ * Returns per-(placement, album) group stats: count, publishedCount, and the
+ * cover image URL (isCover=true doc first, then lowest order, then newest).
+ * Optional query param: placement=gallery|slider|featured — filters results.
+ */
+exports.getAlbums = async (req, res) => {
+  try {
+    const { placement } = req.query;
+    const match = {};
+    if (placement && PLACEMENTS.includes(placement)) match.placement = placement;
+
+    const agg = await GalleryItem.aggregate([
+      { $match: match },
+      // Sort so $first picks the best cover: isCover desc → order asc → newest first
+      { $sort: { isCover: -1, order: 1, createdAt: -1 } },
+      {
+        $group: {
+          _id: { placement: "$placement", album: "$album" },
+          count: { $sum: 1 },
+          publishedCount: { $sum: { $cond: ["$published", 1, 0] } },
+          coverDoc: { $first: "$$ROOT" },
+        },
+      },
+      { $sort: { "_id.placement": 1, "_id.album": 1 } },
+    ]);
+
+    const albums = agg.map((g) => ({
+      placement: g._id.placement,
+      album: g._id.album,
+      count: g.count,
+      publishedCount: g.publishedCount,
+      coverUrl: g.coverDoc.imageKey
+        ? publicUrlFromKey(g.coverDoc.imageKey)
+        : g.coverDoc.url || null,
+      coverThumbUrl: g.coverDoc.thumbKey
+        ? publicUrlFromKey(g.coverDoc.thumbKey)
+        : g.coverDoc.thumbnail || null,
+    }));
+
+    res.json({ albums });
+  } catch (e) {
+    res.status(500).json({ message: e.message });
+  }
+};
+
 exports.list = async (req, res) => {
   try {
     const {
@@ -110,6 +156,7 @@ exports.create = async (req, res) => {
       "published",
       "placement",
       "order",
+      "isCover",
       "imageKey",
       "thumbKey",
     ]);
@@ -142,6 +189,7 @@ exports.create = async (req, res) => {
       album: body.album,
       placement,
       order,
+      isCover: body.isCover === true || body.isCover === "true" ? true : false,
       imageKey: body.imageKey,
       url: publicUrlFromKey(body.imageKey),
       thumbKey: body.thumbKey || undefined,
@@ -174,6 +222,7 @@ exports.update = async (req, res) => {
       "published",
       "placement",
       "order",
+      "isCover",
       "imageKey",
       "thumbKey",
     ]);
@@ -190,6 +239,8 @@ exports.update = async (req, res) => {
     }
     if (typeof body.order !== "undefined")
       patch.order = Number(body.order) || 0;
+    if (typeof body.isCover !== "undefined")
+      patch.isCover = body.isCover === true || body.isCover === "true";
     if (typeof body.tags !== "undefined") {
       patch.tags = Array.isArray(body.tags)
         ? body.tags
@@ -253,6 +304,35 @@ exports.removeAll = async (_req, res) => {
       ...docs.map((d) => (d.thumbnail ? deleteByUrl(d.thumbnail) : null)),
     ]);
     res.status(204).send();
+  } catch (e) {
+    res.status(400).json({ message: e.message });
+  }
+};
+
+/**
+ * POST /api/gallery/:id/cover
+ * Sets this item as the cover for its album+placement group,
+ * clearing isCover on all other items in the same group.
+ */
+exports.setCover = async (req, res) => {
+  try {
+    const doc = await GalleryItem.findById(req.params.id).lean();
+    if (!doc) return res.status(404).json({ message: "Not found" });
+
+    // Clear cover on all items in the same album+placement
+    await GalleryItem.updateMany(
+      { album: doc.album, placement: doc.placement },
+      { $set: { isCover: false } }
+    );
+
+    // Set this one
+    const updated = await GalleryItem.findByIdAndUpdate(
+      req.params.id,
+      { $set: { isCover: true } },
+      { new: true }
+    ).lean();
+
+    res.json(absolutize(req, updated));
   } catch (e) {
     res.status(400).json({ message: e.message });
   }

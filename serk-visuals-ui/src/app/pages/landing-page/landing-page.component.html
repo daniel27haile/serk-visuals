@@ -111,35 +111,71 @@
 </div>
 
 <!-- FEATURED GALLERY -->
-<section id="gallery" class="container section">
-  <h2 class="section-heading">Featured Gallery</h2>
+<section id="gallery" class="feat-section section">
 
-  <div class="grid gallery">
-    <img
-      *ngFor="let f of featured(); trackBy: trackByGallery; let i = index"
-      class="zoomable"
-      [src]="f.thumbnail || f.url"
-      [alt]="f.title"
-      loading="lazy"
-      width="400"
-      height="267"
-      (click)="lb.open(featured(), i)"
-      (error)="onImgError($event)"
-    />
+  <div class="container">
+    <h2 class="section-heading">Featured Gallery</h2>
   </div>
 
-  <p
-    class="hint"
-    *ngIf="!loadingFeatured() && featured().length === 0 && !errorFeatured()"
-  >
-    No featured items yet. Add some in Admin → Gallery (placement: featured).
-  </p>
-  <p class="hint error" *ngIf="errorFeatured()">{{ errorFeatured() }}</p>
-
-  <div class="button-group">
-    <a [routerLink]="['/gallery']" class="btn btn--ghost">See More</a>
-    <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+  <!-- Continuous horizontal marquee — duplicated strip for seamless loop -->
+  <div class="feat-reel" *ngIf="featured().length > 0" aria-label="Featured gallery">
+    <div class="feat-track">
+      <!-- Strip 1 — interactive (accessible) -->
+      <div class="feat-strip">
+        <button
+          *ngFor="let f of featured(); trackBy: trackByGallery; let i = index"
+          class="feat-item"
+          type="button"
+          [attr.aria-label]="'Open ' + f.title"
+          (click)="lb.open(featured(), i)"
+        >
+          <img
+            [src]="f.thumbnail || f.url"
+            [alt]="f.title"
+            loading="lazy"
+            width="400"
+            height="267"
+            (error)="onImgError($event)"
+          />
+        </button>
+      </div>
+      <!-- Strip 2 — visually identical duplicate; hidden from AT for seamless loop -->
+      <div class="feat-strip" aria-hidden="true">
+        <button
+          *ngFor="let f of featured(); trackBy: trackByGallery; let i = index"
+          class="feat-item"
+          type="button"
+          tabindex="-1"
+          (click)="lb.open(featured(), i)"
+        >
+          <img
+            [src]="f.thumbnail || f.url"
+            alt=""
+            loading="lazy"
+            width="400"
+            height="267"
+            (error)="onImgError($event)"
+          />
+        </button>
+      </div>
+    </div>
   </div>
+
+  <div class="container">
+    <p
+      class="hint"
+      *ngIf="!loadingFeatured() && featured().length === 0 && !errorFeatured()"
+    >
+      No featured items yet. Add some in Admin → Gallery (placement: featured).
+    </p>
+    <p class="hint error" *ngIf="errorFeatured()">{{ errorFeatured() }}</p>
+
+    <div class="button-group">
+      <a [routerLink]="['/gallery']" class="btn btn--ghost">See More</a>
+      <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+    </div>
+  </div>
+
 </section>
 
 <!-- WHY SERK VISUALS -->

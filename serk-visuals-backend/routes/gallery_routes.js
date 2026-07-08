@@ -3,6 +3,7 @@ const express = require("express");
 const ctrl = require("../controller/gallery_controller");
 const { requireAuth, requireRole } = require("../middleware/auth");
 const { publicCache } = require("../middleware/cache");
+const { validateId } = require("../middleware/validate");
 
 const router = express.Router();
 

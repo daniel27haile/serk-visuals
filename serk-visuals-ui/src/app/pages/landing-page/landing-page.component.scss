@@ -322,10 +322,98 @@
   .stat-divider { display: block; }
 }
 
-// ── Featured gallery preview ───────────────────────────────
-.gallery { grid-template-columns: 1fr; }
-.gallery img { width: 100%; height: 220px; object-fit: cover; border-radius: var(--radius-md); cursor: zoom-in; transition: transform var(--t-fast); }
-.gallery img:hover { transform: scale(1.02); }
+// ── Featured gallery marquee ───────────────────────────────
+// The section is full-bleed; heading/buttons sit inside .container.
+.feat-section {
+  // Prevent the full-bleed reel from causing horizontal scroll on the page
+  overflow: hidden;
+}
+
+// Outer clipping + edge-fade mask
+.feat-reel {
+  overflow: hidden;
+  margin-block: clamp(1.25rem, 2.5vw, 2rem);
+
+  // Soft transparency fade at both horizontal edges so the strip
+  // looks "infinite" and doesn't hard-cut against the viewport edge.
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 clamp(1.5rem, 4vw, 4rem),
+    #000 calc(100% - clamp(1.5rem, 4vw, 4rem)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 clamp(1.5rem, 4vw, 4rem),
+    #000 calc(100% - clamp(1.5rem, 4vw, 4rem)),
+    transparent 100%
+  );
+
+  // Pause the scroll while the pointer is over the reel (desktop only)
+  @media (hover: hover) {
+    &:hover .feat-track { animation-play-state: paused; }
+  }
+}
+
+// Moving track — contains two identical strips side-by-side.
+// translateX(-50%) moves exactly one strip width → seamless loop.
+.feat-track {
+  display: flex;
+  width: max-content;
+  animation: feat-scroll 42s linear infinite;
+  will-change: transform;
+}
+
+@keyframes feat-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+// One strip — flex row of image cards
+.feat-strip {
+  display: flex;
+  gap: clamp(.65rem, 1.2vw, 1rem);
+  flex-shrink: 0;
+  padding-inline: clamp(.35rem, 0.6vw, .5rem); // keep gap consistent at strip edges
+}
+
+// Individual image card (button wrapper for lightbox)
+.feat-item {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: zoom-in;
+  display: block;
+  line-height: 0;
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 3px;
+    border-radius: var(--radius-md);
+  }
+
+  img {
+    display: block;
+    height: clamp(180px, 20vw, 270px);
+    // Width is derived from a fixed 3:2 ratio so every card is the same shape
+    width: calc(clamp(180px, 20vw, 270px) * 3 / 2);
+    object-fit: cover;
+    object-position: center;
+    border-radius: var(--radius-md);
+    transition: transform .45s ease, filter .45s ease;
+    pointer-events: none; // prevent accidental drag
+  }
+
+  &:hover img {
+    transform: scale(1.04);
+    filter: brightness(1.06);
+  }
+}
 
 // ── Why Serk Visuals ──────────────────────────────────────
 .why-section {
@@ -802,8 +890,6 @@
 // Tablet (640px–1023px)
 @media (min-width: 640px) {
   .hero-slider  { height: clamp(340px, 50vh, 520px); }
-  .gallery      { grid-template-columns: repeat(2, 1fr); }
-  .gallery img  { height: 240px; }
 }
 
 // Desktop (1024px+)
@@ -820,7 +906,12 @@
     max-height: 90vh;
     min-height: 480px;
   }
-  .gallery      { grid-template-columns: repeat(3, 1fr); }
+  // On desktop use contain so the full image subject is visible without cropping.
+  // The slider's background (--color-surface-2) fills any letterbox areas.
+  .hero-slide {
+    object-fit: contain;
+    background: var(--color-surface-2);
+  }
   .hero-copy .container { max-width: min(100%, 720px); }
 }
 

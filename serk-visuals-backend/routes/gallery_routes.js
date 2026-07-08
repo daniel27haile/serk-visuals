@@ -18,6 +18,6 @@ router.patch("/:id", requireAuth, requireRole(["admin"]), ctrl.update);
 router.delete("/:id", requireAuth, requireRole(["admin"]), ctrl.remove);
 router.delete("/", requireAuth, requireRole(["admin"]), ctrl.removeAll);
 router.post("/reorder", requireAuth, requireRole(["admin"]), ctrl.reorder);
-router.post("/:id/cover", requireAuth, requireRole(["admin"]), validateId, ctrl.setCover);
+router.post("/:id/cover", requireAuth, requireRole(["admin"]), ctrl.setCover);
 
 module.exports = router;

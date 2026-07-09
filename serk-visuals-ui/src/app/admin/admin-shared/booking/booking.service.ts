@@ -5,7 +5,7 @@ import { Booking, ContactMessage, PagedResult } from './models';
 import { BookingStatus } from './models';
 import { environment } from '../../../../environments/environment';
 
-const API_BASE = `${environment.apiUrl}/api`;
+const API_BASE = `${environment.apiUrl}`;
 
 @Injectable({ providedIn: 'root' })
 export class AdminApiService {

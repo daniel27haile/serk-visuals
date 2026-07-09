@@ -12,7 +12,7 @@ import {
 } from '../models/booking.model';
 import { environment } from '../../../environments/environment';
 
-const BASE = `${environment.apiUrl}/api/bookings`;
+const BASE = `${environment.apiUrl}/bookings`;
 
 @Injectable({ providedIn: 'root' })
 export class BookingsService {

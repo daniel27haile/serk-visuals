@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PricingConfig } from '../models/pricing-config.model';
 
-const BASE       = `${environment.apiUrl}/api/pricing-config`;
-const ADMIN_BASE = `${environment.apiUrl}/api/admin/pricing-config`;
+const BASE       = `${environment.apiUrl}/pricing-config`;
+const ADMIN_BASE = `${environment.apiUrl}/admin/pricing-config`;
 
 @Injectable({ providedIn: 'root' })
 export class PricingConfigService {

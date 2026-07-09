@@ -11,7 +11,7 @@ import {
 } from '../models/project.model';
 import { environment } from '../../../environments/environment';
 
-const BASE = `${environment.apiUrl}/api/projects`;
+const BASE = `${environment.apiUrl}/projects`;
 
 @Injectable({ providedIn: 'root' })
 export class ProjectsService {

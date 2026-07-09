@@ -5,7 +5,7 @@ import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Album, AlbumSummary, GalleryItem, Paged, Placement } from '../models/gallery.model';
 import { environment } from '../../../environments/environment';
 
-const baseUrl = `${environment.apiUrl}/api/gallery`;
+const baseUrl = `${environment.apiUrl}/gallery`;
 
 @Injectable({ providedIn: 'root' })
 export class GalleryService {

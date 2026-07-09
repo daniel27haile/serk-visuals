@@ -44,7 +44,7 @@ export interface ProjectUpdatePayload {
 export class ProjectsService {
   private http = inject(HttpClient);
 
-  private readonly BASE = `${environment.apiUrl}/api/projects`;
+  private readonly BASE = `${environment.apiUrl}/projects`;
 
   list(params: {
     page?: number;

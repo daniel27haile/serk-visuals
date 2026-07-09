@@ -9,7 +9,7 @@ import {
 } from '../models/testimonial.model';
 import { environment } from '../../../environments/environment';
 
-const BASE = `${environment.apiUrl}/api/testimonials`;
+const BASE = `${environment.apiUrl}/testimonials`;
 
 @Injectable({ providedIn: 'root' })
 export class TestimonialService {

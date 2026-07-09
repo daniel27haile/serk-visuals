@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 export class ContactUsService {
   private http = inject(HttpClient);
 
-  private base = `${environment.apiUrl}/api/contact`;
+  private base = `${environment.apiUrl}/contact`;
 
   /**
    * Posts a contact request to your backend.

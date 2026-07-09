@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class ContactUsService {
   private http = inject(HttpClient);
-  private baseUrl = `${environment.apiUrl}/api/contact`;
+  private baseUrl = `${environment.apiUrl}/contact`;
 
   list(params: {
     page?: number;

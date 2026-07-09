@@ -16,7 +16,7 @@ export interface UploadResult {
   publicUrl: string; // CloudFront URL — use for immediate display in UI
 }
 
-const SIGN_URL = `${environment.apiUrl}/api/uploads/sign`;
+const SIGN_URL = `${environment.apiUrl}/uploads/sign`;
 
 @Injectable({ providedIn: 'root' })
 export class UploadService {

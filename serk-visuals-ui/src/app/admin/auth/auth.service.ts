@@ -12,7 +12,7 @@ export interface AuthUser {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
-  private base = `${environment.apiUrl}/api/auth`;
+  private base = `${environment.apiUrl}/auth`;
 
   readonly user = signal<AuthUser | null>(null);
   readonly loaded = signal(false);

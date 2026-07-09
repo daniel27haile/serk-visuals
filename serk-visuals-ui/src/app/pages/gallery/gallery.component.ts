@@ -103,8 +103,11 @@ export class GalleryPage implements OnInit, OnDestroy {
       const res = await firstValueFrom(this.api.getAlbums({ placement: 'gallery' }));
       this.albumStats.set(res.albums);
       this.totalAllImages.set(res.albums.reduce((n, s) => n + s.publishedCount, 0));
-    } catch {
-      this.albumsError.set('Could not load albums.');
+    } catch (e: any) {
+      const status = e?.status ?? 'network';
+      const msg = e?.error?.message || e?.message || 'Could not load albums.';
+      console.error(`[Gallery] loadAlbums failed (${status}):`, msg, e);
+      this.albumsError.set('Could not load albums. Please try again later.');
     } finally {
       this.albumsLoading.set(false);
     }
@@ -128,7 +131,10 @@ export class GalleryPage implements OnInit, OnDestroy {
       this.items.set(res.items ?? []);
       this.total.set(res.total ?? 0);
     } catch (e: any) {
-      this.error.set(e?.error?.message || 'Failed to load images.');
+      const status = e?.status ?? 'network';
+      const msg = e?.error?.message || e?.message || 'Failed to load images.';
+      console.error(`[Gallery] fetchImages failed (${status}):`, msg, e);
+      this.error.set('Failed to load images. Please try again later.');
       this.items.set([]);
       this.total.set(0);
     } finally {

@@ -2,9 +2,9 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
 import { PricingConfigService } from '../../shared/services/pricing-config.service';
-import { PricingConfig, PricingAdjustment, ServiceAddOn, DeliverableTier } from '../../shared/models/pricing-config.model';
+import { PricingConfig, PricingAdjustment, ServiceAddOn, DeliverableTier, PackageConfig } from '../../shared/models/pricing-config.model';
 
-type AdminPricingTab = 'Real Estate' | 'Product';
+type AdminPricingTab = 'Real Estate' | 'Product' | 'Wedding';
 
 @Component({
   selector: 'app-admin-pricing',
@@ -33,6 +33,16 @@ export class AdminPricingComponent implements OnInit {
     serviceAddOns:           this.fb.array<FormGroup>([]),
   });
 
+  // ── Wedding form ──────────────────────────────────────────
+  weddingLoading = signal(true);
+  weddingSaving  = signal(false);
+  weddingError   = signal<string | null>(null);
+  weddingSaved   = signal(false);
+
+  weddingForm = this.fb.group({
+    packages: this.fb.array<FormGroup>([]),
+  });
+
   // ── Product Photography form ──────────────────────────────
   productLoading = signal(true);
   productSaving  = signal(false);
@@ -54,6 +64,11 @@ export class AdminPricingComponent implements OnInit {
       next: cfg => { this.populateProductForm(cfg); this.productLoading.set(false); },
       error: () => { this.productError.set('Failed to load Product Photography pricing config.'); this.productLoading.set(false); },
     });
+
+    this.api.getConfig('Wedding').subscribe({
+      next: cfg => { this.populateWeddingForm(cfg); this.weddingLoading.set(false); },
+      error: () => { this.weddingError.set('Failed to load Wedding pricing config.'); this.weddingLoading.set(false); },
+    });
   }
 
   // ── Form builders ─────────────────────────────────────────
@@ -68,6 +83,16 @@ export class AdminPricingComponent implements OnInit {
 
   private tierGroup(t: DeliverableTier): FormGroup {
     return this.fb.group({ value: [t.value], label: [t.label], price: [t.price] });
+  }
+
+  private packageGroup(p: PackageConfig): FormGroup {
+    return this.fb.group({
+      value:           [p.value],
+      label:           [p.label],
+      price:           [p.price,           [Validators.required, Validators.min(0)]],
+      durationMinutes: [p.durationMinutes, [Validators.required, Validators.min(15), Validators.max(1440)]],
+      isActive:        [p.isActive !== false],
+    });
   }
 
   get reIsActive(): boolean { return !!this.reForm.get('isActive')?.value; }
@@ -88,6 +113,12 @@ export class AdminPricingComponent implements OnInit {
     (cfg.serviceAddOns ?? []).forEach(a => svcArr.push(this.addOnGroup(a)));
   }
 
+  private populateWeddingForm(cfg: PricingConfig): void {
+    const arr = this.weddingForm.get('packages') as FormArray;
+    arr.clear();
+    (cfg.packages ?? []).forEach(p => arr.push(this.packageGroup(p)));
+  }
+
   private populateProductForm(cfg: PricingConfig): void {
     const catArr = this.productForm.get('categoryAdjustments') as FormArray;
     catArr.clear();
@@ -105,6 +136,10 @@ export class AdminPricingComponent implements OnInit {
   get serviceAddOns(): FormArray           { return this.reForm.get('serviceAddOns') as FormArray; }
   get categoryAdjustments(): FormArray     { return this.productForm.get('categoryAdjustments') as FormArray; }
   get deliverableTiers(): FormArray        { return this.productForm.get('deliverableTiers') as FormArray; }
+  get weddingPackages(): FormArray         { return this.weddingForm.get('packages') as FormArray; }
+  get weddingHasDurationError(): boolean {
+    return this.weddingPackages.controls.some(c => c.get('durationMinutes')?.invalid);
+  }
 
   // ── Save ─────────────────────────────────────────────────
 
@@ -144,6 +179,26 @@ export class AdminPricingComponent implements OnInit {
       error: () => {
         this.productSaving.set(false);
         this.productError.set('Failed to save. Please try again.');
+      },
+    });
+  }
+
+  saveWedding(): void {
+    if (this.weddingSaving()) return;
+    this.weddingSaving.set(true);
+    this.weddingError.set(null);
+    this.weddingSaved.set(false);
+
+    const payload = this.weddingForm.getRawValue() as Partial<PricingConfig>;
+    this.api.updateConfig('Wedding', payload).subscribe({
+      next: () => {
+        this.weddingSaving.set(false);
+        this.weddingSaved.set(true);
+        setTimeout(() => this.weddingSaved.set(false), 3000);
+      },
+      error: () => {
+        this.weddingSaving.set(false);
+        this.weddingError.set('Failed to save. Please try again.');
       },
     });
   }

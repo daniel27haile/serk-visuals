@@ -14,6 +14,9 @@
     <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'Product'" (click)="switchTab('Product')">
       Product Photography
     </button>
+    <button class="tab-btn" [class.tab-btn--active]="activeTab() === 'Wedding'" (click)="switchTab('Wedding')">
+      Wedding
+    </button>
   </div>
 
   <!-- ════════════════════════════════════════════════════════
@@ -227,6 +230,75 @@
           }
           <button type="submit" class="btn-save" [disabled]="productSaving()">
             {{ productSaving() ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+
+      </form>
+    }
+  }
+
+  <!-- ════════════════════════════════════════════════════════
+       WEDDING TAB
+       ════════════════════════════════════════════════════════ -->
+  @if (activeTab() === 'Wedding') {
+    @if (weddingLoading()) {
+      <div class="skeleton">Loading wedding packages…</div>
+    } @else if (weddingError()) {
+      <div class="alert alert--error">{{ weddingError() }}</div>
+    } @else {
+      <form [formGroup]="weddingForm" (ngSubmit)="saveWedding()">
+
+        <!-- ── Packages ──────────────────────────────────── -->
+        <div class="config-section">
+          <h2 class="config-section__title">Wedding Packages</h2>
+          <p class="config-section__desc">
+            Set the price and duration for each package. Duration controls exactly how long the
+            availability calendar reserves — clients who select a package cannot override it.
+            Deactivate a package to hide it from the booking form.
+          </p>
+          <div class="pkg-table">
+            <div class="pkg-table__head">
+              <span>Package</span>
+              <span>Price ($)</span>
+              <span>Duration (min)</span>
+              <span>Active</span>
+            </div>
+            <div formArrayName="packages">
+              @for (ctrl of weddingPackages.controls; track $index) {
+                <div class="pkg-table__row" [formGroupName]="$index">
+                  <span class="pkg-table__label">{{ ctrl.get('label')?.value }}</span>
+                  <div class="price-field price-field--sm">
+                    <span class="price-field__prefix">$</span>
+                    <input type="number" formControlName="price" min="0" step="25" class="price-field__input" />
+                  </div>
+                  <div class="price-field price-field--sm">
+                    <span class="price-field__prefix">min</span>
+                    <input type="number" formControlName="durationMinutes" min="15" step="15" class="price-field__input" />
+                  </div>
+                  <label class="toggle">
+                    <input type="checkbox" formControlName="isActive" />
+                    <span class="toggle__track"></span>
+                    <span class="toggle__label">{{ ctrl.get('isActive')?.value ? 'Active' : 'Hidden' }}</span>
+                  </label>
+                </div>
+              }
+            </div>
+          </div>
+          @if (weddingHasDurationError) {
+            <p class="config-section__warn">Duration must be between 15 and 1440 minutes per package.</p>
+          }
+        </div>
+
+        <!-- ── Save footer ──────────────────────────────── -->
+        <div class="form-footer">
+          @if (weddingError()) {
+            <p class="form-footer__error">{{ weddingError() }}</p>
+          }
+          @if (weddingSaved()) {
+            <span class="saved-badge">Saved</span>
+          }
+          <button type="submit" class="btn-save" [disabled]="weddingSaving() || weddingForm.invalid">
+            {{ weddingSaving() ? 'Saving…' : 'Save Changes' }}
           </button>
         </div>
 

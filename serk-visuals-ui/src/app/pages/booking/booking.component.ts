@@ -12,7 +12,7 @@ import { RouterLink, ActivatedRoute } from '@angular/router';
 import { BookingsService } from '../../shared/services/booking.service';
 import { PricingConfigService } from '../../shared/services/pricing-config.service';
 import { Booking, SessionType, PreferredContactMethod } from '../../shared/models/booking.model';
-import { PricingConfig, PricingBreakdown, ProductPricingBreakdown } from '../../shared/models/pricing-config.model';
+import { PricingConfig, PricingBreakdown, ProductPricingBreakdown, PackageConfig } from '../../shared/models/pricing-config.model';
 import { formatBookingDate } from '../../shared/utils/booking-format.util';
 import { AvailabilityModalComponent, SelectedSlot } from '../../shared/components/availability-modal/availability-modal.component';
 import { BookingSummaryComponent } from '../../shared/components/booking-summary/booking-summary.component';
@@ -100,18 +100,23 @@ export class BookingFormPage {
 
     this.form.controls.type.valueChanges.subscribe(type => {
       this.rebuildDetailsGroup(type as SessionType);
-      if (type === 'Real Estate' || type === 'Product') {
+      if (type === 'Real Estate' || type === 'Product' || type === 'Wedding') {
         this.fetchPricingConfig();
       } else {
         this.pricingConfig.set(null);
         this.pricingBreakdown.set(null);
         this.productPricingBreakdown.set(null);
       }
+      // Clear slot when session type changes — duration requirements may differ
+      this.selectedSlot.set(null);
       this.updateEstimate();
     });
 
     this.form.controls.durationMinutes.valueChanges.subscribe(() => this.updateEstimate());
-    this.bookingDetails.valueChanges.subscribe(() => this.updateEstimate());
+    this.bookingDetails.valueChanges.subscribe(() => {
+      this.checkPackageDurationConflict();
+      this.updateEstimate();
+    });
 
     this.rebuildDetailsGroup(this.defaultType);
     this.updateEstimate();
@@ -152,6 +157,31 @@ export class BookingFormPage {
       : 'Address, park, studio, etc.';
   }
 
+  /**
+   * Returns the duration in minutes locked by the currently selected package,
+   * or null when duration should be chosen freely by the user.
+   * Checks backend-fetched packages first (admin-managed), then frontend defaults.
+   */
+  get packageDurationMinutes(): number | null {
+    const cfg = this.currentConfig;
+    if (cfg.pricing.strategy !== 'package') return null;
+    const details     = this.bookingDetails.getRawValue() as Record<string, unknown>;
+    const backendPkgs = this.pricingConfig()?.packages;
+    for (const field of cfg.fields) {
+      const val = details[field.key] as string;
+      if (!val) continue;
+      // Backend config takes precedence (admin-managed price + duration)
+      if (backendPkgs?.length) {
+        const bPkg = backendPkgs.find(p => p.value === val && p.isActive !== false);
+        if (bPkg?.durationMinutes) return bPkg.durationMinutes;
+      }
+      // Fallback to frontend config
+      const pkg = cfg.pricing.packages?.find(p => p.value === val);
+      if (pkg?.durationMinutes) return pkg.durationMinutes;
+    }
+    return null;
+  }
+
   get currentSummaryDetails(): { label: string; value: string }[] {
     const cfg     = this.currentConfig;
     const details = this.bookingDetails.getRawValue() as Record<string, unknown>;
@@ -170,7 +200,7 @@ export class BookingFormPage {
 
   private fetchPricingConfig(): void {
     const type = this.form.controls.type.value;
-    if (type !== 'Real Estate' && type !== 'Product') return;
+    if (type !== 'Real Estate' && type !== 'Product' && type !== 'Wedding') return;
     this.pricingConfigLoading.set(true);
     this.pricingConfigError.set(null);
     this.pricingApi.getConfig(type).subscribe({
@@ -265,13 +295,42 @@ export class BookingFormPage {
   onModalClosed(): void { this.modalOpen.set(false); }
 
   onSlotSelected(slot: SelectedSlot): void {
-    this.selectedSlot.set(slot);
-    this.form.controls.durationMinutes.setValue(slot.durationMinutes);
+    // If a package locks the duration, enforce it regardless of what the modal emits
+    const locked = this.packageDurationMinutes;
+    const finalSlot = locked !== null ? { ...slot, durationMinutes: locked } : slot;
+    this.selectedSlot.set(finalSlot);
+    this.form.controls.durationMinutes.setValue(finalSlot.durationMinutes);
     this.err.set(null);
     this.updateEstimate();
   }
 
   clearSlot(): void { this.selectedSlot.set(null); }
+
+  // ── Package duration enforcement ─────────────────────────
+
+  /**
+   * Called whenever bookingDetails change. If a package is selected whose
+   * duration doesn't match the existing slot, clears the slot and shows a
+   * message so the user re-selects a valid time for the new duration.
+   */
+  private checkPackageDurationConflict(): void {
+    const locked = this.packageDurationMinutes;
+    if (locked === null) return;
+    const slot = this.selectedSlot();
+    if (!slot) return;
+    if (slot.durationMinutes !== locked) {
+      this.selectedSlot.set(null);
+      this.err.set(
+        `Package duration changed to ${this.formatDuration(locked)}. Please re-select your date and time.`
+      );
+    }
+  }
+
+  private formatDuration(mins: number): string {
+    if (mins < 60) return `${mins} min`;
+    if (mins === 60) return '1 hr';
+    return `${mins / 60} hrs`;
+  }
 
   // ── Pricing ─────────────────────────────────────────────
 
@@ -295,9 +354,17 @@ export class BookingFormPage {
 
       case 'package': {
         let price: number | null = null;
-        const details = this.bookingDetails.getRawValue() as Record<string, unknown>;
+        const details     = this.bookingDetails.getRawValue() as Record<string, unknown>;
+        const backendPkgs = this.pricingConfig()?.packages;
         for (const field of cfg.fields) {
           const val = details[field.key] as string;
+          if (!val) continue;
+          // Backend config takes precedence (admin-managed price)
+          if (backendPkgs?.length) {
+            const bPkg = backendPkgs.find((p: PackageConfig) => p.value === val && p.isActive !== false);
+            if (bPkg) { price = bPkg.price; break; }
+          }
+          // Fallback to frontend config
           const pkg = cfg.pricing.packages?.find(p => p.value === val);
           if (pkg) { price = pkg.price; break; }
         }

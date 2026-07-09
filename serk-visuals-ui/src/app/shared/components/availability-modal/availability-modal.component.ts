@@ -51,6 +51,11 @@ const FALLBACK_SLOTS: Pick<DayAvailability, 'availableSlots' | 'takenSlots' | 'u
 export class AvailabilityModalComponent implements OnChanges, OnDestroy {
   @Input() open = false;
   @Input() durationMinutes = 60;
+  /**
+   * When set, the duration is locked to this value (driven by the selected package).
+   * The duration dropdown is hidden and the user cannot change the duration.
+   */
+  @Input() lockedDuration: number | null = null;
   /** Session type from the booking form — used to compute estimated price. */
   @Input() sessionType: SessionType | null = null;
   @Output() closed       = new EventEmitter<void>();
@@ -147,11 +152,25 @@ export class AvailabilityModalComponent implements OnChanges, OnDestroy {
   // ── Lifecycle ────────────────────────────────────────────
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['open']?.currentValue === true) {
-      // Always start fresh — no preselected duration
-      this.selectedDuration.set(null);
+      const locked = this.lockedDuration;
+      if (locked !== null) {
+        // Duration is set by the selected package — pre-select and lock it.
+        // If duration changed since last open, reset time slots too.
+        if (this.selectedDuration() !== locked) {
+          this.selectedTime.set(null);
+          this.dayAvail.set(null);
+          this.selectedDuration.set(locked);
+        }
+      } else {
+        // Free-choice: reset duration so user must pick
+        this.selectedDuration.set(null);
+      }
       this.validationError.set(null);
       this.loadMonth(this.calYear(), this.calMonth());
-      // Don't load day slots — user must select duration first
+      // If duration is locked and a date is already selected, load day slots immediately
+      if (locked !== null && this.selectedDate()) {
+        this.loadDay(this.selectedDate()!);
+      }
     }
   }
 
@@ -301,11 +320,15 @@ export class AvailabilityModalComponent implements OnChanges, OnDestroy {
     const time = this.selectedTime();
     if (!date || !time) return;
 
+    // Use locked duration if set (package-driven) — guarantees the emitted slot
+    // always reflects the correct duration regardless of internal state.
+    const duration = this.lockedDuration ?? this.selectedDuration()!;
+
     this.slotSelected.emit({
       date,
       time:            parseAmPm(time),
       timeDisplay:     time,
-      durationMinutes: this.selectedDuration()!,
+      durationMinutes: duration,
     });
     this.closed.emit();
   }

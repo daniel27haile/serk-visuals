@@ -23,6 +23,8 @@ export interface PackageOption {
   value: string;
   label: string;
   price: number;
+  /** Duration in minutes for this package — drives availability check and schedule card. */
+  durationMinutes?: number;
 }
 
 export interface SessionPricing {
@@ -122,10 +124,10 @@ export const SESSION_CONFIGS: Record<SessionType, SessionConfig> = {
     pricing: {
       strategy: 'package',
       packages: [
-        { value: 'Ceremony Only',         label: 'Ceremony Only',              price: 400  },
-        { value: 'Half Day',              label: 'Half Day (4 hrs)',            price: 700  },
-        { value: 'Full Day',              label: 'Full Day (8 hrs)',            price: 1200 },
-        { value: 'Full Wedding Package',  label: 'Full Wedding Package',        price: 2000 },
+        { value: 'Ceremony Only',        label: 'Ceremony Only',        price: 400,  durationMinutes: 120 },
+        { value: 'Half Day',             label: 'Half Day (4 hrs)',     price: 700,  durationMinutes: 240 },
+        { value: 'Full Day',             label: 'Full Day (8 hrs)',     price: 1200, durationMinutes: 480 },
+        { value: 'Full Wedding Package', label: 'Full Wedding Package', price: 2000, durationMinutes: 600 },
       ],
     },
     fields: [

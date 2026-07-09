@@ -124,24 +124,35 @@
           <!-- Selected date heading -->
           <div class="slots-date">{{ formatDateDisplay(selectedDate()!) }}</div>
 
-          <!-- ── Duration selector ──────────────────────── -->
-          <div class="duration-block">
-            <label class="duration-block__label" for="modal-duration">
-              Session Duration <span class="req">*</span>
-            </label>
-            <select
-              id="modal-duration"
-              class="duration-block__select"
-              [ngModel]="selectedDuration() ?? ''"
-              (ngModelChange)="onDurationChange($event)"
-            >
-              <option value="" disabled>Select session duration</option>
-              @for (opt of durationOptions; track opt.value) {
-                <option [value]="opt.value">{{ opt.label }}</option>
-              }
-            </select>
-            <p class="duration-block__hint">Required to calculate available time slots and estimated price.</p>
-          </div>
+          <!-- ── Duration selector / locked display ───── -->
+          @if (lockedDuration !== null) {
+            <!-- Duration locked by selected package -->
+            <div class="duration-locked">
+              <div class="duration-locked__row">
+                <span class="duration-locked__label">Session Duration</span>
+                <span class="duration-locked__value">{{ durationLabel(lockedDuration) }}</span>
+              </div>
+              <p class="duration-locked__hint">Set by your selected package</p>
+            </div>
+          } @else {
+            <div class="duration-block">
+              <label class="duration-block__label" for="modal-duration">
+                Session Duration <span class="req">*</span>
+              </label>
+              <select
+                id="modal-duration"
+                class="duration-block__select"
+                [ngModel]="selectedDuration() ?? ''"
+                (ngModelChange)="onDurationChange($event)"
+              >
+                <option value="" disabled>Select session duration</option>
+                @for (opt of durationOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                }
+              </select>
+              <p class="duration-block__hint">Required to calculate available time slots and estimated price.</p>
+            </div>
+          }
 
           @if (!hasDuration()) {
             <!-- Step 2: Date selected, waiting for duration -->

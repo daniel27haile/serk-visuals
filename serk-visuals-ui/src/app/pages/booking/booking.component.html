@@ -14,7 +14,8 @@
   <!-- Availability Modal -->
   <app-availability-modal
     [open]="modalOpen()"
-    [durationMinutes]="form.controls.durationMinutes.value"
+    [durationMinutes]="packageDurationMinutes ?? form.controls.durationMinutes.value"
+    [lockedDuration]="packageDurationMinutes"
     [sessionType]="form.controls.type.value"
     (closed)="onModalClosed()"
     (slotSelected)="onSlotSelected($event)"

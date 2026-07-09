@@ -1,3 +1,12 @@
+/** Package option stored in the backend (Wedding, etc.) — includes duration and active flag. */
+export interface PackageConfig {
+  value: string;
+  label: string;
+  price: number;
+  durationMinutes: number;
+  isActive: boolean;
+}
+
 export interface PricingAdjustment {
   value: string;
   label: string;
@@ -28,6 +37,8 @@ export interface PricingConfig {
   // Product Photography
   categoryAdjustments: PricingAdjustment[];
   deliverableTiers: DeliverableTier[];
+  // Package-priced sessions (Wedding, etc.)
+  packages?: PackageConfig[];
   isActive: boolean;
   sortOrder: number;
   updatedAt?: string;

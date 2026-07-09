@@ -299,6 +299,43 @@
   font-size: var(--text-sm);
 }
 
+// ── Package table (Wedding packages) ───────────────────────
+.pkg-table {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+
+  &__head {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: var(--spacing-md);
+    padding: .45rem .9rem;
+    background: var(--color-surface-2);
+    border-bottom: 1px solid var(--color-border);
+    font-size: .7rem;
+    font-weight: var(--weight-bold);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--color-text-muted);
+  }
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: .6rem .9rem;
+
+    & + & { border-top: 1px solid var(--color-border-subtle, rgba(255,255,255,.04)); }
+  }
+
+  &__label {
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+  }
+}
+
 @media (max-width: 600px) {
   .addon-table__head,
   .addon-table__row {

@@ -1,6 +1,18 @@
 // models/pricing_config_model.js
 const { Schema, model } = require("mongoose");
 
+// Used by package-priced session types (Wedding, etc.)
+const PackageSchema = new Schema(
+  {
+    value:           { type: String, required: true },
+    label:           { type: String, required: true },
+    price:           { type: Number, default: 0, min: 0 },
+    durationMinutes: { type: Number, default: 60, min: 15 },
+    isActive:        { type: Boolean, default: true },
+  },
+  { _id: false }
+);
+
 const AdjustmentSchema = new Schema(
   {
     value:           { type: String, required: true },
@@ -41,6 +53,8 @@ const PricingConfigSchema = new Schema(
     // Product Photography
     categoryAdjustments:      [AdjustmentSchema],
     deliverableTiers:         [DeliverableTierSchema],
+    // Package-priced sessions (Wedding, etc.)
+    packages:                 [PackageSchema],
     isActive:                 { type: Boolean, default: true },
     sortOrder:                { type: Number, default: 0 },
   },

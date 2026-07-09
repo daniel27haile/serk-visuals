@@ -36,6 +36,19 @@ const DEFAULTS = {
     sortOrder: 0,
   },
 
+  "Wedding": {
+    sessionType: "Wedding",
+    basePrice: 0,
+    packages: [
+      { value: "Ceremony Only",        label: "Ceremony Only",        price: 400,  durationMinutes: 120, isActive: true },
+      { value: "Half Day",             label: "Half Day (4 hrs)",     price: 700,  durationMinutes: 240, isActive: true },
+      { value: "Full Day",             label: "Full Day (8 hrs)",     price: 1200, durationMinutes: 480, isActive: true },
+      { value: "Full Wedding Package", label: "Full Wedding Package",  price: 2000, durationMinutes: 600, isActive: true },
+    ],
+    isActive: true,
+    sortOrder: 2,
+  },
+
   "Product": {
     sessionType: "Product",
     basePrice: 0,
@@ -82,6 +95,7 @@ async function updateConfig(req, res) {
       serviceAddOns,
       categoryAdjustments,
       deliverableTiers,
+      packages,
       isActive,
       sortOrder,
     } = req.body;
@@ -93,6 +107,7 @@ async function updateConfig(req, res) {
     if (serviceAddOns            !== undefined) update.serviceAddOns           = serviceAddOns;
     if (categoryAdjustments      !== undefined) update.categoryAdjustments     = categoryAdjustments;
     if (deliverableTiers         !== undefined) update.deliverableTiers        = deliverableTiers;
+    if (packages                 !== undefined) update.packages                = packages;
 
     const doc = await PricingConfig.findOneAndUpdate(
       { sessionType },
@@ -121,7 +136,27 @@ async function getAllConfigs(req, res) {
  * Returns { total, snapshot } or null if type is not config-driven.
  */
 async function recalculatePrice(type, bookingDetails) {
-  if (type !== "Real Estate" && type !== "Product") return null;
+  if (type !== "Real Estate" && type !== "Product" && type !== "Wedding") return null;
+
+  if (type === "Wedding") {
+    let config = await PricingConfig.findOne({ sessionType: "Wedding" }).lean();
+    if (!config) config = DEFAULTS["Wedding"];
+    if (!config) return null;
+
+    const details  = bookingDetails || {};
+    const pkgValue = details.weddingPackage || null;
+    const pkg      = (config.packages || []).find(
+      (p) => p.value === pkgValue && p.isActive !== false
+    );
+    const total    = pkg?.price ?? 0;
+    const snapshot = {
+      packageLabel: pkg?.label ?? null,
+      packagePrice: total,
+      durationMinutes: pkg?.durationMinutes ?? null,
+      estimatedTotal:  total,
+    };
+    return { total, snapshot };
+  }
 
   if (type === "Product") {
     let config = await PricingConfig.findOne({ sessionType: "Product" }).lean();

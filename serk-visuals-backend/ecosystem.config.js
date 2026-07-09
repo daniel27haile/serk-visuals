@@ -21,7 +21,7 @@ module.exports = {
 
       env_production: {
         NODE_ENV: 'production',
-        PORT: 5000,
+        PORT: 5001,
       },
 
       // Log files — ensure /var/log/pm2/ exists and is writable

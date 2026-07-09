@@ -375,6 +375,9 @@
     .lead { display: none; }
   }
 
+  // Eyebrow is redundant at small sizes — hide to reduce overlay footprint
+  .hero-copy .eyebrow { display: none; }
+
   .hero-scroll { display: none; }
 }
 
@@ -465,10 +468,20 @@
 .feat-section {
   // Prevent the full-bleed reel from causing horizontal scroll on the page
   overflow: hidden;
+
+  // Center the heading block above and CTA buttons below the full-bleed reel
+  .container {
+    text-align: center;
+  }
+
+  .button-group {
+    justify-content: center;
+  }
 }
 
 // Outer clipping + edge-fade mask
 .feat-reel {
+  width: 100%; // explicit — ensures mask and track always span the full viewport
   overflow: hidden;
   margin-block: clamp(1.25rem, 2.5vw, 2rem);
 

@@ -7,7 +7,7 @@ import {
   FormControl,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 
 import { BookingsService } from '../../shared/services/booking.service';
 import { PricingConfigService } from '../../shared/services/pricing-config.service';
@@ -29,6 +29,7 @@ export class BookingFormPage {
   private readonly fb          = inject(NonNullableFormBuilder);
   private readonly api         = inject(BookingsService);
   private readonly pricingApi  = inject(PricingConfigService);
+  private readonly route       = inject(ActivatedRoute);
 
   readonly sessionTypes: { value: SessionType; label: string }[] = [
     { value: 'Portrait',      label: 'Portrait Session'       },
@@ -114,6 +115,12 @@ export class BookingFormPage {
 
     this.rebuildDetailsGroup(this.defaultType);
     this.updateEstimate();
+
+    // Pre-select session type from ?type= query param (e.g. from /real-estate CTA)
+    const qType = this.route.snapshot.queryParamMap.get('type') as SessionType;
+    if (qType && SESSION_CONFIGS[qType]) {
+      this.form.controls.type.setValue(qType);
+    }
   }
 
   // ── Config helpers ──────────────────────────────────────
@@ -133,6 +140,16 @@ export class BookingFormPage {
 
   get isProduct(): boolean {
     return this.form.controls.type.value === 'Product';
+  }
+
+  get locationLabel(): string {
+    return this.isRealEstate ? 'Property Address' : 'Location / Venue';
+  }
+
+  get locationPlaceholder(): string {
+    return this.isRealEstate
+      ? 'Property address (street, city, state, zip)'
+      : 'Address, park, studio, etc.';
   }
 
   get currentSummaryDetails(): { label: string; value: string }[] {

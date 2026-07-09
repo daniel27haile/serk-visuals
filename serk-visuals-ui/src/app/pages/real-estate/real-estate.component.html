@@ -1,0 +1,308 @@
+<!-- ── PAGE HERO ──────────────────────────────────────────────── -->
+<header class="re-hero">
+  <div class="container re-hero__inner">
+    <p class="re-eyebrow">Real Estate Photography · Seattle Area</p>
+    <h1 class="re-title">
+      Professional Photos That<br aria-hidden="true">
+      Help Listings <em>Sell Faster.</em>
+    </h1>
+    <p class="re-subtitle">
+      Interior, exterior, twilight, aerial, and more — all delivered within 24–48 hours
+      and optimised for MLS, Zillow, Realtor.com, and print.
+    </p>
+    <div class="re-hero__actions">
+      <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent btn--lg">
+        Book a Property Shoot
+      </a>
+      <a href="#re-pricing" class="btn btn--ghost">See Pricing</a>
+    </div>
+  </div>
+</header>
+
+<!-- ── SERVICES GRID ──────────────────────────────────────────── -->
+<section class="re-services section">
+  <div class="container">
+    <p class="section-eyebrow">What We Offer</p>
+    <h2 class="section-heading">Every Service a Listing Needs</h2>
+    <p class="re-services__intro lead">
+      From a single-family home to a luxury estate or commercial property — we have every visual
+      asset agents, sellers, and developers need to attract serious buyers.
+    </p>
+
+    <div class="re-svc-grid">
+      @for (svc of reServices; track svc.id) {
+        <article class="re-svc-card">
+          <div class="re-svc-card__icon" aria-hidden="true">
+            @switch (svc.id) {
+              @case ('interior') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+              }
+              @case ('exterior') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                  <rect x="9" y="13" width="6" height="9" rx="1"/>
+                  <line x1="1" y1="22" x2="23" y2="22"/>
+                </svg>
+              }
+              @case ('twilight') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  <line x1="19" y1="3" x2="20" y2="4"/><line x1="17" y1="1" x2="17" y2="3"/><line x1="21" y1="5" x2="23" y2="5"/>
+                </svg>
+              }
+              @case ('drone') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="6" height="6" rx="1"/>
+                  <line x1="12" y1="9" x2="12" y2="6"/><line x1="12" y1="15" x2="12" y2="18"/>
+                  <line x1="9" y1="12" x2="6" y2="12"/><line x1="15" y1="12" x2="18" y2="12"/>
+                  <circle cx="5" cy="11" r="2"/><circle cx="19" cy="11" r="2"/>
+                  <circle cx="5" cy="13" r="2"/><circle cx="19" cy="13" r="2"/>
+                </svg>
+              }
+              @case ('video') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M15 10l4.553-2.07A1 1 0 0 1 21 8.845v6.31a1 1 0 0 1-1.447.914L15 14M3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/>
+                </svg>
+              }
+              @case ('floorplan') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <line x1="3" y1="11" x2="21" y2="11"/><line x1="13" y1="11" x2="13" y2="21"/>
+                  <line x1="3" y1="16" x2="13" y2="16"/>
+                </svg>
+              }
+              @case ('virtual') {
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+                  <path d="M2 12h20"/>
+                </svg>
+              }
+            }
+          </div>
+          <h3 class="re-svc-card__title">{{ svc.title }}</h3>
+          <p class="re-svc-card__desc">{{ svc.desc }}</p>
+        </article>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── PRICING ────────────────────────────────────────────────── -->
+<section class="re-pricing section" id="re-pricing">
+  <div class="container">
+    <p class="section-eyebrow">Transparent Pricing</p>
+    <h2 class="section-heading">Clear Rates, No Surprises</h2>
+    <p class="lead re-pricing__intro">
+      Pricing is based on property type and size. Select add-ons during booking
+      and see your exact total before you submit — no hidden fees.
+    </p>
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="re-pricing-skeleton" aria-busy="true" aria-label="Loading pricing">
+        <div class="re-skeleton-card">
+          <div class="re-skeleton__line re-skeleton__line--h"></div>
+          <div class="re-skeleton__line"></div>
+          <div class="re-skeleton__line"></div>
+          <div class="re-skeleton__line re-skeleton__line--short"></div>
+        </div>
+        <div class="re-skeleton-card">
+          <div class="re-skeleton__line re-skeleton__line--h"></div>
+          <div class="re-skeleton__line"></div>
+          <div class="re-skeleton__line"></div>
+          <div class="re-skeleton__line re-skeleton__line--short"></div>
+        </div>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (!loading() && error()) {
+      <div class="re-pricing-error" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="currentColor"/>
+        </svg>
+        <p>{{ error() }}</p>
+        <a [routerLink]="['/contact']" class="btn btn--ghost">Contact Us</a>
+      </div>
+    }
+
+    <!-- Inactive -->
+    @if (!loading() && !error() && !isActive) {
+      <div class="re-inactive" role="status">
+        <p>Real Estate Photography is temporarily unavailable for online booking.</p>
+        <a [routerLink]="['/contact']" class="btn btn--accent">Contact Us for Availability</a>
+      </div>
+    }
+
+    <!-- Pricing content -->
+    @if (!loading() && !error() && isActive && config()) {
+      <div class="re-pricing-layout">
+
+        <!-- Base package card -->
+        <div class="re-package">
+          <div class="re-package__header">
+            <p class="re-package__label">Base Package</p>
+            <p class="re-package__price">
+              <span class="re-package__from">Starting at</span>
+              ${{ basePrice }}
+            </p>
+            <p class="re-package__price-note">Price adjusts by property type &amp; size</p>
+          </div>
+
+          @if (includedAddOns.length > 0) {
+            <div class="re-package__section">
+              <p class="re-package__section-label">Always Included</p>
+              @for (svc of includedAddOns; track svc.value) {
+                <div class="re-package__row">
+                  <svg class="re-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span>{{ svc.label }}</span>
+                  <span class="re-tag re-tag--included">Included</span>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="re-package__footer">
+            <p class="re-package__turnaround">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              24–48 hour delivery
+            </p>
+            <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent">
+              Book Now
+            </a>
+          </div>
+        </div>
+
+        <!-- Right column: add-ons + size adjustments -->
+        <div class="re-addons-col">
+
+          @if (extraAddOns.length > 0) {
+            <div class="re-addons">
+              <p class="re-addons__heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                Optional Add-Ons
+              </p>
+              <div class="re-addons__list">
+                @for (addon of extraAddOns; track addon.value) {
+                  <div class="re-addon-row">
+                    <span class="re-addon-row__label">{{ addon.label }}</span>
+                    <span class="re-addon-row__price">+${{ addon.price }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (sizeAdjustments.length > 0) {
+            <div class="re-addons">
+              <p class="re-addons__heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                </svg>
+                Size Adjustments
+              </p>
+              <div class="re-addons__list">
+                @for (adj of sizeAdjustments; track adj.value) {
+                  <div class="re-addon-row">
+                    <span class="re-addon-row__label">{{ adj.label }}</span>
+                    <span class="re-addon-row__price">+${{ adj.priceAdjustment }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (propertyTypeAdjustments.length > 0) {
+            <div class="re-addons">
+              <p class="re-addons__heading">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/><line x1="12" y1="12" x2="12" y2="16"/>
+                </svg>
+                Property Type Adjustments
+              </p>
+              <div class="re-addons__list">
+                @for (adj of propertyTypeAdjustments; track adj.value) {
+                  <div class="re-addon-row">
+                    <span class="re-addon-row__label">{{ adj.label }}</span>
+                    <span class="re-addon-row__price">+${{ adj.priceAdjustment }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <p class="re-addons__note">
+            * Select services and see your live total during booking. Final price confirmed before submission.
+          </p>
+        </div>
+
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ── PROCESS ────────────────────────────────────────────────── -->
+<section class="re-process section">
+  <div class="container">
+    <p class="section-eyebrow">Simple Process</p>
+    <h2 class="section-heading">From Booking to Delivered</h2>
+    <div class="re-process__steps">
+      @for (step of processSteps; track step.num) {
+        <div class="re-step">
+          <span class="re-step__num" aria-hidden="true">{{ step.num }}</span>
+          <h3 class="re-step__title">{{ step.title }}</h3>
+          <p class="re-step__desc">{{ step.desc }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ── COVERAGE ───────────────────────────────────────────────── -->
+<section class="re-coverage section">
+  <div class="container">
+    <p class="section-eyebrow">Service Area</p>
+    <h2 class="section-heading">We Cover Greater Seattle</h2>
+    <p class="lead">
+      Based in the Seattle metro, we regularly photograph properties in
+      <strong>Seattle</strong>, <strong>Bellevue</strong>, <strong>Kirkland</strong>,
+      <strong>Redmond</strong>, <strong>Everett</strong>, <strong>Mill Creek</strong>,
+      <strong>Lynnwood</strong>, <strong>Snohomish</strong>, and throughout
+      <strong>King</strong> and <strong>Snohomish Counties</strong>.
+      Travel beyond these areas is available — just ask.
+    </p>
+    <div class="button-group">
+      <a [routerLink]="['/contact']" class="btn btn--ghost">Ask About Availability</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FINAL CTA ──────────────────────────────────────────────── -->
+<section class="re-cta-banner">
+  <div class="re-cta-banner__bg" aria-hidden="true"></div>
+  <div class="container re-cta-banner__inner">
+    <p class="re-cta-banner__eyebrow">Ready to List?</p>
+    <h2 class="re-cta-banner__title">
+      Professional Photos.<br aria-hidden="true">
+      Faster <em>Sales.</em>
+    </h2>
+    <p class="re-cta-banner__sub">
+      Book online in minutes. We confirm within 24 hours and deliver edited photos within 48 hours of the shoot.
+    </p>
+    <div class="re-cta-banner__actions">
+      <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent btn--lg">
+        Book a Real Estate Shoot
+      </a>
+      <a [routerLink]="['/contact']" class="btn btn--ghost-light">Ask a Question</a>
+    </div>
+  </div>
+</section>

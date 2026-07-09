@@ -77,12 +77,12 @@
         </label>
 
         <div class="field-wrap full">
-          <label for="location">Location / Venue *
-            <input id="location" formControlName="location" placeholder="Address, park, studio, etc."
+          <label for="location">{{ locationLabel }} *
+            <input id="location" formControlName="location" [placeholder]="locationPlaceholder"
               [class.is-invalid]="form.controls['location'].touched && form.controls['location'].invalid" />
           </label>
           <div class="field-errors" *ngIf="form.controls['location'].touched && form.controls['location'].invalid">
-            <small>Location is required.</small>
+            <small>{{ locationLabel }} is required.</small>
           </div>
         </div>
       </div>

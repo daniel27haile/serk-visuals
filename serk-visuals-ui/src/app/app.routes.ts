@@ -82,6 +82,18 @@ export const routes = [
             (m) => m.BookingFormPage
           ),
       },
+      {
+        path: 'real-estate',
+        title: 'Real Estate Photography Seattle | Serk Visuals',
+        data: {
+          description:
+            'Professional real estate photography in Seattle — interior, exterior, twilight, drone, walkthrough video, floor plans, and virtual tours. Delivered in 24–48 hours. Book online.',
+        },
+        loadComponent: () =>
+          import('./pages/real-estate/real-estate.component').then(
+            (m) => m.RealEstateComponent
+          ),
+      },
     ],
   },
 

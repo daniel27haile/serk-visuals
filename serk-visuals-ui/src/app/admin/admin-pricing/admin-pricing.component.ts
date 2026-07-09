@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
 import { PricingConfigService } from '../../shared/services/pricing-config.service';
 import { PricingConfig, PricingAdjustment, ServiceAddOn, DeliverableTier } from '../../shared/models/pricing-config.model';
 
@@ -26,7 +26,8 @@ export class AdminPricingComponent implements OnInit {
   reSaved   = signal(false);
 
   reForm = this.fb.group({
-    basePrice:               [0],
+    isActive:                [true],
+    basePrice:               [0, [Validators.min(0)]],
     propertyTypeAdjustments: this.fb.array<FormGroup>([]),
     propertySizeAdjustments: this.fb.array<FormGroup>([]),
     serviceAddOns:           this.fb.array<FormGroup>([]),
@@ -69,8 +70,10 @@ export class AdminPricingComponent implements OnInit {
     return this.fb.group({ value: [t.value], label: [t.label], price: [t.price] });
   }
 
+  get reIsActive(): boolean { return !!this.reForm.get('isActive')?.value; }
+
   private populateReForm(cfg: PricingConfig): void {
-    this.reForm.patchValue({ basePrice: cfg.basePrice });
+    this.reForm.patchValue({ isActive: cfg.isActive ?? true, basePrice: cfg.basePrice });
 
     const typeArr = this.reForm.get('propertyTypeAdjustments') as FormArray;
     typeArr.clear();

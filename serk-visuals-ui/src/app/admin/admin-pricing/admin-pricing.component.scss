@@ -81,6 +81,10 @@
   padding: var(--spacing-md) var(--spacing-lg);
   margin-bottom: var(--spacing-md);
 
+  &--status {
+    border-color: var(--color-border-strong);
+  }
+
   &__title {
     margin: 0 0 .25rem;
     font-size: var(--text-base);
@@ -91,6 +95,13 @@
     margin: 0 0 var(--spacing-md);
     font-size: var(--text-sm);
     color: var(--color-text-muted);
+  }
+
+  &__warn {
+    margin: .6rem 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-warning, #d97706);
+    font-style: italic;
   }
 }
 

@@ -218,7 +218,7 @@ export const SESSION_CONFIGS: Record<SessionType, SessionConfig> = {
       },
       {
         key: 'propertySize',
-        label: 'Property Size',
+        label: 'Bedrooms / Unit Size',
         type: 'select',
         required: true,
         options: [
@@ -232,8 +232,36 @@ export const SESSION_CONFIGS: Record<SessionType, SessionConfig> = {
         ],
       },
       {
+        key: 'squareFt',
+        label: 'Approximate Square Footage',
+        type: 'select',
+        options: [
+          { value: '',            label: 'Select range'        },
+          { value: 'Under 1,000', label: 'Under 1,000 sq ft'  },
+          { value: '1,000–1,499', label: '1,000–1,499 sq ft'  },
+          { value: '1,500–1,999', label: '1,500–1,999 sq ft'  },
+          { value: '2,000–2,999', label: '2,000–2,999 sq ft'  },
+          { value: '3,000–4,999', label: '3,000–4,999 sq ft'  },
+          { value: '5,000+',      label: '5,000+ sq ft'        },
+        ],
+      },
+      {
+        key: 'bathrooms',
+        label: 'Number of Bathrooms',
+        type: 'select',
+        options: [
+          { value: '',    label: 'Select count' },
+          { value: '1',   label: '1'            },
+          { value: '1.5', label: '1.5'          },
+          { value: '2',   label: '2'            },
+          { value: '2.5', label: '2.5'          },
+          { value: '3',   label: '3'            },
+          { value: '3.5+',label: '3.5+'         },
+        ],
+      },
+      {
         key: 'services',
-        label: 'Services Needed',
+        label: 'Photography Services',
         type: 'checkbox-group',
         required: true,
         options: [
@@ -246,8 +274,22 @@ export const SESSION_CONFIGS: Record<SessionType, SessionConfig> = {
           { value: 'Virtual Tour',         label: 'Virtual Tour'         },
         ],
       },
+      {
+        key: 'accessInstructions',
+        label: 'Access Instructions',
+        type: 'textarea',
+        placeholder: 'Lock box code, gate code, building entry details, contact person on-site…',
+        rows: 3,
+      },
+      {
+        key: 'agentNotes',
+        label: 'Agent / Realtor Notes',
+        type: 'textarea',
+        placeholder: 'Staging info, features to highlight, shooting priorities, special requests…',
+        rows: 3,
+      },
     ],
-    summaryFields: ['propertyType', 'propertySize', 'services'],
+    summaryFields: ['propertyType', 'propertySize', 'squareFt', 'services'],
   },
 
   Commercial: {

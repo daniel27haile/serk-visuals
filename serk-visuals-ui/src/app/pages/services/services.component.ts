@@ -77,15 +77,16 @@ export class ServicesComponent implements OnDestroy {
     {
       icon: '🏡',
       title: 'Real Estate Photography',
-      copy: 'Clean, well-lit images that help properties stand out in listings and attract serious buyers — delivered fast.',
+      copy: 'Professional property photography that helps listings attract serious buyers and sell faster — delivered within 24–48 hours.',
       bullets: [
         'Interior & Exterior Photography',
-        'Twilight & Aerial Shots',
-        'Virtual Tour Imagery',
+        'Twilight & Drone Aerial Shots',
+        'Walkthrough Video & Virtual Tours',
+        'Floor Plans Available',
         '24–48 Hour Delivery',
       ],
-      ctaText: 'Book a Property Shoot →',
-      ctaLink: ['/bookings'],
+      ctaText: 'Learn More →',
+      ctaLink: ['/real-estate'],
     },
     {
       icon: '🪄',

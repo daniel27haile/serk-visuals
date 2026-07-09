@@ -27,14 +27,36 @@
     } @else {
       <form [formGroup]="reForm" (ngSubmit)="saveRealEstate()">
 
+        <!-- ── Service Status ───────────────────────────── -->
+        <div class="config-section config-section--status">
+          <h2 class="config-section__title">Service Status</h2>
+          <p class="config-section__desc">
+            Controls whether Real Estate Photography appears as bookable. When inactive,
+            clients visiting the Real Estate page will see an "unavailable" notice.
+          </p>
+          <label class="toggle">
+            <input type="checkbox" formControlName="isActive" />
+            <span class="toggle__track"></span>
+            <span class="toggle__label">
+              {{ reIsActive ? 'Active — accepting bookings' : 'Inactive — not available for booking' }}
+            </span>
+          </label>
+        </div>
+
         <!-- ── Base Price ───────────────────────────────── -->
         <div class="config-section">
           <h2 class="config-section__title">Base Price</h2>
-          <p class="config-section__desc">Starting price before any adjustments or add-ons.</p>
+          <p class="config-section__desc">
+            Starting price before property type adjustments, size adjustments, or add-ons.
+            This is displayed as the "Starting at" price on the Real Estate page.
+          </p>
           <div class="price-field">
             <span class="price-field__prefix">$</span>
             <input type="number" formControlName="basePrice" min="0" step="5" class="price-field__input" />
           </div>
+          @if (reForm.get('basePrice')?.value === 0) {
+            <p class="config-section__warn">Base price is $0 — clients will see a $0 starting price.</p>
+          }
         </div>
 
         <!-- ── Property Type Adjustments ───────────────── -->

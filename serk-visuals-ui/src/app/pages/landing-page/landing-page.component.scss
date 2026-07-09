@@ -476,30 +476,18 @@
   .stat-divider { display: block; }
 }
 
-// ── Featured gallery marquee ───────────────────────────────
-// The section is full-bleed; heading/buttons sit inside .container.
+// ── Featured gallery carousel ──────────────────────────────
 .feat-section {
-  // Prevent the full-bleed reel from causing horizontal scroll on the page
   overflow: hidden;
-
-  // Center the heading block above and CTA buttons below the full-bleed reel
-  .container {
-    text-align: center;
-  }
-
-  .button-group {
-    justify-content: center;
-  }
+  .container { text-align: center; }
+  .button-group { justify-content: center; }
 }
 
-// Outer clipping + edge-fade mask
-.feat-reel {
-  width: 100%; // explicit — ensures mask and track always span the full viewport
+// Clip container with edge-fade mask
+.feat-viewport {
+  width: 100%;
   overflow: hidden;
   margin-block: clamp(1.25rem, 2.5vw, 2rem);
-
-  // Soft transparency fade at both horizontal edges so the strip
-  // looks "infinite" and doesn't hard-cut against the viewport edge.
   mask-image: linear-gradient(
     to right,
     transparent 0,
@@ -514,36 +502,20 @@
     #000 calc(100% - clamp(1.5rem, 4vw, 4rem)),
     transparent 100%
   );
+}
 
-  // Pause the scroll while the pointer is over the reel (desktop only)
-  @media (hover: hover) {
-    &:hover .feat-track { animation-play-state: paused; }
+// Flat flex row — position controlled by JS via translateX
+.feat-track {
+  display: flex;
+  gap: clamp(.65rem, 1.2vw, 1rem);
+  will-change: transform;
+
+  &.is-animating {
+    transition: transform .7s cubic-bezier(.25, .46, .45, .94);
   }
 }
 
-// Moving track — contains two identical strips side-by-side.
-// translateX(-50%) moves exactly one strip width → seamless loop.
-.feat-track {
-  display: flex;
-  width: max-content;
-  animation: feat-scroll 42s linear infinite;
-  will-change: transform;
-}
-
-@keyframes feat-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-
-// One strip — flex row of image cards
-.feat-strip {
-  display: flex;
-  gap: clamp(.65rem, 1.2vw, 1rem);
-  flex-shrink: 0;
-  padding-inline: clamp(.35rem, 0.6vw, .5rem); // keep gap consistent at strip edges
-}
-
-// Individual image card (button wrapper for lightbox)
+// Individual image card
 .feat-item {
   flex-shrink: 0;
   padding: 0;
@@ -564,13 +536,12 @@
   img {
     display: block;
     height: clamp(220px, 25vw, 340px);
-    // Width is derived from a fixed 3:4 portrait ratio for visual impact
     width: calc(clamp(220px, 25vw, 340px) * 3 / 4);
     object-fit: cover;
     object-position: center;
     border-radius: var(--radius-lg);
     transition: transform .45s ease, filter .45s ease;
-    pointer-events: none; // prevent accidental drag
+    pointer-events: none;
   }
 
   &:hover img {
@@ -1129,6 +1100,28 @@
     color: var(--color-text-muted);
     line-height: 1.7;
   }
+
+  &--link {
+    text-decoration: none;
+    cursor: pointer;
+    color: inherit;
+
+    &:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 1px var(--color-primary), var(--shadow-md);
+
+      .overview-card__cta { color: var(--color-primary); }
+    }
+  }
+}
+
+.overview-card__cta {
+  margin-top: auto;
+  padding-top: .5rem;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  transition: color .2s;
 }
 
 .overview-card__num {

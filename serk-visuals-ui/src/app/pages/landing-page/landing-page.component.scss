@@ -55,7 +55,7 @@
 .hero-slider {
   position: relative;
   width: 100%;
-  height: clamp(360px, 60vw, 520px); // mobile default
+  height: clamp(460px, 90vw, 560px); // mobile default — tall enough for bottom overlay
   overflow: hidden;
   outline: none;
   background: var(--color-surface-2);
@@ -137,9 +137,9 @@
     pointer-events: auto;
     max-width: min(100%, 820px); // mobile: same as before
 
-    // Desktop: pin to the left column so the right half of the image stays clear
+    // Desktop: pin to left column — right ~56% of image stays fully clear
     @media (min-width: 768px) {
-      max-width: min(56%, 660px);
+      max-width: min(44%, 520px);
       margin-inline: 0 auto;
     }
   }
@@ -341,65 +341,38 @@
   }
 }
 
-// ── Mobile hero: image above, text below (≤ 767px) ──────────
-// On mobile the overlay is removed and text lives in its own
-// section below the image so the photo is always fully visible.
+// ── Mobile hero: bottom overlay (≤ 767px) ────────────────────
+// Text overlays the bottom portion of the image.
+// Top ~42% of image stays completely clear so the subject is visible.
 @media (max-width: 767px) {
 
-  // Register the image-zone height as a CSS token — inherited by
-  // all descendants so dots and nav can reference the same value.
-  .hero-slider {
-    --_img-h: clamp(210px, 60vw, 290px);
-    height: auto;
-    display: flex;
-    flex-direction: column;
+  // Bottom-only gradient — upper image is untouched.
+  .hero-overlay {
+    background: linear-gradient(
+      to bottom,
+      transparent                0%,
+      transparent                42%,
+      rgba(0, 0, 0, .12)        55%,
+      rgba(0, 0, 0, .52)        70%,
+      rgba(0, 0, 0, .74)        84%,
+      rgba(0, 0, 0, .86)       100%
+    );
   }
 
-  // Image track: fixed to the image zone only.
-  .hero-slides {
-    height: var(--_img-h);
-    min-height: var(--_img-h);
-    flex-shrink: 0;
-  }
-
-  // Show the full image without cropping.
-  // Dark fill covers letterbox gaps.
-  .hero-slide {
-    object-fit: contain;
-    background: #0b0a10;
-    &--placeholder { padding: .75rem; }
-  }
-
-  // No overlay needed — text is safely below the image.
-  .hero-overlay { display: none; }
-
-  // Text section: exits absolute stacking, appears below image.
+  // Compact text — uses the full slider width, anchored to bottom.
   .hero-copy {
-    position: relative;
-    inset: unset;
-    display: block;
-    padding: 1.5rem var(--container-pad) 2.25rem;
-    background: var(--color-surface);
-    pointer-events: auto;
+    padding-bottom: 1.5rem;
 
     .container {
-      max-width: 100%;
-      margin-inline: 0;
+      max-width: 100%; // override desktop left-column constraint
+      margin-inline: 0 auto;
     }
 
-    .lead { max-width: 100%; }
-  }
+    // Smaller headline — fits in 2 tight lines without overwhelming the image
+    h1 { font-size: clamp(2rem, 7.5vw, 2.75rem); }
 
-  // Dots stay inside the image zone.
-  .dots {
-    top: calc(var(--_img-h) - 2.25rem);
-    bottom: auto;
-  }
-
-  // Arrow buttons confined to the image zone only.
-  .nav {
-    height: var(--_img-h);
-    bottom: auto;
+    // Hide lead text on mobile — keeps overlay compact, more image visible
+    .lead { display: none; }
   }
 
   .hero-scroll { display: none; }

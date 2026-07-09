@@ -60,6 +60,9 @@
   outline: none;
   background: var(--color-surface-2);
 
+  @media (min-width: 768px)  { height: clamp(520px, 72vh, 760px); }
+  @media (min-width: 1024px) { height: clamp(620px, 80vh, 860px); }
+
   &:focus-visible {
     outline: 3px solid var(--color-secondary);
     outline-offset: -3px;
@@ -94,24 +97,29 @@
   }
 }
 
-// Premium gradient: subtle dark vignette at top, strong darkening at bottom
+// Gradient: concentrated behind the text (left column + bottom), clear elsewhere.
+// On desktop the right ~40% of the image is intentionally unobscured.
 .hero-overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background:
+    // Bottom-to-top: readable base behind the text row
     linear-gradient(to bottom,
-      rgba(0, 0, 0, .18) 0%,
-      rgba(0, 0, 0, 0)   25%,
-      rgba(0, 0, 0, 0)   45%,
-      rgba(0, 0, 0, .25) 65%,
-      rgba(0, 0, 0, .55) 85%,
-      rgba(0, 0, 0, .72) 100%
+      rgba(0, 0, 0, .08) 0%,
+      rgba(0, 0, 0, 0)   18%,
+      rgba(0, 0, 0, 0)   48%,
+      rgba(0, 0, 0, .15) 66%,
+      rgba(0, 0, 0, .40) 82%,
+      rgba(0, 0, 0, .58) 100%
     ),
+    // Left-to-right: shields the text column, fades out before center
     linear-gradient(to right,
-      rgba(0, 0, 0, .22) 0%,
-      rgba(0, 0, 0, 0)   40%
+      rgba(0, 0, 0, .45) 0%,
+      rgba(0, 0, 0, .20) 32%,
+      rgba(0, 0, 0, .04) 52%,
+      rgba(0, 0, 0, 0)   62%
     );
 }
 
@@ -127,12 +135,18 @@
 
   .container {
     pointer-events: auto;
-    max-width: min(100%, 820px);
+    max-width: min(100%, 820px); // mobile: same as before
+
+    // Desktop: pin to the left column so the right half of the image stays clear
+    @media (min-width: 768px) {
+      max-width: min(56%, 660px);
+      margin-inline: 0 auto;
+    }
   }
 
   h1 {
     font-family: var(--font-editorial);
-    font-size: clamp(3.25rem, 8vw, 6.5rem);
+    font-size: clamp(3.25rem, 6.5vw, 5.5rem);
     font-weight: 300;
     line-height: 1.05;
     margin: 0;

@@ -5,10 +5,30 @@
 :host { display: block; color: var(--color-text); background: var(--color-bg); }
 
 .head {
-  display: flex; flex-wrap: wrap; align-items: center;
+  display: flex; flex-wrap: wrap; align-items: flex-start;
   gap: var(--spacing-sm); justify-content: space-between;
-  margin-bottom: var(--spacing-md);
-  h1 { margin: 0; font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: var(--weight-extrabold); }
+  margin-bottom: var(--spacing-lg);
+
+  h1 {
+    margin: 0 0 .2rem;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: var(--weight-extrabold);
+    letter-spacing: -.02em;
+    line-height: 1.15;
+  }
+
+  p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  .head__actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    align-items: center;
+  }
 }
 
 // ── Filters bar ───────────────────────────────────────────
@@ -26,7 +46,7 @@
   font-size: var(--text-sm);
   outline: none;
   transition: border-color var(--t-base), box-shadow var(--t-base);
-  &:focus { border-color: var(--color-secondary); box-shadow: 0 0 0 3px rgba(124, 106, 255, .20); }
+  &:focus { border-color: var(--color-secondary); box-shadow: 0 0 0 3px var(--focus-shadow); }
 }
 
 // Date inputs: force calendar icon to be visible on dark backgrounds
@@ -119,7 +139,7 @@
   display: grid;
   place-items: center;
   transition: background var(--t-base), color var(--t-base);
-  &:hover { background: rgba(255, 255, 255, .08); color: var(--color-text); }
+  &:hover { background: var(--btn-icon-hover-bg); color: var(--color-text); }
 }
 
 @keyframes slideIn {
@@ -175,28 +195,28 @@ td:first-child { width: 40px; }
     transition: transform var(--t-fast), background var(--t-base), border-color var(--t-base), box-shadow var(--t-base);
     white-space: nowrap;
 
-    // Default: Confirm / Complete — indigo accent
-    border: 1px solid rgba(124, 106, 255, .40);
-    background: rgba(124, 106, 255, .12);
-    color: #c4b8ff;
-    &:hover { transform: translateY(-1px); background: rgba(124, 106, 255, .22); border-color: var(--color-accent); box-shadow: 0 3px 10px rgba(124, 106, 255, .20); }
+    // Default: Confirm / Complete — indigo accent (token-adaptive)
+    border: 1px solid var(--color-accent-muted);
+    background: var(--color-accent-muted);
+    color: var(--color-secondary);
+    &:hover { transform: translateY(-1px); filter: brightness(1.05); border-color: var(--color-accent); box-shadow: var(--shadow-sm); }
     &:disabled { opacity: .40; cursor: not-allowed; pointer-events: none; }
   }
 
   // "Cancel" row — danger
   button.danger {
-    border-color: rgba(248, 113, 113, .40);
-    background: rgba(248, 113, 113, .10);
-    color: #ffb3b3;
-    &:hover { background: rgba(248, 113, 113, .20); border-color: var(--color-danger); box-shadow: 0 3px 10px rgba(248, 113, 113, .18); }
+    border-color: var(--color-danger-border);
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    &:hover { filter: brightness(1.05); border-color: var(--color-danger); box-shadow: var(--shadow-sm); }
   }
 
   // "Gmail Draft" — brand orange
   button.gmail {
-    border-color: rgba(255, 106, 0, .40);
-    background: rgba(255, 106, 0, .10);
+    border-color: rgba(255, 106, 0, .35);
+    background: rgba(255, 106, 0, .08);
     color: var(--color-primary);
-    &:hover { background: rgba(255, 106, 0, .20); border-color: var(--color-primary); box-shadow: 0 3px 10px rgba(255, 106, 0, .20); }
+    &:hover { background: rgba(255, 106, 0, .15); border-color: var(--color-primary); box-shadow: var(--shadow-sm); }
   }
 
   // "Copy" — muted secondary
@@ -234,10 +254,10 @@ td:first-child { width: 40px; }
   }
 
   button.danger {
-    border-color: rgba(248, 113, 113, .40);
-    background: rgba(248, 113, 113, .10);
-    color: #ffb3b3;
-    &:hover { background: rgba(248, 113, 113, .20); border-color: var(--color-danger); box-shadow: 0 3px 10px rgba(248, 113, 113, .18); }
+    border-color: var(--color-danger-border);
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    &:hover { filter: brightness(1.05); border-color: var(--color-danger); box-shadow: var(--shadow-sm); }
   }
 }
 
@@ -290,13 +310,20 @@ td:first-child { width: 40px; }
 
 // ── States ────────────────────────────────────────────────
 .empty {
-  margin: var(--spacing-md) 0;
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .6rem;
+  margin: var(--spacing-lg) 0;
+  padding: clamp(2rem, 5vw, 3rem) var(--spacing-md);
+  border-radius: var(--radius-xl);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-text-muted);
   text-align: center;
+
+  svg { opacity: .3; width: 40px; height: 40px; }
+  strong { color: var(--color-text); font-weight: var(--weight-bold); font-size: var(--text-base); }
 }
 
 // Mobile

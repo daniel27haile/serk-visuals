@@ -1,123 +1,168 @@
-<section id="contact" class="contact container">
-  <header class="contact__header">
-    <h1 class="section-heading">Contact Us</h1>
-    <p class="lead">
-      Tell us about your project, date, and vision. We usually reply within 24 hours.
+<!-- PAGE HERO -->
+<header class="contact-hero">
+  <div class="container contact-hero__inner">
+    <p class="contact-eyebrow">Let's Connect</p>
+    <h1 class="contact-title">Ready to Start<br aria-hidden="true"> <em>Your Story?</em></h1>
+    <p class="contact-subtitle">
+      Tell us about your vision — we usually reply within 24 hours.
     </p>
-  </header>
+  </div>
+</header>
 
-  <!-- Success message replaces the form -->
-  @if (submitted()) {
-    <div class="alert alert--success" role="status" aria-live="polite">
-      <strong>Thanks!</strong> Your message has been sent. We’ll get back to you shortly.
-    </div>
-  } @else {
-    <!-- Server error -->
-    @if (serverError()) {
-      <div class="alert alert--error" role="alert" aria-live="assertive">
-        {{ serverError() }}
+<!-- MAIN CONTENT -->
+<section id="contact" class="contact container">
+
+  <!-- LEFT — form -->
+  <div class="contact__main">
+
+    <!-- Success state -->
+    @if (submitted()) {
+      <div class="success-card" role="status" aria-live="polite">
+        <div class="success-card__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h2 class="success-card__heading">Message Sent!</h2>
+        <p class="success-card__text">Thanks for reaching out. We'll get back to you shortly — usually within one business day.</p>
       </div>
+    } @else {
+
+      <!-- Server error -->
+      @if (serverError()) {
+        <div class="alert alert--error" role="alert" aria-live="assertive">
+          {{ serverError() }}
+        </div>
+      }
+
+      <!-- Contact Form -->
+      <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <div class="form-grid">
+          <!-- Full name -->
+          <div class="field">
+            <label for="fullName">Full name <span class="req" aria-hidden="true">*</span></label>
+            <input id="fullName" type="text" formControlName="fullName" autocomplete="name"
+              [class.is-invalid]="f.fullName.touched && f.fullName.invalid" />
+            @if (f.fullName.touched && f.fullName.invalid) {
+              <div class="error">
+                @if (f.fullName.errors?.['required']) { <span>Name is required.</span> }
+                @if (f.fullName.errors?.['minlength']) { <span>At least 2 characters.</span> }
+              </div>
+            }
+          </div>
+
+          <!-- Email -->
+          <div class="field">
+            <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input id="email" type="email" formControlName="email" autocomplete="email"
+              [class.is-invalid]="f.email.touched && f.email.invalid" />
+            @if (f.email.touched && f.email.invalid) {
+              <div class="error">
+                @if (f.email.errors?.['required']) { <span>Email is required.</span> }
+                @if (f.email.errors?.['email']) { <span>Enter a valid email.</span> }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Subject -->
+        <div class="field">
+          <label for="subject">Subject <span class="req" aria-hidden="true">*</span></label>
+          <input id="subject" type="text" formControlName="subject"
+            [class.is-invalid]="f.subject.touched && f.subject.invalid" />
+          @if (f.subject.touched && f.subject.invalid) {
+            <div class="error">
+              @if (f.subject.errors?.['required']) { <span>Subject is required.</span> }
+              @if (f.subject.errors?.['minlength']) { <span>At least 3 characters.</span> }
+            </div>
+          }
+        </div>
+
+        <!-- Message -->
+        <div class="field">
+          <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
+          <textarea id="message" rows="6" formControlName="message"
+            [class.is-invalid]="f.message.touched && f.message.invalid"
+            placeholder="Tell us about your project, date, and vision…"></textarea>
+          @if (f.message.touched && f.message.invalid) {
+            <div class="error">
+              @if (f.message.errors?.['required']) { <span>Message is required.</span> }
+              @if (f.message.errors?.['minlength']) { <span>At least 10 characters.</span> }
+            </div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <label class="checkbox">
+            <input type="checkbox" formControlName="consent" />
+            <span>I consent to be contacted about my inquiry.</span>
+          </label>
+
+          <button type="submit" class="btn btn--accent" [disabled]="submitting()">
+            @if (submitting()) {
+              <span class="btn-spinner" aria-hidden="true"></span> Sending…
+            } @else {
+              Send Message
+            }
+          </button>
+        </div>
+
+        <!-- Honeypot -->
+        <input formControlName="hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      </form>
     }
+  </div>
 
-    <!-- Contact Form -->
-    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-      <div class="form-grid">
-        <!-- Full name -->
-        <div class="field">
-          <label for="fullName">Full name *</label>
-          <input id="fullName" type="text" formControlName="fullName" autocomplete="name"
-            [class.is-invalid]="f.fullName.touched && f.fullName.invalid" />
-          @if (f.fullName.touched && f.fullName.invalid) {
-            <div class="error">
-              @if (f.fullName.errors?.['required']) { <span>Name is required.</span> }
-              @if (f.fullName.errors?.['minlength']) { <span>At least 2 characters.</span> }
-            </div>
-          }
-        </div>
+  <!-- RIGHT — sidebar -->
+  <aside class="contact__sidebar" aria-label="Contact information">
 
-        <!-- Email -->
-        <div class="field">
-          <label for="email">Email *</label>
-          <input id="email" type="email" formControlName="email" autocomplete="email"
-            [class.is-invalid]="f.email.touched && f.email.invalid" />
-          @if (f.email.touched && f.email.invalid) {
-            <div class="error">
-              @if (f.email.errors?.['required']) { <span>Email is required.</span> }
-              @if (f.email.errors?.['email']) { <span>Enter a valid email.</span> }
-            </div>
-          }
-        </div>
-      </div>
+    <div class="contact-card">
+      <h2 class="contact-card__heading">Direct Contact</h2>
 
-      <!-- Subject -->
-      <div class="field">
-        <label for="subject">Subject *</label>
-        <input id="subject" type="text" formControlName="subject"
-          [class.is-invalid]="f.subject.touched && f.subject.invalid" />
-        @if (f.subject.touched && f.subject.invalid) {
-          <div class="error">
-            @if (f.subject.errors?.['required']) { <span>Subject is required.</span> }
-            @if (f.subject.errors?.['minlength']) { <span>At least 3 characters.</span> }
-          </div>
-        }
-      </div>
+      <a class="contact-row" href="mailto:serkvisuals@gmail.com">
+        <span class="contact-row__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </span>
+        <span class="contact-row__label">serkvisuals&#64;gmail.com</span>
+      </a>
 
-      <!-- Message -->
-      <div class="field">
-        <label for="message">Message *</label>
-        <textarea id="message" rows="6" formControlName="message"
-          [class.is-invalid]="f.message.touched && f.message.invalid"></textarea>
-        @if (f.message.touched && f.message.invalid) {
-          <div class="error">
-            @if (f.message.errors?.['required']) { <span>Message is required.</span> }
-            @if (f.message.errors?.['minlength']) { <span>At least 10 characters.</span> }
-          </div>
-        }
-      </div>
+      <a class="contact-row" href="tel:+12068059405">
+        <span class="contact-row__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+          </svg>
+        </span>
+        <span class="contact-row__label">+1 (206) 805-9405</span>
+      </a>
 
-      <div class="form-actions">
-        <label class="checkbox">
-          <input type="checkbox" formControlName="consent" />
-          <span>I consent to be contacted about my inquiry.</span>
-        </label>
-
-        <button type="submit" class="btn btn--accent" [disabled]="submitting()">
-          @if (submitting()) { Sending… } @else { Send message }
-        </button>
-      </div>
-
-      <!-- Honeypot — hidden from AT via aria-hidden -->
-      <input formControlName="hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
-    </form>
-  }
-
-  <!-- Sidebar -->
-  <aside class="contact__sidebar">
-    <div class="card">
-      <h2>Get in touch directly</h2>
-      <p class="lead">
-        <a href="mailto:serkvisuals@gmail.com">serkvisuals&#64;gmail.com</a>
-      </p>
-      <p>
-        <a href="tel:+12068059405">+1 (206) 805-9405</a>
-      </p>
-      <p>
-        Instagram:
-        <a href="https://instagram.com/serk_visuals" target="_blank" rel="noopener noreferrer">
-          &#64;serk_visuals
-        </a>
-      </p>
+      <a class="contact-row" href="https://instagram.com/serk_visuals" target="_blank" rel="noopener noreferrer">
+        <span class="contact-row__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+          </svg>
+        </span>
+        <span class="contact-row__label">&#64;serk_visuals</span>
+      </a>
     </div>
 
-    <div class="card">
-      <h2>Service Area</h2>
-      <p>
-        We serve clients throughout the greater Seattle area, including
+    <div class="contact-card">
+      <h2 class="contact-card__heading">Service Area</h2>
+      <p class="contact-card__text">
+        Based in the greater Seattle area — serving
         <strong>Mill Creek</strong>, <strong>Everett</strong>, <strong>Lynnwood</strong>,
         <strong>Bellevue</strong>, <strong>Redmond</strong>, <strong>Kirkland</strong>,
         and <strong>Snohomish</strong>, WA.
-        Travel is available for weddings and larger projects.
       </p>
+      <p class="contact-card__text">Travel available for weddings and larger projects.</p>
     </div>
+
   </aside>
+
 </section>

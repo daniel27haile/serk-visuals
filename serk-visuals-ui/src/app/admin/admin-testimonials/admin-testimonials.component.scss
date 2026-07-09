@@ -8,25 +8,35 @@
 .head {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
 
-  h1 { margin: 0; font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: var(--weight-black); }
+  h1 {
+    margin: 0 0 .2rem;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: var(--weight-extrabold);
+    letter-spacing: -.02em;
+    line-height: 1.15;
+  }
+
+  p { margin: 0; font-size: var(--text-sm); color: var(--color-text-muted); }
 }
 
 // ── Testimonial tile (different from image-tile pattern) ─
 .tile {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   overflow: hidden;
   display: grid;
   gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  transition: border-color var(--t-base), transform var(--t-fast);
+  padding: 1.25rem;
+  transition: border-color var(--t-base), transform var(--t-fast), box-shadow var(--t-base);
+  box-shadow: var(--shadow-xs), var(--shadow-inset-top);
 
-  &:hover { transform: translateY(-1px); border-color: var(--color-border-strong); }
+  &:hover { transform: translateY(-2px); border-color: var(--color-border-strong); box-shadow: var(--shadow-sm); }
 }
 
 .tile__row { display: flex; gap: var(--spacing-sm); align-items: center; }

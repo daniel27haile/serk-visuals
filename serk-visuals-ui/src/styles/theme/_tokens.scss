@@ -1,21 +1,27 @@
 // ============================================================
 // SERK VISUALS — Design Tokens
 //
-// Theme 1 (default): Warm Obsidian dark — warm purple base, orange brand, indigo interactive
-// Theme 2: Pure Black (#000) / Pure White (#fff) — no gradients, no off-tones
+// Theme 1 (default): Warm Obsidian — deep charcoal, orange brand, indigo interactive
+//   Inspiration: Linear, GitHub Dark, Raycast, Vercel
 //
-// To add Theme 3: add entry in admin-theme.service.ts,
-// add .app-shell[data-theme="theme-3"] block here, and matching
-// .admin-layout[data-admin-theme="theme-3"] block in admin-layouts.component.scss.
+// Theme 2: Clean Monochrome Light — off-white, white cards, orange brand (restrained)
+//   Inspiration: Apple, Stripe Dashboard, Airbnb, Framer
+//
+// Spacing, layout, radius, and typography are IDENTICAL between themes.
+// Only color tokens differ.
 // ============================================================
 
+// ============================================================
+// THEME 1 — WARM OBSIDIAN (DEFAULT DARK)
+// ============================================================
 :root {
+
   // ── Background layers ─────────────────────────────────────
-  --color-bg:            #111020;
-  --color-surface:       #1c1a2c;
-  --color-surface-2:     #252340;
-  --color-surface-input: #181630;
-  --color-surface-hover: #2e2b48;
+  --color-bg:            #111020;   // deep charcoal base
+  --color-surface:       #1c1a2c;   // card / panel
+  --color-surface-2:     #252340;   // secondary panel / grouped sections
+  --color-surface-input: #181630;   // form field background
+  --color-surface-hover: #2e2b48;   // hover state on surface
 
   // ── Borders ───────────────────────────────────────────────
   --color-border:        #3c3858;
@@ -23,37 +29,37 @@
   --color-border-strong: #554e78;
 
   // ── Text ──────────────────────────────────────────────────
-  --color-text:          #f0eef8;
-  --color-text-muted:    #9b98b5;
-  --color-text-dim:      #554f6a;
-  --color-text-label:    #c5c1da;
-  --color-text-inverse:  #0b0a10;
+  --color-text:          #f0eef8;   // primary text — warm white
+  --color-text-muted:    #9b98b5;   // secondary / supporting text
+  --color-text-dim:      #554f6a;   // placeholder / disabled
+  --color-text-label:    #c5c1da;   // form labels / column headers
+  --color-text-inverse:  #0b0a10;   // text on coloured fills (e.g. button)
 
   // ── Brand — Orange ────────────────────────────────────────
   --color-primary:       #ff6a00;
   --color-primary-dark:  #e05e00;
-  --color-primary-ink:   #0b0a10;
+  --color-primary-ink:   #0b0a10;   // text colour on an orange fill
 
   // ── Interactive accent — Indigo ───────────────────────────
-  --color-secondary:     #7c6aff;
-  --color-secondary-dark:#6655e8;
-  --color-accent:        #7c6aff;
-  --color-accent-dark:   #6655e8;
-  --color-accent-muted:  rgba(124, 106, 255, .15);
+  --color-secondary:      #7c6aff;
+  --color-secondary-dark: #6655e8;
+  --color-accent:         #7c6aff;
+  --color-accent-dark:    #6655e8;
+  --color-accent-muted:   rgba(124, 106, 255, .15);
 
   // ── Semantic status ───────────────────────────────────────
   --color-success:        #34d399;
   --color-success-bg:     rgba(52, 211, 153, .10);
   --color-success-border: rgba(52, 211, 153, .35);
 
-  --color-warning:       #fbbf24;
-  --color-warning-bg:    rgba(251, 191, 36, .10);
+  --color-warning:        #fbbf24;
+  --color-warning-bg:     rgba(251, 191, 36, .10);
 
-  --color-danger:        #f87171;
-  --color-danger-bg:     rgba(248, 113, 113, .12);
-  --color-danger-border: rgba(248, 113, 113, .40);
+  --color-danger:         #f87171;
+  --color-danger-bg:      rgba(248, 113, 113, .12);
+  --color-danger-border:  rgba(248, 113, 113, .40);
 
-  // ── Admin shell ───────────────────────────────────────────
+  // ── Admin shell — dark (default) ─────────────────────────
   --color-admin-bg:             #0e0c1a;
   --color-admin-deeper:         #0a0814;
   --color-admin-border:         #221f30;
@@ -67,26 +73,27 @@
   --color-glass:   rgba(255, 255, 255, .05);
   --color-overlay: rgba(0, 0, 0, .60);
 
-  // ── Spacing (4pt base) ────────────────────────────────────
+  // ── Spacing (8pt base) — shared by ALL themes ─────────────
   --space-1:  .25rem;  --space-2:  .5rem;  --space-3:  .75rem;
   --space-4:  1rem;    --space-5:  1.25rem; --space-6:  1.5rem;
   --space-8:  2rem;    --space-10: 2.5rem;  --space-12: 3rem;
+  --space-16: 4rem;    --space-20: 5rem;    --space-24: 6rem;
 
   --spacing-xs:  var(--space-2);
-  --spacing-sm:  var(--space-3);
-  --spacing-md:  var(--space-4);
-  --spacing-lg:  var(--space-6);
-  --spacing-xl:  var(--space-8);
-  --spacing-2xl: var(--space-12);
+  --spacing-sm:  var(--space-4);
+  --spacing-md:  var(--space-6);
+  --spacing-lg:  var(--space-8);
+  --spacing-xl:  var(--space-12);
+  --spacing-2xl: var(--space-20);
 
-  // ── Border radius ─────────────────────────────────────────
+  // ── Border radius — shared by ALL themes ──────────────────
   --radius-sm:   .5rem;
   --radius-md:   .65rem;
   --radius-lg:   1rem;
   --radius-xl:   1.25rem;
   --radius-full: 999px;
 
-  // ── Shadows ───────────────────────────────────────────────
+  // ── Shadows — dark theme ───────────────────────────────────
   --shadow-xs: 0 1px 4px  rgba(0, 0, 0, .22);
   --shadow-sm: 0 4px 16px rgba(0, 0, 0, .28);
   --shadow-md: 0 8px 30px rgba(0, 0, 0, .34);
@@ -94,7 +101,7 @@
   --shadow-xl: 0 24px 64px rgba(0, 0, 0, .48);
   --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, .07);
 
-  // ── Typography ────────────────────────────────────────────
+  // ── Typography — shared by ALL themes ─────────────────────
   --font-sans:      system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display:   'Josefin Sans', system-ui, sans-serif;
   --font-editorial: 'Cormorant Garant', Georgia, serif;
@@ -102,49 +109,50 @@
   --text-xs:   .75rem;   --text-sm:   .875rem;  --text-base: 1rem;
   --text-lg:   1.125rem; --text-xl:   1.25rem;  --text-2xl:  1.5rem;
   --text-3xl:  clamp(1.75rem, 3vw + .5rem, 2.5rem);
+  --text-4xl:  clamp(2.25rem, 4vw + .5rem, 3.5rem);
+  --text-5xl:  clamp(3rem,    5vw + .5rem, 5rem);
 
   --weight-normal:    400;  --weight-medium:    500;  --weight-semibold:  600;
   --weight-bold:      700;  --weight-extrabold: 800;  --weight-black:     900;
 
   --leading-tight:   1.25;  --leading-normal:  1.5;  --leading-relaxed: 1.7;
 
-  // ── Transitions ───────────────────────────────────────────
+  // ── Transitions — shared by ALL themes ────────────────────
   --t-fast: .12s ease;  --t-base: .2s ease;  --t-slow: .35s ease;
 
-  // ── Layout ────────────────────────────────────────────────
+  // ── Layout — shared by ALL themes ─────────────────────────
   --container-max: 1200px;
   --container-pad: clamp(1rem, 2.4vw, 1.5rem);
   --sidebar-w:     260px;
-  --header-h:      calc(clamp(98px, 9vw, 160px) + 1.5rem);
+  --header-h:      72px;
 
-  // ── Z-index scale ─────────────────────────────────────────
+  // ── Z-index scale — shared by ALL themes ──────────────────
   --z-header:  1000;  --z-sidebar: 40;  --z-topbar:  30;
   --z-backdrop: 80;   --z-modal:   90;
 
-  // ── Header shell tokens ───────────────────────────────────
-  // The complex dark overlay is expressed as a variable so Theme 2 can override it
+  // ── Header tokens — dark theme ────────────────────────────
   --header-bg:
-    linear-gradient(180deg, rgba(8, 12, 22, .85), rgba(8, 12, 22, .65)),
+    linear-gradient(180deg, rgba(8, 12, 22, .88), rgba(8, 12, 22, .70)),
     var(--color-bg);
-  --header-border:           rgba(255, 255, 255, .08);
-  --header-text:             var(--color-text);
-  --header-link:             var(--color-text);
-  --header-link-hover:       var(--color-primary);
-  --header-link-active:      var(--color-primary);
-  --header-cta-bg:           var(--color-primary);
-  --header-cta-color:        var(--color-primary-ink);
-  --header-cta-border:       var(--color-primary);
-  --header-toggle-bg:        rgba(255, 255, 255, .04);
-  --header-toggle-border:    rgba(255, 255, 255, .25);
-  --header-toggle-hover-bg:  rgba(255, 255, 255, .09);
-  --header-toggle-hover-brd: rgba(255, 255, 255, .45);
+  --header-border:            rgba(255, 255, 255, .08);
+  --header-text:              var(--color-text);
+  --header-link:              rgba(240, 238, 248, .80);
+  --header-link-hover:        var(--color-primary);
+  --header-link-active:       var(--color-primary);
+  --header-cta-bg:            var(--color-primary);
+  --header-cta-color:         var(--color-primary-ink);
+  --header-cta-border:        var(--color-primary);
+  --header-toggle-bg:         rgba(255, 255, 255, .04);
+  --header-toggle-border:     rgba(255, 255, 255, .25);
+  --header-toggle-hover-bg:   rgba(255, 255, 255, .09);
+  --header-toggle-hover-brd:  rgba(255, 255, 255, .45);
   --header-nav-mob-bg:
-    linear-gradient(180deg, rgba(8, 12, 22, .97), rgba(8, 12, 22, .90)),
+    linear-gradient(180deg, rgba(8, 12, 22, .97), rgba(8, 12, 22, .92)),
     var(--color-bg);
-  --header-nav-mob-border:   rgba(255, 255, 255, .08);
-  --header-nav-mob-active:   rgba(255, 255, 255, .06);
+  --header-nav-mob-border:    rgba(255, 255, 255, .08);
+  --header-nav-mob-active:    rgba(255, 255, 255, .06);
 
-  // ── Footer shell tokens ───────────────────────────────────
+  // ── Footer tokens — dark theme ────────────────────────────
   --footer-bg:               #13131a;
   --footer-border:           rgba(255, 255, 255, .10);
   --footer-text:             rgba(255, 255, 255, .68);
@@ -165,7 +173,37 @@
   --footer-bottom-link:      rgba(255, 255, 255, .42);
   --footer-bottom-link-hover:rgba(255, 255, 255, .80);
 
-  // ── Component tokens ─────────────────────────────────────
+  // ── KPI card icon colors — dark theme ────────────────────
+  --kpi-orange-bg:      rgba(255, 106, 0, .12);
+  --kpi-orange-color:   #ff6a00;
+  --kpi-orange-border:  rgba(255, 106, 0, .20);
+  --kpi-amber-bg:       rgba(251, 191, 36, .12);
+  --kpi-amber-color:    #f59e0b;
+  --kpi-amber-border:   rgba(251, 191, 36, .22);
+  --kpi-green-bg:       rgba(52, 211, 153, .12);
+  --kpi-green-color:    #10b981;
+  --kpi-green-border:   rgba(52, 211, 153, .22);
+  --kpi-purple-bg:      rgba(124, 106, 255, .12);
+  --kpi-purple-color:   #7c6aff;
+  --kpi-purple-border:  rgba(124, 106, 255, .20);
+
+  // ── Status badge colors — dark theme ──────────────────────
+  --badge-pending-bg:      rgba(251, 191, 36, .12);
+  --badge-pending-color:   #f59e0b;
+  --badge-pending-border:  rgba(251, 191, 36, .25);
+  --badge-confirmed-bg:    rgba(52, 211, 153, .12);
+  --badge-confirmed-color: #10b981;
+  --badge-confirmed-border:rgba(52, 211, 153, .25);
+  --badge-completed-bg:    rgba(124, 106, 255, .12);
+  --badge-completed-color: #7c6aff;
+  --badge-completed-border:rgba(124, 106, 255, .22);
+  --badge-cancelled-bg:    rgba(248, 113, 113, .12);
+  --badge-cancelled-border:rgba(248, 113, 113, .22);
+
+  // ── Table row hover ────────────────────────────────────────
+  --table-hover-bg: rgba(255, 255, 255, .025);
+
+  // ── Component tokens — dark theme ─────────────────────────
   --chip-bg:     #111723;
   --chip-color:  #b7c0d4;
   --chip-border: #253047;
@@ -173,6 +211,7 @@
   --btn-primary-shadow:       0 6px 22px rgba(124, 106, 255, .28);
   --btn-primary-hover-shadow: 0 10px 28px rgba(124, 106, 255, .38);
   --btn-ghost-hover-bg:       rgba(255, 255, 255, .05);
+  --btn-icon-hover-bg:        rgba(255, 255, 255, .08);
   --btn-accent-shadow:        0 6px 20px rgba(255, 106, 0, .22);
   --btn-accent-hover-shadow:  0 10px 24px rgba(255, 106, 0, .32);
 
@@ -186,144 +225,309 @@
   --field-error-text:   #fca5a5;
   --field-error-border: #ef4444;
   --field-error-shadow: rgba(239, 68, 68, .18);
-  --toggle-checked-bg:  #1d3f8f;
+  --toggle-checked-bg:  rgba(255, 106, 0, .25);
   --date-color-scheme:  dark;
   --date-icon-filter:   invert(1) brightness(1.2) contrast(1.05);
   --date-icon-opacity:  .85;
 }
 
-// ── Theme 2: Pure Black / Pure White — public shell ────────
+
+// ============================================================
+// THEME 2 — CLEAN MONOCHROME LIGHT (PUBLIC SITE)
+// Inspiration: Apple, Stripe, Airbnb, Framer
+// Off-white page (#F7F8FA), white cards, orange brand (restrained)
+// ============================================================
 .app-shell[data-theme="theme-2"] {
 
-  // ── Core colour tokens ─────────────────────────────────────
-  --color-bg:            #ffffff;
-  --color-surface:       #ffffff;
-  --color-surface-2:     #f0f0f0;
-  --color-surface-input: #ffffff;
-  --color-surface-hover: #f5f5f5;
+  // ── Background layers ─────────────────────────────────────
+  --color-bg:            #F7F8FA;   // off-white — the Stripe/Linear light bg
+  --color-surface:       #FFFFFF;   // white cards
+  --color-surface-2:     #F0F2F5;   // secondary panels, grouped sections
+  --color-surface-input: #FFFFFF;   // form inputs
+  --color-surface-hover: #F0F2F5;   // hover on surface
 
-  --color-border:        rgba(0, 0, 0, .12);
-  --color-border-subtle: rgba(0, 0, 0, .06);
-  --color-border-strong: rgba(0, 0, 0, .24);
+  // ── Borders ───────────────────────────────────────────────
+  --color-border:        #E5E7EB;   // default border — tailwind gray-200
+  --color-border-subtle: #F3F4F6;   // very subtle dividers
+  --color-border-strong: #D1D5DB;   // stronger border on hover/active
 
-  --color-text:          #000000;
-  --color-text-muted:    rgba(0, 0, 0, .55);
-  --color-text-dim:      rgba(0, 0, 0, .35);
-  --color-text-label:    rgba(0, 0, 0, .72);
-  --color-text-inverse:  #ffffff;
+  // ── Text ──────────────────────────────────────────────────
+  --color-text:          #111827;   // near-black, not pure black
+  --color-text-muted:    #6B7280;   // secondary text
+  --color-text-dim:      #9CA3AF;   // placeholder / disabled
+  --color-text-label:    #374151;   // form labels, column headers
+  --color-text-inverse:  #FFFFFF;   // text on coloured fills
 
-  // Brand → pure black in monochrome theme
-  --color-primary:       #000000;
-  --color-primary-dark:  #000000;
-  --color-primary-ink:   #ffffff;
+  // ── Brand — Orange (restrained for light backgrounds) ─────
+  // Darkened slightly from #ff6a00 → #E8610A for WCAG AA contrast on white
+  --color-primary:       #E8610A;
+  --color-primary-dark:  #C94F00;
+  --color-primary-ink:   #FFFFFF;
 
-  // Interactive accent → pure black
-  --color-secondary:      #000000;
-  --color-secondary-dark: #000000;
-  --color-accent:         #000000;
-  --color-accent-dark:    #000000;
-  --color-accent-muted:   rgba(0, 0, 0, .07);
+  // ── Interactive accent — Indigo (darkened for light) ──────
+  --color-secondary:      #4F46E5;
+  --color-secondary-dark: #4338CA;
+  --color-accent:         #4F46E5;
+  --color-accent-dark:    #4338CA;
+  --color-accent-muted:   rgba(79, 70, 229, .10);
 
-  // Semantic — readable on white backgrounds
-  --color-success:        #15803d;
-  --color-success-bg:     rgba(21, 128, 61, .08);
-  --color-success-border: rgba(21, 128, 61, .22);
+  // ── Semantic status — accessible on light ─────────────────
+  --color-success:        #059669;
+  --color-success-bg:     rgba(5, 150, 105, .08);
+  --color-success-border: rgba(5, 150, 105, .22);
 
-  --color-warning:       #b45309;
-  --color-warning-bg:    rgba(180, 83, 9, .07);
+  --color-warning:        #D97706;
+  --color-warning-bg:     rgba(217, 119, 6, .08);
 
-  --color-danger:        #b91c1c;
-  --color-danger-bg:     rgba(185, 28, 28, .07);
-  --color-danger-border: rgba(185, 28, 28, .22);
+  --color-danger:         #DC2626;
+  --color-danger-bg:      rgba(220, 38, 38, .07);
+  --color-danger-border:  rgba(220, 38, 38, .22);
 
-  --color-glass:   rgba(0, 0, 0, .04);
-  --color-overlay: rgba(0, 0, 0, .50);
+  // ── Utility ───────────────────────────────────────────────
+  --color-glass:   rgba(255, 255, 255, .70);
+  --color-overlay: rgba(0, 0, 0, .40);
 
-  --shadow-xs:   0 1px 3px  rgba(0, 0, 0, .06);
-  --shadow-sm:   0 4px 14px rgba(0, 0, 0, .08);
-  --shadow-md:   0 8px 28px rgba(0, 0, 0, .10);
-  --shadow-lg:   0 16px 44px rgba(0, 0, 0, .12);
-  --shadow-xl:   0 24px 60px rgba(0, 0, 0, .14);
-  --shadow-inset-top: inset 0 1px 0 rgba(0, 0, 0, .04);
+  // ── Shadows — lighter, more refined on light surfaces ─────
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, .04), 0 1px 4px rgba(0, 0, 0, .04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .06), 0 4px 12px rgba(0, 0, 0, .06);
+  --shadow-md: 0 4px 8px  rgba(0, 0, 0, .06), 0 8px 24px rgba(0, 0, 0, .06);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, .08), 0 16px 40px rgba(0, 0, 0, .08);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, .10), 0 24px 56px rgba(0, 0, 0, .10);
+  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, .90);
 
-  // ── Header — pure black so white-text logo is always visible ──
-  --header-bg:               #000000;
-  --header-border:           rgba(255, 255, 255, .10);
-  --header-text:             #ffffff;
-  --header-link:             rgba(255, 255, 255, .85);
-  --header-link-hover:       #ffffff;
-  --header-link-active:      #ffffff;
-  // Book Now CTA on black header: white button, black text
-  --header-cta-bg:           #ffffff;
-  --header-cta-color:        #000000;
-  --header-cta-border:       #ffffff;
+  // ── Header — dark editorial header on light page ──────────
+  // Photography brands use dark headers for visual impact, even on light pages.
+  // The logo is white so we preserve the dark header.
+  --header-bg:               #1A1A1A;
+  --header-border:           rgba(255, 255, 255, .08);
+  --header-text:             #FFFFFF;
+  --header-link:             rgba(255, 255, 255, .80);
+  --header-link-hover:       #FFFFFF;
+  --header-link-active:      #E8610A;
+  --header-cta-bg:           #E8610A;
+  --header-cta-color:        #FFFFFF;
+  --header-cta-border:       #E8610A;
   --header-toggle-bg:        rgba(255, 255, 255, .06);
-  --header-toggle-border:    rgba(255, 255, 255, .25);
+  --header-toggle-border:    rgba(255, 255, 255, .22);
   --header-toggle-hover-bg:  rgba(255, 255, 255, .12);
-  --header-toggle-hover-brd: rgba(255, 255, 255, .50);
-  --header-nav-mob-bg:       #000000;
+  --header-toggle-hover-brd: rgba(255, 255, 255, .45);
+  --header-nav-mob-bg:       #1A1A1A;
   --header-nav-mob-border:   rgba(255, 255, 255, .10);
   --header-nav-mob-active:   rgba(255, 255, 255, .08);
 
-  // ── Footer — black footer on white page (unchanged from T1 design intent)
-  --footer-bg:               #000000;
-  --footer-border:           rgba(255, 255, 255, .12);
-  --footer-text:             rgba(255, 255, 255, .75);
-  --footer-desc:             rgba(255, 255, 255, .55);
-  --footer-heading:          #ffffff;
-  --footer-link:             rgba(255, 255, 255, .55);
-  --footer-link-hover:       #ffffff;
+  // ── Footer — dark footer on light page (editorial) ────────
+  --footer-bg:               #1A1A1A;
+  --footer-border:           rgba(255, 255, 255, .10);
+  --footer-text:             rgba(255, 255, 255, .70);
+  --footer-desc:             rgba(255, 255, 255, .50);
+  --footer-heading:          #FFFFFF;
+  --footer-link:             rgba(255, 255, 255, .52);
+  --footer-link-hover:       #FFFFFF;
   --footer-contact:          rgba(255, 255, 255, .85);
-  --footer-social-border:    rgba(255, 255, 255, .18);
-  --footer-social-bg:        rgba(255, 255, 255, .08);
-  --footer-cta-color:        #000000;
-  --footer-cta-shadow:       rgba(0, 0, 0, .14);
-  --footer-cta-shadow-hover: rgba(0, 0, 0, .24);
-  --footer-bottom-bg:        #000000;
-  --footer-bottom-border:    rgba(255, 255, 255, .10);
+  --footer-social-border:    rgba(255, 255, 255, .16);
+  --footer-social-bg:        rgba(255, 255, 255, .07);
+  --footer-cta-color:        #FFFFFF;
+  --footer-cta-shadow:       rgba(232, 97, 10, .22);
+  --footer-cta-shadow-hover: rgba(232, 97, 10, .36);
+  --footer-bottom-bg:        #111111;
+  --footer-bottom-border:    rgba(255, 255, 255, .08);
   --footer-bottom-text:      rgba(255, 255, 255, .35);
   --footer-bottom-strong:    rgba(255, 255, 255, .60);
   --footer-bottom-link:      rgba(255, 255, 255, .45);
-  --footer-bottom-link-hover:#ffffff;
+  --footer-bottom-link-hover:#FFFFFF;
 
   // ── Component tokens ─────────────────────────────────────
-  --chip-bg:     #000000;
-  --chip-color:  #ffffff;
-  --chip-border: transparent;
+  --chip-bg:     #F0F2F5;
+  --chip-color:  #374151;
+  --chip-border: #E5E7EB;
 
-  --btn-primary-shadow:       0 6px 22px rgba(0, 0, 0, .14);
-  --btn-primary-hover-shadow: 0 10px 28px rgba(0, 0, 0, .22);
-  --btn-ghost-hover-bg:       rgba(0, 0, 0, .05);
-  --btn-accent-shadow:        0 6px 20px rgba(0, 0, 0, .14);
-  --btn-accent-hover-shadow:  0 10px 24px rgba(0, 0, 0, .22);
+  --btn-primary-shadow:       0 4px 14px rgba(79, 70, 229, .20);
+  --btn-primary-hover-shadow: 0 8px 22px rgba(79, 70, 229, .28);
+  --btn-ghost-hover-bg:       rgba(0, 0, 0, .04);
+  --btn-icon-hover-bg:        rgba(0, 0, 0, .05);
+  --btn-accent-shadow:        0 4px 14px rgba(232, 97, 10, .22);
+  --btn-accent-hover-shadow:  0 8px 22px rgba(232, 97, 10, .32);
 
-  --alert-error-text:   #7f1d1d;
-  --alert-success-text: #064e3b;
-  --alert-info-text:    #1e3a8a;
-  --alert-info-border:  rgba(0, 0, 0, .12);
-  --shimmer-highlight:  rgba(0, 0, 0, .05);
+  --alert-error-text:   #991B1B;
+  --alert-success-text: #065F46;
+  --alert-info-text:    #1E40AF;
+  --alert-info-border:  rgba(79, 70, 229, .22);
+  --shimmer-highlight:  rgba(0, 0, 0, .04);
 
-  --focus-shadow:       rgba(0, 0, 0, .18);
-  --field-error-text:   #991b1b;
-  --field-error-border: #dc2626;
+  --focus-shadow:       rgba(79, 70, 229, .18);
+  --field-error-text:   #B91C1C;
+  --field-error-border: #DC2626;
   --field-error-shadow: rgba(220, 38, 38, .15);
-  --toggle-checked-bg:  #000000;
+  --toggle-checked-bg:  rgba(232, 97, 10, .15);
   --date-color-scheme:  light;
   --date-icon-filter:   none;
   --date-icon-opacity:  .55;
 
-  // Date / time inputs — light color-scheme, no inversion
+  // Native date/time pickers on light background
   input[type="date"],
   input[type="time"] {
     color-scheme: light;
-    &::-webkit-calendar-picker-indicator {
-      filter: none;
-      opacity: .55;
-    }
+    &::-webkit-calendar-picker-indicator { filter: none; opacity: .55; }
   }
 
   ::selection {
-    background: rgba(0, 0, 0, .12);
-    color: #000000;
+    background: rgba(232, 97, 10, .15);
+    color: #111827;
   }
+}
+
+
+// ============================================================
+// ADMIN THEME 1 — applied by [data-admin-theme="theme-1"]
+// Inherits from :root (Warm Obsidian dark) — no overrides needed.
+// Admin-specific tokens are already in :root above.
+// ============================================================
+
+
+// ============================================================
+// ADMIN THEME 2 — CLEAN LIGHT (applied to admin-layout)
+// Zinc-based palette — think Vercel dashboard, Linear, Notion Light
+// KEEPS orange brand accent for visual continuity
+// ============================================================
+.admin-layout[data-admin-theme="theme-2"] {
+
+  // ── Page background ───────────────────────────────────────
+  --color-bg:             #FAFAFA;   // zinc-50 — just off white
+  --color-surface:        #FFFFFF;   // white panels / cards
+  --color-surface-2:      #F4F4F5;   // zinc-100 — secondary surface
+  --color-surface-input:  #FFFFFF;
+  --color-surface-hover:  #F4F4F5;
+
+  // ── Borders ───────────────────────────────────────────────
+  --color-border:         #E4E4E7;   // zinc-200
+  --color-border-subtle:  #F4F4F5;
+  --color-border-strong:  #D4D4D8;   // zinc-300
+
+  // ── Text ──────────────────────────────────────────────────
+  --color-text:           #18181B;   // zinc-900
+  --color-text-muted:     #71717A;   // zinc-500
+  --color-text-dim:       #A1A1AA;   // zinc-400
+  --color-text-label:     #52525B;   // zinc-600
+  --color-text-inverse:   #FFFFFF;
+
+  // ── Brand — KEEP orange in admin light theme ───────────────
+  --color-primary:        #E8610A;
+  --color-primary-dark:   #C94F00;
+  --color-primary-ink:    #FFFFFF;
+
+  // ── Interactive accent ────────────────────────────────────
+  --color-secondary:      #4F46E5;
+  --color-secondary-dark: #4338CA;
+  --color-accent:         #4F46E5;
+  --color-accent-dark:    #4338CA;
+  --color-accent-muted:   rgba(79, 70, 229, .10);
+
+  // ── Semantic ──────────────────────────────────────────────
+  --color-success:        #16A34A;
+  --color-success-bg:     rgba(22, 163, 74, .08);
+  --color-success-border: rgba(22, 163, 74, .22);
+  --color-warning:        #D97706;
+  --color-warning-bg:     rgba(217, 119, 6, .08);
+  --color-danger:         #DC2626;
+  --color-danger-bg:      rgba(220, 38, 38, .07);
+  --color-danger-border:  rgba(220, 38, 38, .22);
+
+  // ── Admin shell ───────────────────────────────────────────
+  --color-admin-bg:             #FAFAFA;   // sidebar: zinc-50
+  --color-admin-deeper:         #F4F4F5;
+  --color-admin-surface:        #FFFFFF;   // main content area
+  --color-admin-surface-border: #E4E4E7;
+  --color-admin-text:           #18181B;
+  --color-admin-muted:          #71717A;
+  --color-admin-border:         #E4E4E7;
+  --color-admin-accent:         #E8610A;   // orange — NOT stripped away
+
+  // ── Shadows — light (more border-based on light surfaces) ─
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, .04), 0 1px 4px rgba(0, 0, 0, .04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .06), 0 4px 12px rgba(0, 0, 0, .06);
+  --shadow-md: 0 4px 8px  rgba(0, 0, 0, .06), 0 8px 24px rgba(0, 0, 0, .06);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, .08), 0 16px 40px rgba(0, 0, 0, .08);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, .10), 0 24px 56px rgba(0, 0, 0, .10);
+  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, .90);
+
+  // ── KPI card icon colors — light theme ───────────────────
+  --kpi-orange-bg:      rgba(232, 97, 10, .10);
+  --kpi-orange-color:   #E8610A;
+  --kpi-orange-border:  rgba(232, 97, 10, .18);
+  --kpi-amber-bg:       rgba(217, 119, 6, .10);
+  --kpi-amber-color:    #B45309;
+  --kpi-amber-border:   rgba(217, 119, 6, .20);
+  --kpi-green-bg:       rgba(22, 163, 74, .10);
+  --kpi-green-color:    #16A34A;
+  --kpi-green-border:   rgba(22, 163, 74, .22);
+  --kpi-purple-bg:      rgba(79, 70, 229, .10);
+  --kpi-purple-color:   #4F46E5;
+  --kpi-purple-border:  rgba(79, 70, 229, .18);
+
+  // ── Status badge colors — light theme ────────────────────
+  --badge-pending-bg:      #FFFBEB;
+  --badge-pending-color:   #92400E;
+  --badge-pending-border:  #FDE68A;
+  --badge-confirmed-bg:    #ECFDF5;
+  --badge-confirmed-color: #065F46;
+  --badge-confirmed-border:#A7F3D0;
+  --badge-completed-bg:    #EFF6FF;
+  --badge-completed-color: #1E40AF;
+  --badge-completed-border:#BFDBFE;
+  --badge-cancelled-bg:    #FEF2F2;
+  --badge-cancelled-border:#FECACA;
+
+  // ── Table row hover ───────────────────────────────────────
+  --table-hover-bg: var(--color-surface-hover);
+
+  // ── Component tokens ─────────────────────────────────────
+  --chip-bg:     #F4F4F5;
+  --chip-color:  #18181B;
+  --chip-border: #E4E4E7;
+
+  --btn-primary-shadow:       0 4px 14px rgba(79, 70, 229, .20);
+  --btn-primary-hover-shadow: 0 8px 22px rgba(79, 70, 229, .28);
+  --btn-ghost-hover-bg:       rgba(0, 0, 0, .04);
+  --btn-icon-hover-bg:        rgba(0, 0, 0, .05);
+  --btn-accent-shadow:        0 4px 14px rgba(232, 97, 10, .22);
+  --btn-accent-hover-shadow:  0 8px 22px rgba(232, 97, 10, .32);
+
+  --alert-error-text:   #991B1B;
+  --alert-success-text: #14532D;
+  --alert-info-text:    #1E40AF;
+  --alert-info-border:  rgba(79, 70, 229, .20);
+  --shimmer-highlight:  rgba(0, 0, 0, .04);
+
+  --focus-shadow:       rgba(79, 70, 229, .18);
+  --field-error-text:   #B91C1C;
+  --field-error-border: #DC2626;
+  --field-error-shadow: rgba(220, 38, 38, .15);
+  --toggle-checked-bg:  rgba(232, 97, 10, .15);
+  --date-color-scheme:  light;
+  --date-icon-filter:   none;
+  --date-icon-opacity:  .55;
+
+  // ── Native date/time pickers ──────────────────────────────
+  input[type="date"],
+  input[type="time"] {
+    color-scheme: light;
+    &::-webkit-calendar-picker-indicator { filter: none; opacity: .55; }
+  }
+
+  ::selection {
+    background: rgba(232, 97, 10, .15);
+    color: #111827;
+  }
+
+  // ── Status badges (global scope — component SCSS overrides these) ─
+  .badge            { background: #F4F4F5; color: #52525B; border-color: #E4E4E7; }
+  .badge--new       { background: #FFFBEB; color: #92400E; border-color: #FDE68A; }
+  .badge--confirmed { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
+  .badge--completed { background: #EFF6FF; color: #1E40AF; border-color: #BFDBFE; }
+  .badge--cancelled { background: #FEF2F2; color: #991B1B; border-color: #FECACA; }
+
+  .chip.s1 { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }
+  .chip.s2 { background: #ECFEFF; color: #0E7490; border-color: #A5F3FC; }
+  .chip.s3 { background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }
+  .chip.s4 { background: #FEFCE8; color: #A16207; border-color: #FDE68A; }
 }

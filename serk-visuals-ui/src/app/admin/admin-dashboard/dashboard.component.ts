@@ -6,7 +6,8 @@ import {
   computed,
   PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser, DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { firstValueFrom, forkJoin } from 'rxjs';
 import { AdminApiService } from '../admin-shared/booking/booking.service';
 import {
@@ -18,7 +19,7 @@ import {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DatePipe, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
@@ -31,37 +32,46 @@ export class DashboardComponent implements OnInit {
 
   bookings = signal<Booking[]>([]);
   contacts = signal<ContactMessage[]>([]);
+  bookingsTotal = signal(0);
+  contactsTotal = signal(0);
 
   recentBookings = computed(() => this.bookings().slice(0, 5));
   latestMessages = computed(() => this.contacts().slice(0, 5));
 
+  pendingBookings = computed(() =>
+    this.bookings().filter(
+      (b) => !b.status || b.status === 'new' || b.status === 'pending'
+    ).length
+  );
+
+  confirmedBookings = computed(() =>
+    this.bookings().filter((b) => b.status === 'confirmed').length
+  );
+
   async ngOnInit() {
-    // Avoid SSR network calls
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.loading.set(true);
     this.error.set(null);
 
     try {
-      const { bookings, contacts } = await firstValueFrom(
+      const results = await firstValueFrom(
         forkJoin({
-          bookings: this.api.getBookings({
-            page: 1,
-            pageSize: 10,
-            sort: '-createdAt',
-          }),
-          contacts: this.api.getContacts({
-            page: 1,
-            pageSize: 10,
-            sort: '-createdAt',
-          }),
+          bookings: this.api.getBookings({ page: 1, pageSize: 10, sort: '-createdAt' }),
+          contacts: this.api.getContacts({ page: 1, pageSize: 10, sort: '-createdAt' }),
         })
       );
 
-      this.bookings.set(this.ensureIds(this.normalize(bookings)));
-      this.contacts.set(this.ensureIds(this.normalize(contacts)));
+      // Extract totals from paged results
+      const bResult = results.bookings as PagedResult<Booking> | Booking[];
+      const cResult = results.contacts as PagedResult<ContactMessage> | ContactMessage[];
+
+      this.bookingsTotal.set(Array.isArray(bResult) ? bResult.length : (bResult?.total ?? 0));
+      this.contactsTotal.set(Array.isArray(cResult) ? cResult.length : (cResult?.total ?? 0));
+
+      this.bookings.set(this.ensureIds(this.normalize(results.bookings)));
+      this.contacts.set(this.ensureIds(this.normalize(results.contacts)));
     } catch (e) {
-      console.error(e);
       this.error.set('Failed to load dashboard data.');
     } finally {
       this.loading.set(false);

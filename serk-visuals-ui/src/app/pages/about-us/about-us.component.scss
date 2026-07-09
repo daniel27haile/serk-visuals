@@ -1,73 +1,241 @@
 // ============================================================
 // About Us — component-specific styles only.
-// Background was rgb(58,55,55) — corrected to var(--color-bg).
 // ============================================================
 
 :host {
   display: block;
   color: var(--color-text);
   background: var(--color-bg);
-  padding-block: 2rem;
 }
 
-.about {
-  padding: 4rem 1rem;
+// ── Page hero ─────────────────────────────────────────────
+.about-hero {
+  padding-block: clamp(4rem, 9vw, 7rem);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+}
 
-  &__container {
-    display: grid;
-    gap: 2rem;
-    max-width: var(--container-max);
-    margin: 0 auto;
-    align-items: center;
+.about-hero__inner {
+  max-width: 780px;
+  margin-inline: auto;
+}
 
-    @media (min-width: 768px) { grid-template-columns: 1fr 1fr; }
-  }
+.about-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 0 0 1.25rem;
 
-  &__image img {
-    width: 100%;
-    border-radius: var(--radius-lg);
-    object-fit: cover;
-    box-shadow: var(--shadow-md);
-  }
-
-  &__content {
-    text-align: left;
-    @media (max-width: 767px) { text-align: center; }
-  }
-
-  &__title {
-    font-size: clamp(1.8rem, 2.5vw, 2.4rem);
-    font-weight: var(--weight-extrabold);
-    margin-bottom: var(--spacing-md);
-    color: var(--color-text);
-  }
-
-  &__text {
-    margin-bottom: var(--spacing-md);
-    line-height: var(--leading-relaxed);
-    color: var(--color-text-muted);
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 1.5px;
+    background: var(--color-primary);
+    border-radius: 2px;
   }
 }
 
-// Supplemental image
-.about-image {
-  width: 350px;
-  height: 200px;
-  object-fit: cover;
-  margin-top: 2px;
-  border-radius: var(--radius-sm);
+.about-headline {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-editorial);
+  font-size: clamp(2.75rem, 6vw, 5rem);
+  font-weight: 300;
+  letter-spacing: -.025em;
+  line-height: 1.1;
+  text-wrap: balance;
+  color: var(--color-text);
+
+  em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
 }
 
-// Actions row under the copy
-.about__actions {
+.about-hero__sub {
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin: 0;
+  font-size: clamp(.95rem, 1.5vw, 1.1rem);
+  max-width: 54ch;
+  margin-inline: auto;
+}
+
+// ── Story section ─────────────────────────────────────────
+.about-story {
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+}
+
+.about-story__grid {
+  display: grid;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  align-items: center;
+
+  @media (min-width: 768px) { grid-template-columns: 1fr 1fr; }
+}
+
+// Visual / logo side
+.about-story__visual {
+  position: relative;
+}
+
+.about-brand-frame {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: linear-gradient(135deg, #0d0b14 0%, #1a1520 50%, rgba(255,106,0,.08) 100%);
+  border: 1px solid var(--color-border);
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 60% 40%, rgba(255,106,0,.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+}
+
+.about-logo-img {
+  width: 70%;
+  height: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 4px 24px rgba(255,106,0,.18));
+}
+
+// Decorative accent block offset behind the frame
+.about-story__accent {
+  position: absolute;
+  bottom: -1.25rem;
+  right: -1.25rem;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(255,106,0,.18);
+  z-index: -1;
+
+  @media (max-width: 767px) { display: none; }
+}
+
+// Copy side
+.about-story__copy {
+  @media (max-width: 767px) { text-align: center; }
+}
+
+.about-story__eyebrow {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 0 0 1rem;
+}
+
+.about-story__text {
+  margin-bottom: 1.1rem;
+  line-height: 1.75;
+  font-size: 1.05rem;
+  color: var(--color-text-muted);
+
+  strong { color: var(--color-text); font-weight: var(--weight-bold); }
+  em     { color: var(--color-text); font-style: italic; }
+}
+
+.about-story__actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
+
   @media (max-width: 767px) { justify-content: center; }
 }
 
-// Visually hidden but readable by crawlers and screen readers
+// ── Values section ────────────────────────────────────────
+.about-values {
+  border-top: 1px solid var(--color-border);
+  padding-block: clamp(3rem, 6vw, 5rem);
+  background: var(--color-surface);
+}
+
+.about-values__grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+
+  @media (min-width: 640px)  { grid-template-columns: repeat(3, 1fr); }
+}
+
+.about-value {
+  position: relative;
+  padding: clamp(1.5rem, 3vw, 2rem) clamp(1.25rem, 2.5vw, 1.75rem);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: border-color .28s ease, box-shadow .28s ease;
+
+  &:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-md);
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--color-primary);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .32s ease;
+  }
+
+  &:hover::after { transform: scaleX(1); }
+
+  &__num {
+    display: block;
+    font-family: var(--font-editorial);
+    font-size: 2.25rem;
+    font-weight: 300;
+    color: var(--color-primary);
+    opacity: .4;
+    line-height: 1;
+    margin-bottom: .75rem;
+    letter-spacing: -.02em;
+    user-select: none;
+  }
+
+  &__title {
+    margin: 0 0 .5rem;
+    font-size: 1.05rem;
+    font-weight: var(--weight-extrabold);
+    letter-spacing: -.01em;
+    color: var(--color-text);
+  }
+
+  &__text {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: 1.7;
+    color: var(--color-text-muted);
+  }
+}
+
+// ── Visually hidden ───────────────────────────────────────
 .visually-hidden {
   position: absolute;
   width: 1px;

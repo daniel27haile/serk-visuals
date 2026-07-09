@@ -1,246 +1,237 @@
-<section class="container section">
-  <header class="header">
-    <div>
-      <h1>Settings</h1>
-      <p class="subtle">Manage environment, appearance, notifications, and privacy.</p>
-    </div>
+<div class="settings">
 
-    <div class="actions">
-      <button class="btn ghost" type="button" (click)="reset()">Reset</button>
+  <!-- Page header -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Settings</h1>
+      <p class="page-subtitle">Manage admin panel appearance and preferences.</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn ghost" type="button" (click)="reset()">Reset to defaults</button>
       <button class="btn primary" type="button" [disabled]="saving" (click)="save()">
-        {{ saving ? 'Saving…' : 'Save changes' }}
+        @if (saving) { Saving… } @else { Save changes }
       </button>
     </div>
-  </header>
+  </div>
 
-  <div class="banner" *ngIf="savedBanner">{{ savedBanner }}</div>
+  <!-- Flash banner -->
+  @if (savedBanner) {
+    <div class="flash-banner" role="status" aria-live="polite">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      {{ savedBanner }}
+    </div>
+  }
 
-  <form class="card" [formGroup]="form" (ngSubmit)="save()">
-    <!-- Environment -->
-    <div class="block">
-      <div class="block-title">
-        <h2>Environment</h2>
-        <p class="muted">Tip: prefer Angular environments for dev/prod URLs.</p>
+  <form [formGroup]="form" (ngSubmit)="save()">
+
+    <!-- ── Section 1: Admin Panel Theme ──────────────────── -->
+    <div class="settings-section">
+      <div class="section-label">
+        <h2>Admin Panel Theme</h2>
+        <p>Choose a visual theme for your admin interface.</p>
       </div>
 
-      <div class="grid">
-        <div class="field">
-          <label for="apiBaseUrl">API Base URL</label>
-          <input
-            id="apiBaseUrl"
-            type="text"
-            formControlName="apiBaseUrl"
-            placeholder="https://api.yourapp.com"
-          />
-          <small class="error" *ngIf="form.controls.apiBaseUrl.touched && form.controls.apiBaseUrl.invalid">
-            API Base URL is required.
-          </small>
-        </div>
-
-        <div class="field">
-          <label for="timeoutMs">Request timeout (ms)</label>
-          <input id="timeoutMs" type="number" formControlName="timeoutMs" min="1000" max="120000" />
-          <small class="muted">Allowed: 1,000 – 120,000</small>
-        </div>
-
-        <div class="field toggle">
-          <div class="toggle-row">
-            <div>
-              <label class="toggle-label" for="useMockApi">Use mock API</label>
-              <small class="muted">Helpful for local dev & UI testing</small>
+      <div class="section-body">
+        <div class="theme-cards">
+          <button
+            *ngFor="let t of themeService.themes"
+            type="button"
+            class="theme-card"
+            [class.theme-card--active]="themeService.activeThemeId() === t.id"
+            (click)="themeService.setTheme(t.id)"
+            [attr.aria-pressed]="themeService.activeThemeId() === t.id"
+            [attr.aria-label]="'Select ' + t.name + ' theme'"
+          >
+            <div class="theme-preview" [style.background]="t.preview.bg">
+              <div class="theme-preview__sidebar" [style.background]="t.preview.sidebar"></div>
+              <div class="theme-preview__main">
+                <div class="theme-preview__bar" [style.background]="t.preview.accent"></div>
+                <div class="theme-preview__bar theme-preview__bar--short" [style.background]="t.preview.text + '33'"></div>
+                <div class="theme-preview__bar theme-preview__bar--shorter" [style.background]="t.preview.text + '22'"></div>
+              </div>
             </div>
-            <label class="switch">
-              <input id="useMockApi" type="checkbox" formControlName="useMockApi" />
-              <span class="slider"></span>
-            </label>
-          </div>
+            <div class="theme-card__info">
+              <span class="theme-card__name">{{ t.name }}</span>
+              <span class="theme-card__desc">{{ t.description }}</span>
+            </div>
+            @if (themeService.activeThemeId() === t.id) {
+              <div class="theme-card__check" aria-hidden="true">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 8 6.5 11.5 13 4.5"/>
+                </svg>
+              </div>
+            }
+          </button>
         </div>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Theme Options -->
-    <div class="block">
-      <div class="block-title">
-        <h2>Theme Options</h2>
-        <p class="muted">Choose a visual theme for the admin panel.</p>
+    <!-- ── Section 2: Admin Preferences ─────────────────── -->
+    <div class="settings-section">
+      <div class="section-label">
+        <h2>Admin Preferences</h2>
+        <p>Saved locally to your browser.</p>
       </div>
 
-      <div class="theme-cards">
-        <button
-          *ngFor="let t of themeService.themes"
-          type="button"
-          class="theme-card"
-          [class.theme-card--active]="themeService.activeThemeId() === t.id"
-          (click)="themeService.setTheme(t.id)"
-          [attr.aria-pressed]="themeService.activeThemeId() === t.id"
-          [attr.aria-label]="'Select ' + t.name + ' theme'"
-        >
-          <div class="theme-preview" [style.background]="t.preview.bg">
-            <div class="theme-preview__sidebar" [style.background]="t.preview.sidebar"></div>
-            <div class="theme-preview__main">
-              <div class="theme-preview__bar" [style.background]="t.preview.accent"></div>
-              <div class="theme-preview__bar theme-preview__bar--short" [style.background]="t.preview.text + '33'"></div>
-              <div class="theme-preview__bar theme-preview__bar--shorter" [style.background]="t.preview.text + '22'"></div>
-            </div>
-          </div>
-          <div class="theme-card__info">
-            <span class="theme-card__name">{{ t.name }}</span>
-            <span class="theme-card__desc">{{ t.description }}</span>
-          </div>
-          <div class="theme-card__check" *ngIf="themeService.activeThemeId() === t.id" aria-hidden="true">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 8 6.5 11.5 13 4.5"></polyline>
-            </svg>
-          </div>
-        </button>
-      </div>
-    </div>
+      <div class="section-body">
+        <div class="pref-list">
 
-    <div class="divider"></div>
-
-    <!-- Appearance -->
-    <div class="block">
-      <div class="block-title">
-        <h2>Appearance</h2>
-        <p class="muted">Theme & layout preferences.</p>
-      </div>
-
-      <div class="grid">
-        <div class="field">
-          <label for="themeMode">Theme</label>
-          <select id="themeMode" formControlName="themeMode">
-            <option value="system">System</option>
-            <option value="dark">Dark</option>
-            <option value="light">Light</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="accentColor">Accent color</label>
-          <div class="color-row">
-            <input id="accentColor" type="text" formControlName="accentColor" placeholder="#6ea8fe" />
-            <span class="swatch" [style.background]="form.controls.accentColor.value || '#6ea8fe'"></span>
-          </div>
-          <small class="muted">Used for buttons/links highlights (placeholder).</small>
-        </div>
-
-        <div class="field toggle">
-          <div class="toggle-row">
-            <div>
-              <label class="toggle-label" for="compactMode">Compact mode</label>
-              <small class="muted">Denser UI spacing</small>
+          <div class="pref-row">
+            <div class="pref-row__info">
+              <label class="pref-row__label" for="compactMode">Compact mode</label>
+              <span class="pref-row__desc">Use tighter spacing in admin tables and panels</span>
             </div>
             <label class="switch">
               <input id="compactMode" type="checkbox" formControlName="compactMode" />
               <span class="slider"></span>
             </label>
           </div>
+
+          <div class="pref-row">
+            <div class="pref-row__info">
+              <label class="pref-row__label" for="confirmBeforeDelete">Confirm before deleting</label>
+              <span class="pref-row__desc">Show a confirmation prompt before any delete action</span>
+            </div>
+            <label class="switch">
+              <input id="confirmBeforeDelete" type="checkbox" formControlName="confirmBeforeDelete" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="pref-row">
+            <div class="pref-row__info">
+              <label class="pref-row__label" for="defaultGalleryColumns">Default gallery columns</label>
+              <span class="pref-row__desc">Number of columns shown in the admin gallery grid</span>
+            </div>
+            <select id="defaultGalleryColumns" class="select-sm" formControlName="defaultGalleryColumns">
+              <option [value]="2">2 columns</option>
+              <option [value]="3">3 columns</option>
+              <option [value]="4">4 columns</option>
+            </select>
+          </div>
+
         </div>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Notifications -->
-    <div class="block">
-      <div class="block-title">
-        <h2>Notifications</h2>
-        <p class="muted">Choose what you want to receive.</p>
+    <!-- ── Section 3: Business Information (read-only) ───── -->
+    <div class="settings-section">
+      <div class="section-label">
+        <h2>Business Information</h2>
+        <p>Your public contact and service information.</p>
       </div>
 
-      <div class="grid">
-        <div class="field toggle">
-          <div class="toggle-row">
-            <div>
-              <label class="toggle-label" for="emailAlerts">Email alerts</label>
-              <small class="muted">Important account and activity updates</small>
-            </div>
-            <label class="switch">
-              <input id="emailAlerts" type="checkbox" formControlName="emailAlerts" />
-              <span class="slider"></span>
-            </label>
+      <div class="section-body">
+        <div class="info-grid">
+
+          <div class="info-item">
+            <span class="info-item__label">Business Name</span>
+            <span class="info-item__value">Serk Visuals</span>
           </div>
+
+          <div class="info-item">
+            <span class="info-item__label">Location</span>
+            <span class="info-item__value">Seattle, WA</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-item__label">Email</span>
+            <a class="info-item__link" href="mailto:serkvisuals@gmail.com">serkvisuals&#64;gmail.com</a>
+          </div>
+
+          <div class="info-item">
+            <span class="info-item__label">Phone</span>
+            <a class="info-item__link" href="tel:+12068059405">+1 (206) 805-9405</a>
+          </div>
+
+          <div class="info-item">
+            <span class="info-item__label">Instagram</span>
+            <a class="info-item__link" href="https://instagram.com/serk_visuals" target="_blank" rel="noopener noreferrer">&#64;serk_visuals</a>
+          </div>
+
+          <div class="info-item">
+            <span class="info-item__label">Service Area</span>
+            <span class="info-item__value">Seattle, Mill Creek, Everett, Lynnwood, Bellevue, Redmond, Kirkland, Snohomish — WA</span>
+          </div>
+
         </div>
 
-        <div class="field toggle">
-          <div class="toggle-row">
-            <div>
-              <label class="toggle-label" for="pushAlerts">Push notifications</label>
-              <small class="muted">Placeholder (needs browser permission)</small>
-            </div>
-            <label class="switch">
-              <input id="pushAlerts" type="checkbox" formControlName="pushAlerts" />
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="field toggle">
-          <div class="toggle-row">
-            <div>
-              <label class="toggle-label" for="weeklyDigest">Weekly digest</label>
-              <small class="muted">Summary email every week</small>
-            </div>
-            <label class="switch">
-              <input id="weeklyDigest" type="checkbox" formControlName="weeklyDigest" />
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
+        <p class="info-note">
+          To update business information, edit <code>src/index.html</code> (structured data) and the relevant page components.
+        </p>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Privacy -->
-    <div class="block">
-      <div class="block-title">
-        <h2>Privacy</h2>
-        <p class="muted">Control diagnostics and data sharing.</p>
+    <!-- ── Section 4: Quick Links ────────────────────────── -->
+    <div class="settings-section">
+      <div class="section-label">
+        <h2>Quick Links</h2>
+        <p>Jump to areas that need regular attention.</p>
       </div>
 
-      <div class="grid">
-        <div class="field toggle">
-          <div class="toggle-row">
-            <div>
-              <label class="toggle-label" for="telemetry">Usage analytics</label>
-              <small class="muted">Improve product based on anonymous usage</small>
-            </div>
-            <label class="switch">
-              <input id="telemetry" type="checkbox" formControlName="telemetry" />
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="field toggle">
-          <div class="toggle-row">
-            <div>
-              <label class="toggle-label" for="crashReports">Crash reports</label>
-              <small class="muted">Send errors to help fix issues faster</small>
-            </div>
-            <label class="switch">
-              <input id="crashReports" type="checkbox" formControlName="crashReports" />
-              <span class="slider"></span>
-            </label>
-          </div>
+      <div class="section-body">
+        <div class="quick-links">
+          <a href="/admin/gallery" class="quick-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            Manage Gallery
+          </a>
+          <a href="/admin/pricing" class="quick-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+            Update Pricing
+          </a>
+          <a href="/admin/testimonials" class="quick-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+              <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+            </svg>
+            Add Testimonials
+          </a>
+          <a href="/" target="_blank" rel="noopener" class="quick-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            View Public Site
+          </a>
         </div>
       </div>
     </div>
 
-    <footer class="footer">
-      <span class="muted">
-        Status: <b>{{ dirty ? 'Unsaved changes' : 'All changes saved' }}</b>
+    <!-- Form footer -->
+    <div class="form-footer">
+      <span class="form-footer__status">
+        @if (dirty) {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--color-warning)">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          Unsaved changes
+        } @else {
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--color-success)">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          All changes saved
+        }
       </span>
-
-      <div class="footer-actions">
-        <button class="btn ghost" type="button" (click)="load()">Reload</button>
-        <button class="btn primary" type="button" [disabled]="saving" (click)="save()">
+      <div class="form-footer__actions">
+        <button class="btn ghost" type="button" (click)="reset()">Reset to defaults</button>
+        <button class="btn primary" type="submit" [disabled]="saving">
           {{ saving ? 'Saving…' : 'Save changes' }}
         </button>
       </div>
-    </footer>
+    </div>
+
   </form>
-</section>
+</div>

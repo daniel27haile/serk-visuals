@@ -1,10 +1,11 @@
 <!-- PAGE HERO -->
 <header class="services-hero">
   <div class="container">
-    <h1 class="page-title">Photography &amp; Videography Services</h1>
+    <p class="hero-eyebrow">Photography &amp; Videography · Seattle, WA</p>
+    <h1 class="page-title">Every Story Deserves to Be<br aria-hidden="true"> <em>Beautifully Told.</em></h1>
     <p class="lead">
       From wedding films and portrait sessions to branding shoots and real estate photography —
-      we offer everything you need to tell your story, right here in Seattle and the greater Pacific Northwest.
+      we offer everything you need to tell your story, right here in Seattle and the Pacific Northwest.
     </p>
   </div>
 </header>
@@ -12,9 +13,9 @@
 <!-- SERVICE CARDS -->
 <section class="container section" aria-label="Our services">
   <div class="grid services">
-    <article class="svc" *ngFor="let svc of services">
-      <div class="svc__glow"></div>
-      <div class="svc__icon" aria-hidden="true">{{ svc.icon }}</div>
+    <article class="svc" *ngFor="let svc of services; let i = index">
+      <div class="svc__glow" aria-hidden="true"></div>
+      <span class="svc__num" aria-hidden="true">{{ (i + 1).toString().padStart(2, '0') }}</span>
       <h2>{{ svc.title }}</h2>
       <p class="lead">{{ svc.copy }}</p>
       <ul class="svc__bullets">

@@ -1,52 +1,99 @@
-<section id="about" class="about">
-  <div class="about__container">
-    <div class="about__image">
-      <picture>
-        <source srcset="images/serkvisuals_logo.webp" type="image/webp" />
-        <img
-          src="images/serkvisuals_logo.png"
-          alt="Serk Visuals photography and videography studio logo"
-          class="about-image"
-          width="612"
-          height="408"
-          loading="lazy"
-        />
-      </picture>
+<!-- PAGE HERO -->
+<header class="about-hero">
+  <div class="container about-hero__inner">
+    <p class="about-eyebrow">Our Story</p>
+    <h1 class="about-headline">We Craft Stories<br aria-hidden="true"> That <em>Last Forever.</em></h1>
+    <p class="about-hero__sub">
+      A Seattle-based photography and videography studio built on intention, artistry, and a genuine
+      love for the stories people trust us to capture.
+    </p>
+  </div>
+</header>
+
+<!-- STORY SECTION -->
+<section class="about-story container">
+  <div class="about-story__grid">
+
+    <!-- Image side -->
+    <div class="about-story__visual">
+      <div class="about-brand-frame">
+        <picture>
+          <source srcset="images/serkvisuals_logo.webp" type="image/webp" />
+          <img
+            src="images/serkvisuals_logo.png"
+            alt="Serk Visuals photography and videography studio logo"
+            class="about-logo-img"
+            width="612"
+            height="408"
+            loading="lazy"
+          />
+        </picture>
+      </div>
+      <div class="about-story__accent" aria-hidden="true"></div>
     </div>
 
-    <div class="about__content">
-      <h1 class="about__title">About Serk Visuals</h1>
-      <p class="about__text">
-        At <strong>Serk Visuals</strong>, we believe every story deserves to be captured with clarity and creativity.
-        Specializing in <em>photography</em> and <em>videography</em>, we blend artistry with technology to
-        deliver timeless visuals — from weddings and events to portraits, brands, and real estate.
+    <!-- Copy side -->
+    <div class="about-story__copy">
+      <p class="about-story__eyebrow">Who We Are</p>
+      <p class="about-story__text">
+        At <strong>Serk Visuals</strong>, we believe every story deserves to be captured with
+        clarity and creativity. We specialize in <em>photography</em> and <em>videography</em>
+        — blending artistry with technology to deliver timeless visuals for weddings, events,
+        portraits, brands, and real estate.
       </p>
-
-      <p class="about__text">
-        With years of experience and a genuine passion for storytelling, we work closely with every client to
-        transform ideas into lasting memories. Whether it’s a family portrait, a corporate event, or a cinematic
-        wedding film, every detail is crafted with intention.
+      <p class="about-story__text">
+        With years of experience and a genuine passion for visual storytelling, we work closely
+        with every client to transform ideas into lasting memories. Whether it's a family portrait,
+        a corporate event, or a cinematic wedding film, every detail is crafted with intention
+        and delivered with pride.
       </p>
-
-      <p class="about__text">
-        We’re proud to serve clients throughout the greater Seattle area — including
+      <p class="about-story__text">
+        We're proud to serve clients throughout the greater Seattle area — including
         <strong>Mill Creek</strong>, <strong>Everett</strong>, <strong>Lynnwood</strong>,
         <strong>Bellevue</strong>, <strong>Redmond</strong>, <strong>Kirkland</strong>,
         and <strong>Snohomish</strong>, Washington.
       </p>
 
-      <div class="about__actions">
-        <a routerLink="/bookings" class="btn btn--primary">Book a Session</a>
+      <div class="about-story__actions">
+        <a routerLink="/bookings" class="btn btn--accent">Book a Session</a>
         <a routerLink="/services" class="btn btn--ghost">View Our Services</a>
       </div>
     </div>
-  </div>
 
-  <!-- NAP -->
-  <address class="about__nap visually-hidden" aria-label="Contact information">
-    <span>Serk Visuals</span> —
-    <a href="tel:+12068059405">+1 (206) 805-9405</a> —
-    <a href="mailto:serkvisuals&#64;gmail.com">serkvisuals&#64;gmail.com</a> —
-    Seattle, WA
-  </address>
+  </div>
 </section>
+
+<!-- VALUES -->
+<section class="about-values">
+  <div class="container">
+    <div class="about-values__grid">
+
+      <div class="about-value">
+        <span class="about-value__num" aria-hidden="true">01</span>
+        <h3 class="about-value__title">Intentional</h3>
+        <p class="about-value__text">Every frame is deliberate. We study light, composition, and emotion before we press the shutter.</p>
+      </div>
+
+      <div class="about-value">
+        <span class="about-value__num" aria-hidden="true">02</span>
+        <h3 class="about-value__title">Personal</h3>
+        <p class="about-value__text">We listen first. Understanding your vision, style, and goals is as important as the work itself.</p>
+      </div>
+
+      <div class="about-value">
+        <span class="about-value__num" aria-hidden="true">03</span>
+        <h3 class="about-value__title">Reliable</h3>
+        <p class="about-value__text">Fast turnaround without cutting corners. You'll relive your moments in days — beautifully edited.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- NAP (hidden from visual display, readable by crawlers) -->
+<address class="visually-hidden" aria-label="Contact information">
+  <span>Serk Visuals</span> —
+  <a href="tel:+12068059405">+1 (206) 805-9405</a> —
+  <a href="mailto:serkvisuals&#64;gmail.com">serkvisuals&#64;gmail.com</a> —
+  Seattle, WA
+</address>

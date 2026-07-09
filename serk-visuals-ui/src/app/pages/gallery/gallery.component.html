@@ -1,20 +1,23 @@
 <section class="gallery-page">
 
-  <div class="gallery-page__header">
-    <h1>Our Portfolio</h1>
-    <p class="gallery-page__intro">
-      Browse our work — wedding photography, portrait sessions, corporate events,
-      branding shoots, real estate imagery, and videography from across the Seattle area.
-    </p>
-  </div>
+  <!-- PAGE HERO -->
+  <header class="gallery-hero">
+    <div class="gallery-hero__inner">
+      <p class="gallery-eyebrow">Portfolio</p>
+      <h1 class="gallery-title">Captured <em>Moments</em>,<br aria-hidden="true"> Timeless Stories.</h1>
+      <p class="gallery-subtitle">
+        Weddings, portraits, events, brands, real estate, and more —
+        every frame crafted with intention across Seattle and the Pacific Northwest.
+      </p>
+    </div>
+  </header>
 
   <!-- ── Albums view ──────────────────────────────────────── -->
   @if (view() === 'albums') {
 
     @if (albumsLoading()) {
       <div class="state-center">
-        <span class="spinner"></span>
-        <span>Loading albums…</span>
+        <span class="spinner" aria-label="Loading albums"></span>
       </div>
     } @else if (albumsError()) {
       <p class="hint error">{{ albumsError() }}</p>
@@ -23,40 +26,47 @@
       <div class="album-grid">
 
         <!-- All Photos card -->
-        <button class="album-card album-card--all" (click)="openAlbum('')" type="button">
+        <button class="album-card album-card--all" (click)="openAlbum('')" type="button" aria-label="View all photos">
           <div class="album-card__cover">
-            <span class="album-card__all-icon">⭐</span>
-          </div>
-          <div class="album-card__info">
-            <span class="album-card__name">All Photos</span>
-            <span class="album-card__count">{{ totalAllImages() }} photos</span>
-            <span class="album-card__desc">Browse the complete collection</span>
+            <div class="album-card__all-bg" aria-hidden="true">
+              <svg class="album-card__all-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="4"  y="4"  width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                <rect x="26" y="4"  width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                <rect x="4"  y="26" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                <rect x="26" y="26" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="album-card__overlay">
+              <span class="album-card__label">All Photos</span>
+              <span class="album-card__count">{{ totalAllImages() }} photos</span>
+            </div>
           </div>
         </button>
 
         @for (album of albums; track album) {
           @let stats = statsFor(album);
           @if ((stats?.publishedCount ?? 0) > 0) {
-            <button class="album-card" (click)="openAlbum(album)" type="button">
+            <button class="album-card" (click)="openAlbum(album)" type="button" [attr.aria-label]="'Open ' + album + ' album'">
               <div class="album-card__cover">
                 @if (stats?.coverThumbUrl || stats?.coverUrl) {
                   <img
                     [src]="stats!.coverThumbUrl || stats!.coverUrl"
-                    [alt]="album + ' album'"
+                    [alt]="album + ' album cover'"
                     loading="lazy"
                     (error)="onImgError($event)"
                   />
                 } @else {
-                  <span class="album-card__placeholder-icon">{{ albumIcon(album) }}</span>
+                  <div class="album-card__no-cover" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" width="40" height="40">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </div>
                 }
-              </div>
-              <div class="album-card__info">
-                <span class="album-card__name">
-                  <span class="album-card__icon">{{ albumIcon(album) }}</span>
-                  {{ album }}
-                </span>
-                <span class="album-card__count">{{ stats!.publishedCount }} photos</span>
-                <span class="album-card__desc">{{ albumDesc(album) }}</span>
+                <div class="album-card__overlay">
+                  <span class="album-card__label">{{ album }}</span>
+                  <span class="album-card__count">{{ stats!.publishedCount }} photos</span>
+                </div>
               </div>
             </button>
           }
@@ -70,12 +80,14 @@
   @if (view() === 'images') {
 
     <div class="images-header">
-      <button class="back-btn" (click)="backToAlbums()" type="button">
-        ‹ All Albums
+      <button class="back-btn" (click)="backToAlbums()" type="button" aria-label="Back to all albums">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Albums
       </button>
       <div class="images-header__title">
-        <span class="images-header__icon">{{ selectedAlbumIcon }}</span>
-        <span class="images-header__label">{{ selectedAlbumLabel }}</span>
+        <h2 class="images-header__label">{{ selectedAlbumLabel }}</h2>
         @if (total() > 0) {
           <span class="images-header__count">{{ total() }} photos</span>
         }
@@ -84,33 +96,52 @@
 
     @if (loading()) {
       <div class="state-center">
-        <span class="spinner"></span>
+        <span class="spinner" aria-label="Loading photos"></span>
       </div>
     } @else if (error()) {
       <p class="hint error">{{ error() }}</p>
     } @else if (items().length === 0) {
-      <div class="state-center">
-        <p class="hint">No photos in this album yet.</p>
+      <div class="state-empty">
+        <svg class="state-empty__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="6" y="10" width="36" height="28" rx="3"/>
+          <circle cx="24" cy="24" r="7"/>
+          <circle cx="36" cy="15" r="2" fill="currentColor" stroke="none"/>
+        </svg>
+        <p class="state-empty__text">No photos in this album yet.</p>
       </div>
     } @else {
 
       <div class="gallery__grid">
         @for (it of items(); track it._id; let i = $index) {
-          <article class="gallery__item" (click)="openLightbox(i)">
+          <article
+            class="gallery__item"
+            (click)="openLightbox(i)"
+            role="button"
+            tabindex="0"
+            [attr.aria-label]="'View ' + it.title"
+            (keydown.enter)="openLightbox(i)"
+            (keydown.space)="openLightbox(i); $event.preventDefault()"
+          >
             <div class="thumb">
               <img
-                class="zoomable"
                 [src]="it.thumbnail || it.url"
                 [alt]="it.title"
                 loading="lazy"
                 width="400"
-                height="267"
+                height="300"
                 (error)="onImgError($event)"
               />
-              <div class="thumb__overlay"></div>
-            </div>
-            <div class="gallery__item-body">
-              <h4>{{ it.title }}</h4>
+              <div class="thumb__overlay" aria-hidden="true">
+                <span class="thumb__zoom">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                  </svg>
+                </span>
+                @if (it.title) {
+                  <p class="thumb__title">{{ it.title }}</p>
+                }
+              </div>
             </div>
           </article>
         }
@@ -118,9 +149,15 @@
 
       @if (pages() > 1) {
         <nav class="pager" aria-label="Gallery pages">
-          <button [disabled]="page() === 1" (click)="goto(page() - 1)">‹ Prev</button>
-          <span>Page {{ page() }} of {{ pages() }}</span>
-          <button [disabled]="page() === pages()" (click)="goto(page() + 1)">Next ›</button>
+          <button [disabled]="page() === 1" (click)="goto(page() - 1)" aria-label="Previous page">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            Prev
+          </button>
+          <span class="pager__info">{{ page() }} / {{ pages() }}</span>
+          <button [disabled]="page() === pages()" (click)="goto(page() + 1)" aria-label="Next page">
+            Next
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </nav>
       }
     }

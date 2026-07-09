@@ -1,21 +1,77 @@
 // ============================================================
 // Public Booking — component-specific styles only.
-// Background was rgb(58,55,55) — corrected to var(--color-bg).
 // ============================================================
 
 :host {
   display: block;
   color: var(--color-text);
   background: var(--color-bg);
-  padding-block: 2rem;
+}
+
+// ── Page hero ─────────────────────────────────────────────
+.booking-hero {
+  padding-block: clamp(4rem, 9vw, 7rem);
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
+}
+
+.booking-hero__inner {
+  max-width: 640px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2rem);
+}
+
+.booking-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin: 0 0 1.25rem;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 1.5px;
+    background: var(--color-primary);
+    border-radius: 2px;
+  }
+}
+
+.booking-title {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-editorial);
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  font-weight: 300;
+  letter-spacing: -.025em;
+  line-height: 1.1;
+  text-wrap: balance;
+  color: var(--color-text);
+
+  em {
+    font-style: italic;
+    color: var(--color-primary);
+  }
+}
+
+.booking-subtitle {
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin: 0;
+  font-size: clamp(.95rem, 1.5vw, 1.1rem);
 }
 
 .wrap {
   max-width: 720px;
   margin-inline: auto;
-  padding: 0 var(--spacing-md);
+  padding: clamp(2.5rem, 5vw, 4rem) var(--spacing-md) clamp(3rem, 6vw, 5rem);
 
-  h1, h2 {
+  h2 {
     margin-bottom: var(--spacing-md);
     font-size: var(--text-2xl);
     text-align: center;
@@ -29,8 +85,10 @@
   grid-template-columns: 1fr 1fr;
 
   label {
-    display: grid; gap: .35rem;
-    font-size: var(--text-sm); color: var(--color-text-label);
+    display: grid; gap: .4rem;
+    font-size: var(--text-sm);
+    font-weight: var(--weight-bold);
+    color: var(--color-text-label);
   }
 
   .full { grid-column: 1 / -1; }
@@ -39,11 +97,14 @@
     background: var(--color-surface-input);
     color: var(--color-text);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    padding: .65rem .75rem;
+    border-radius: var(--radius-md);
+    padding: .65rem .9rem;
+    font: inherit;
     outline: none;
-    transition: border-color var(--t-slow), box-shadow var(--t-base);
-    &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(74, 127, 255, .18); }
+    transition: border-color var(--t-base), box-shadow var(--t-base);
+    &::placeholder { color: var(--color-text-dim); }
+    &:hover:not(:focus) { border-color: var(--color-border-strong); }
+    &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--focus-shadow); }
   }
 
   input[type="date"],
@@ -68,29 +129,41 @@ button {
   &:disabled { opacity: .5; cursor: not-allowed; }
 }
 
-.ok       { color: #69db7c; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
-.err      { color: #ff6b6b; margin-top: var(--spacing-sm); font-size: var(--text-sm); }
+.ok       { color: var(--color-success);  margin-top: var(--spacing-sm); font-size: var(--text-sm); font-weight: var(--weight-semibold); }
+.err      { color: var(--color-danger);   margin-top: var(--spacing-sm); font-size: var(--text-sm); }
 .checking { color: var(--color-text-muted); margin-top: var(--spacing-sm); font-size: var(--text-sm); font-style: italic; }
 
 .grid input.is-invalid,
 .grid select.is-invalid,
 .grid textarea.is-invalid {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, .18);
+  border-color: var(--field-error-border);
+  box-shadow: 0 0 0 3px var(--field-error-shadow);
 }
 
 @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
 
 // ── Section labels ─────────────────────────────────────────
 .section-label {
-  font-size: var(--text-sm);
-  font-weight: var(--weight-bold);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
   color: var(--color-text-muted);
   text-transform: uppercase;
-  letter-spacing: .06em;
+  letter-spacing: .1em;
   margin: var(--spacing-lg) 0 var(--spacing-sm);
-  padding-bottom: .35rem;
-  border-bottom: 1px solid var(--color-border);
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 1.5px;
+    background: var(--color-primary);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
   &:first-of-type { margin-top: 0; }
 }
 
@@ -177,7 +250,7 @@ button {
   font-size: var(--text-sm);
   cursor: pointer;
   margin-top: 0;
-  &:hover { border-color: #ef4444; color: #ef4444; }
+  &:hover { border-color: var(--color-danger); color: var(--color-danger); }
 }
 
 // ── Session options (dynamic per session type) ─────────────
@@ -200,7 +273,7 @@ button {
   font-weight: var(--weight-medium);
   color: var(--color-text-label);
 
-  .req { color: #ef4444; margin-left: .2rem; }
+  .req { color: var(--color-danger); margin-left: .2rem; }
 }
 
 .option-select,
@@ -212,8 +285,8 @@ button {
   padding: .65rem .75rem;
   outline: none;
   font: inherit;
-  transition: border-color var(--t-slow), box-shadow var(--t-base);
-  &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(74, 127, 255, .18); }
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+  &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--focus-shadow); }
 }
 
 .option-textarea {
@@ -226,8 +299,8 @@ button {
   font: inherit;
   resize: vertical;
   min-height: 90px;
-  transition: border-color var(--t-slow), box-shadow var(--t-base);
-  &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(74, 127, 255, .18); }
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+  &:focus { border-color: var(--color-accent); box-shadow: 0 0 0 3px var(--focus-shadow); }
 }
 
 // Radio buttons
@@ -302,16 +375,16 @@ button {
     font-size: .7rem;
     font-weight: var(--weight-semibold);
     color: var(--color-text-muted);
-    background: rgba(255, 255, 255, .06);
+    background: var(--color-surface-2);
     border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: .1rem .35rem;
     white-space: nowrap;
 
     &--included {
-      color: #10b981;
-      background: rgba(16, 185, 129, .08);
-      border-color: rgba(16, 185, 129, .25);
+      color: var(--color-success);
+      background: var(--color-success-bg);
+      border-color: var(--color-success-border);
     }
   }
 
@@ -339,7 +412,7 @@ button {
 
 .pricing-error {
   font-size: var(--text-sm);
-  color: #ef4444;
+  color: var(--color-danger);
   margin: 0 0 var(--spacing-sm);
 }
 
@@ -398,9 +471,9 @@ button {
   &__included {
     font-size: .7rem;
     font-weight: var(--weight-semibold);
-    color: #10b981;
-    background: rgba(16, 185, 129, .08);
-    border: 1px solid rgba(16, 185, 129, .25);
+    color: var(--color-success);
+    background: var(--color-success-bg);
+    border: 1px solid var(--color-success-border);
     border-radius: 4px;
     padding: .1rem .35rem;
   }
@@ -426,13 +499,13 @@ button {
 
 // ── Inline select field errors ─────────────────────────────
 .option-select.is-invalid {
-  border-color: #ef4444;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, .18);
+  border-color: var(--field-error-border);
+  box-shadow: 0 0 0 3px var(--field-error-shadow);
 }
 
 .field-error-msg {
   font-size: .72rem;
-  color: #ef4444;
+  color: var(--color-danger);
   margin-top: .2rem;
   display: block;
 }
@@ -586,7 +659,7 @@ button {
   z-index: 1;
   width: 100%;
   max-width: 460px;
-  background: rgba(255, 255, 255, .03);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;

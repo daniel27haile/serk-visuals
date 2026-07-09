@@ -1,18 +1,126 @@
-<section class="container section">
-  <header class="topbar">
-    <h1 class="heading">Admin Dashboard</h1>
-    <button class="btn" (click)="refresh()" aria-label="Refresh">Refresh</button>
-  </header>
+<div class="dashboard">
+
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-header__text">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">Overview of your bookings and activity</p>
+    </div>
+    <div class="page-header__actions">
+      <a [routerLink]="['/admin/bookings']" class="btn ghost sm">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Manage Bookings
+      </a>
+      <button class="btn ghost sm" (click)="refresh()" aria-label="Refresh dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
 
   @if (loading()) {
-    <div class="skeleton">Loading…</div>
-  } @else if (error()) {
-    <div class="alert alert--error">{{ error() }}</div>
-  } @else {
+    <!-- KPI skeletons -->
+    <div class="kpi-grid">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="kpi-card kpi-card--skeleton">
+          <div class="skeleton-line skeleton-line--short"></div>
+          <div class="skeleton-line skeleton-line--tall"></div>
+          <div class="skeleton-line skeleton-line--medium"></div>
+        </div>
+      }
+    </div>
     <div class="panels">
+      @for (i of [1,2]; track i) {
+        <div class="panel panel--skeleton">
+          <div class="skeleton-line skeleton-line--short"></div>
+          @for (r of [1,2,3,4]; track r) {
+            <div class="skeleton-row"></div>
+          }
+        </div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="alert alert--error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ error() }}
+    </div>
+  } @else {
+
+    <!-- KPI cards -->
+    <div class="kpi-grid">
+
+      <div class="kpi-card">
+        <div class="kpi-card__icon kpi-card__icon--orange" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Total Bookings</span>
+          <span class="kpi-card__value">{{ bookingsTotal() }}</span>
+          <span class="kpi-card__sub">Last 10 fetched</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card__icon kpi-card__icon--amber" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Pending Review</span>
+          <span class="kpi-card__value">{{ pendingBookings() }}</span>
+          <span class="kpi-card__sub">Needs attention</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card__icon kpi-card__icon--green" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Confirmed</span>
+          <span class="kpi-card__value">{{ confirmedBookings() }}</span>
+          <span class="kpi-card__sub">Upcoming sessions</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card__icon kpi-card__icon--purple" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div class="kpi-card__body">
+          <span class="kpi-card__label">Messages</span>
+          <span class="kpi-card__value">{{ contactsTotal() }}</span>
+          <span class="kpi-card__sub">Contact inquiries</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Panels -->
+    <div class="panels">
+
       <!-- Recent bookings -->
       <div class="panel">
-        <h2 class="panel__title">Recent bookings</h2>
+        <div class="panel__header">
+          <h2 class="panel__title">Recent Bookings</h2>
+          <a [routerLink]="['/admin/bookings']" class="panel__link">View all</a>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
@@ -20,23 +128,33 @@
                 <th>Client</th>
                 <th>Date</th>
                 <th>Status</th>
-                <th>Email</th>
+                <th class="col-email">Email</th>
               </tr>
             </thead>
             <tbody>
               @for (b of recentBookings(); track idOf(b, $index)) {
                 <tr>
-                  <td><strong>{{ b.name }}</strong></td>
-                  <td>{{ b.date ? (b.date | date:'short') : '—' }}</td>
+                  <td class="cell-name"><strong>{{ b.name }}</strong></td>
+                  <td class="cell-date muted">{{ b.date ? (b.date | date:'MMM d, y') : '—' }}</td>
                   <td>
-                    <span [ngClass]="['badge', 'badge--' + (b.status ?? 'new')]">
+                    <span [class]="'badge badge--' + (b.status ?? 'new')">
                       {{ b.status ?? 'new' }}
                     </span>
                   </td>
-                  <td class="muted">{{ b.email }}</td>
+                  <td class="cell-email muted col-email">{{ b.email }}</td>
                 </tr>
               } @empty {
-                <tr><td colspan="4" class="muted empty">No recent bookings.</td></tr>
+                <tr>
+                  <td colspan="4" class="empty-row">
+                    <div class="empty-state">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                      </svg>
+                      No bookings yet
+                    </div>
+                  </td>
+                </tr>
               }
             </tbody>
           </table>
@@ -45,32 +163,45 @@
 
       <!-- Latest messages -->
       <div class="panel">
-        <h2 class="panel__title">Latest messages</h2>
+        <div class="panel__header">
+          <h2 class="panel__title">Latest Messages</h2>
+          <a [routerLink]="['/admin/contact']" class="panel__link">View all</a>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Client</th>
-                <!-- <th>Subject</th> -->
-                <th>Email</th>
+                <th>From</th>
+                <th>Subject</th>
                 <th>Received</th>
               </tr>
             </thead>
             <tbody>
               @for (m of latestMessages(); track idOf(m, $index)) {
                 <tr>
-                  <td><strong>{{ m.fullName }}</strong></td>
-                  <!-- <td class="muted ellipsis">{{ m.subject }}</td> -->
-                  <td class="muted">{{ m.email }}</td>
-                  <td>{{ m.createdAt ? (m.createdAt | date:'short') : '—' }}</td>
+                  <td class="cell-name"><strong>{{ m.fullName }}</strong></td>
+                  <td class="cell-subject muted">{{ m.subject }}</td>
+                  <td class="cell-date muted">{{ m.createdAt ? (m.createdAt | date:'MMM d, y') : '—' }}</td>
                 </tr>
               } @empty {
-                <tr><td colspan="4" class="muted empty">No messages yet.</td></tr>
+                <tr>
+                  <td colspan="3" class="empty-row">
+                    <div class="empty-state">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      </svg>
+                      No messages yet
+                    </div>
+                  </td>
+                </tr>
               }
             </tbody>
           </table>
         </div>
       </div>
+
     </div>
+
   }
-</section>
+
+</div>

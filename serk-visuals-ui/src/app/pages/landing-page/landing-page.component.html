@@ -44,16 +44,23 @@
     <!-- Text content overlaid on images -->
     <div class="hero-copy">
       <div class="container">
-        <h1>Bring your vision to life.</h1>
+        <p class="eyebrow">Photography &amp; Videography · Seattle, WA</p>
+        <h1>Bring your vision<br aria-hidden="true"> to <em>life.</em></h1>
         <p class="lead">
           Cinematic coverage and polished editing — all crafted
           with intention and delivered with care.
         </p>
         <div class="cta-row">
           <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
-          <a [routerLink]="['/gallery']" class="btn btn--ghost">View Gallery</a>
+          <a [routerLink]="['/gallery']" class="btn btn--ghost">View Work</a>
         </div>
       </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="hero-scroll" aria-hidden="true">
+      <div class="hero-scroll__label">Scroll</div>
+      <div class="hero-scroll__line"></div>
     </div>
 
     <!-- Arrow navigation -->
@@ -114,6 +121,7 @@
 <section id="gallery" class="feat-section section">
 
   <div class="container">
+    <p class="section-eyebrow">Portfolio</p>
     <h2 class="section-heading">Featured Gallery</h2>
   </div>
 
@@ -181,6 +189,7 @@
 <!-- WHY SERK VISUALS -->
 <section class="why-section">
   <div class="container">
+    <p class="section-eyebrow">The Difference</p>
     <h2 class="section-heading">Why Serk Visuals?</h2>
     <p class="lead why-lead">
       We don't just press a button — we craft every frame with purpose.
@@ -188,17 +197,23 @@
 
     <div class="why-grid">
       <div class="why-card">
-        <div class="why-card__icon" aria-hidden="true">🎯</div>
+        <div class="why-card__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
         <h3>Your Vision First</h3>
         <p>We listen before we shoot. Every session starts with understanding your story, style, and goals — so the final product is unmistakably yours.</p>
       </div>
       <div class="why-card">
-        <div class="why-card__icon" aria-hidden="true">🎬</div>
+        <div class="why-card__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.845v6.310a1 1 0 0 1-1.447.914L15 14M3 8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z"/></svg>
+        </div>
         <h3>Cinematic Quality</h3>
         <p>Studio-grade equipment, intentional composition, and professional color grading — delivering images and films that stand the test of time.</p>
       </div>
       <div class="why-card">
-        <div class="why-card__icon" aria-hidden="true">⚡</div>
+        <div class="why-card__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
         <h3>Fast Turnaround</h3>
         <p>No waiting weeks to relive your moments. Edited galleries and final cuts delivered in days, not months — without cutting corners.</p>
       </div>
@@ -212,6 +227,7 @@
 
 <!-- TESTIMONIALS -->
 <section id="testimonials" class="container section">
+  <p class="section-eyebrow">Testimonials</p>
   <h2 class="section-heading">Client Stories</h2>
 
   <div
@@ -292,39 +308,40 @@
 
 <!-- SERVICES OVERVIEW -->
 <section class="services-overview container section">
-  <h2 class="section-heading">What We Offer</h2>
+  <p class="section-eyebrow">What We Offer</p>
+  <h2 class="section-heading">Full-Service Visual Storytelling</h2>
   <p class="lead services-overview__intro">
-    Whether you're planning a wedding, growing your brand, or updating your headshot, we've got you covered.
-    Serk Visuals offers a full range of photography and videography services across the Seattle metro area.
+    From weddings to brands, portraits to properties — every shoot is crafted with intention
+    and delivered with pride, across Seattle and the Pacific Northwest.
   </p>
   <div class="services-overview__grid">
     <div class="overview-card">
-      <span class="overview-card__icon" aria-hidden="true">💍</span>
+      <span class="overview-card__num" aria-hidden="true">01</span>
       <h3>Wedding Photography</h3>
       <p>Authentic, cinematic coverage of your entire wedding day — from getting ready to the last dance.</p>
     </div>
     <div class="overview-card">
-      <span class="overview-card__icon" aria-hidden="true">🎉</span>
+      <span class="overview-card__num" aria-hidden="true">02</span>
       <h3>Event Photography</h3>
       <p>Corporate events, milestone celebrations, fundraisers, and everything in between.</p>
     </div>
     <div class="overview-card">
-      <span class="overview-card__icon" aria-hidden="true">🖼️</span>
+      <span class="overview-card__num" aria-hidden="true">03</span>
       <h3>Portrait Sessions</h3>
       <p>Headshots, family portraits, senior photos, and creative studio or outdoor sessions.</p>
     </div>
     <div class="overview-card">
-      <span class="overview-card__icon" aria-hidden="true">✨</span>
+      <span class="overview-card__num" aria-hidden="true">04</span>
       <h3>Branding Photography</h3>
       <p>Polished imagery for your website, social media, and marketing — tailored to your brand.</p>
     </div>
     <div class="overview-card">
-      <span class="overview-card__icon" aria-hidden="true">🏡</span>
+      <span class="overview-card__num" aria-hidden="true">05</span>
       <h3>Real Estate Photography</h3>
       <p>Crisp, well-lit property photos that help listings stand out and sell faster.</p>
     </div>
     <div class="overview-card">
-      <span class="overview-card__icon" aria-hidden="true">🎬</span>
+      <span class="overview-card__num" aria-hidden="true">06</span>
       <h3>Videography</h3>
       <p>Cinematic wedding films, event recaps, brand stories, and social content — beautifully edited.</p>
     </div>
@@ -351,14 +368,14 @@
 
 <!-- FINAL CTA BANNER -->
 <section class="cta-banner">
+  <div class="cta-banner__bg" aria-hidden="true"></div>
   <div class="container cta-banner__inner">
-    <div class="cta-banner__copy">
-      <h2>Ready to capture your story?</h2>
-      <p>Let's make something unforgettable together.</p>
-    </div>
+    <p class="cta-banner__eyebrow">Let's Work Together</p>
+    <h2 class="cta-banner__title">Ready to capture<br aria-hidden="true"> your story?</h2>
+    <p class="cta-banner__sub">Let's make something unforgettable together.</p>
     <div class="cta-banner__actions">
-      <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
-      <a [routerLink]="['/contact']" class="btn btn--ghost">Get in Touch</a>
+      <a [routerLink]="['/bookings']" class="btn btn--accent btn--lg">Book a Session</a>
+      <a [routerLink]="['/contact']" class="btn btn--ghost-light">Get in Touch</a>
     </div>
   </div>
 </section>

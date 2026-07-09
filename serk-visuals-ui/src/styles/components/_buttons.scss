@@ -1,16 +1,15 @@
 // ============================================================
-// SERK VISUALS — Button system
-// All hardcoded rgba shadow values replaced with CSS variables.
+// SERK VISUALS — Button system (premium unified)
 // ============================================================
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: .4rem;
+  gap: .45rem;
 
   height: 44px;
-  padding: 0 var(--spacing-md);
+  padding: 0 1.25rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-strong);
 
@@ -24,49 +23,83 @@
   font-size: var(--text-sm);
   text-decoration: none;
   white-space: nowrap;
-  letter-spacing: .02em;
+  letter-spacing: .01em;
+  user-select: none;
 
   transition:
     transform      var(--t-fast),
     box-shadow     var(--t-base),
     background     var(--t-base),
     border-color   var(--t-base),
-    opacity        var(--t-base);
+    opacity        var(--t-base),
+    filter         var(--t-base);
 
-  &:hover {
+  &:hover:not(:disabled) {
     transform: translateY(-1px);
     background: var(--color-surface-hover);
     border-color: var(--color-border-strong);
     box-shadow: var(--shadow-sm);
   }
-  &:active  { transform: translateY(0); }
+  &:active:not(:disabled)  { transform: translateY(0); box-shadow: none; }
   &:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  &:disabled { opacity: .45; cursor: not-allowed; pointer-events: none; }
+  &:disabled { opacity: .4; cursor: not-allowed; pointer-events: none; }
+
+  // Inline SVG icon sizing
+  svg { width: 16px; height: 16px; flex-shrink: 0; }
 
   // ── Variants ──────────────────────────────────────────────
 
-  // Primary (accent colour — adapts to theme)
+  // Primary — admin accent colour (adapts to theme)
   &.primary {
     background: var(--color-accent);
     border-color: var(--color-accent);
     color: var(--color-text-inverse);
     box-shadow: var(--btn-primary-shadow), var(--shadow-inset-top);
-    &:hover {
+    &:hover:not(:disabled) {
       filter: brightness(1.10);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
       box-shadow: var(--btn-primary-hover-shadow), var(--shadow-inset-top);
     }
   }
 
-  // Ghost (transparent, outline only)
+  // Accent — public-site orange CTA
+  &.accent {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-primary-ink);
+    font-weight: var(--weight-extrabold);
+    box-shadow: var(--btn-accent-shadow);
+    letter-spacing: .015em;
+    &:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+      box-shadow: var(--btn-accent-hover-shadow);
+    }
+  }
+
+  // Outline — transparent bg, coloured border
+  &.outline {
+    background: transparent;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    &:hover:not(:disabled) {
+      background: rgba(255, 106, 0, .08);
+      border-color: var(--color-primary);
+      box-shadow: none;
+      transform: translateY(-1px);
+    }
+  }
+
+  // Ghost — transparent, subtle border
   &.ghost {
     background: transparent;
     border-color: var(--color-border-strong);
     color: var(--color-text-muted);
-    &:hover {
+    &:hover:not(:disabled) {
       background: var(--btn-ghost-hover-bg);
       border-color: var(--color-border-strong);
       color: var(--color-text);
+      box-shadow: none;
     }
   }
 
@@ -75,33 +108,124 @@
     background: var(--color-danger-bg);
     border-color: var(--color-danger-border);
     color: var(--color-danger);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
-    &:hover {
+    &:hover:not(:disabled) {
       border-color: var(--color-danger);
       filter: brightness(1.05);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, .12);
+      box-shadow: 0 4px 14px rgba(239, 68, 68, .18);
     }
   }
 
-  // Small size
-  &.sm {
-    height: 36px;
-    padding: 0 .75rem;
+  // Loading — shows spinner, disables interaction
+  &.loading {
+    opacity: .7;
+    cursor: wait;
+    pointer-events: none;
+    position: relative;
+
+    &::after {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: btn-spin .65s linear infinite;
+      flex-shrink: 0;
+    }
+  }
+
+  // ── BEM modifier aliases ──────────────────────────────────
+  // Mirrors the compound-class variants above.
+  // Enables class="btn btn--accent" alongside class="btn accent".
+
+  &--accent {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-primary-ink);
+    font-weight: var(--weight-extrabold);
+    box-shadow: var(--btn-accent-shadow);
+    letter-spacing: .015em;
+    &:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+      box-shadow: var(--btn-accent-hover-shadow);
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    border-color: var(--color-border-strong);
+    color: var(--color-text-muted);
+    &:hover:not(:disabled) {
+      background: var(--btn-ghost-hover-bg);
+      border-color: var(--color-border-strong);
+      color: var(--color-text);
+      box-shadow: none;
+    }
+  }
+
+  // White-border ghost for dark hero/banner sections
+  &--ghost-light {
+    background: transparent;
+    border-color: rgba(255, 255, 255, .35);
+    color: rgba(255, 255, 255, .85);
+    &:hover:not(:disabled) {
+      background: rgba(255, 255, 255, .08);
+      border-color: rgba(255, 255, 255, .65);
+      color: #fff;
+      box-shadow: none;
+      transform: translateY(-1px);
+    }
+  }
+
+  &--lg {
+    height: 52px;
+    padding: 0 1.75rem;
+    font-size: var(--text-base);
+    border-radius: var(--radius-lg);
+    letter-spacing: .02em;
+    svg { width: 18px; height: 18px; }
+  }
+
+  &--sm {
+    height: 34px;
+    padding: 0 .875rem;
     font-size: var(--text-xs);
     border-radius: var(--radius-sm);
+    gap: .3rem;
+    svg { width: 13px; height: 13px; }
+  }
+
+  // ── Sizes ─────────────────────────────────────────────────
+
+  &.sm {
+    height: 34px;
+    padding: 0 .875rem;
+    font-size: var(--text-xs);
+    border-radius: var(--radius-sm);
+    gap: .3rem;
+    svg { width: 13px; height: 13px; }
+  }
+
+  &.lg {
+    height: 52px;
+    padding: 0 1.75rem;
+    font-size: var(--text-base);
+    border-radius: var(--radius-lg);
+    letter-spacing: .02em;
+    svg { width: 18px; height: 18px; }
+  }
+
+  // Pill shape (combine with any variant)
+  &.pill { border-radius: var(--radius-full); }
+
+  // Icon-only square button
+  &.icon-only {
+    width: 44px;
+    padding: 0;
+    svg { width: 18px; height: 18px; }
+    &.sm { width: 34px; svg { width: 14px; height: 14px; } }
   }
 }
 
-// ── Brand CTA (primary colour) — public site hero buttons ─
-.btn.accent {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-primary-ink);
-  font-weight: var(--weight-extrabold);
-  box-shadow: var(--btn-accent-shadow);
-  &:hover {
-    filter: brightness(1.08);
-    transform: translateY(-1px);
-    box-shadow: var(--btn-accent-hover-shadow);
-  }
-}
+@keyframes btn-spin { to { transform: rotate(360deg); } }

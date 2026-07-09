@@ -17,9 +17,9 @@
 .saved-badge {
   font-size: var(--text-sm);
   font-weight: var(--weight-semibold);
-  color: #10b981;
-  background: rgba(16, 185, 129, .1);
-  border: 1px solid rgba(16, 185, 129, .3);
+  color: var(--color-success);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
   border-radius: var(--radius-md);
   padding: .3rem .75rem;
 }
@@ -245,9 +245,9 @@
   }
 
   input:checked + &__track {
-    background: rgba(16, 185, 129, .2);
-    border-color: #10b981;
-    &::after { transform: translateX(16px); background: #10b981; }
+    background: var(--color-success-bg);
+    border-color: var(--color-success);
+    &::after { transform: translateX(16px); background: var(--color-success); }
   }
 
   &__label {
@@ -268,7 +268,7 @@
   &__error {
     flex: 1;
     font-size: var(--text-sm);
-    color: #ef4444;
+    color: var(--color-danger);
     margin: 0;
   }
 }
@@ -282,9 +282,9 @@
 .alert--error {
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-md);
-  background: rgba(239, 68, 68, .1);
-  border: 1px solid rgba(239, 68, 68, .3);
-  color: #ef4444;
+  background: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  color: var(--alert-error-text);
   font-size: var(--text-sm);
 }
 

@@ -1,21 +1,21 @@
 // ============================================================
-// SERK VISUALS — Form controls
-// Hardcoded colour values replaced with CSS variable tokens.
+// SERK VISUALS — Form controls (premium system)
 // ============================================================
 
 // ── Label ────────────────────────────────────────────────
 .lbl {
   display: block;
   font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   color: var(--color-text-label);
-  margin-bottom: .35rem;
+  margin-bottom: .4rem;
+  letter-spacing: .005em;
 }
 
 // Within a grid, labels wrap their input with a gap
 .grid label {
   display: grid;
-  gap: .35rem;
+  gap: .4rem;
   min-width: 0;
 }
 
@@ -32,34 +32,44 @@ input:not([type]),
 select,
 textarea {
   width: 100%;
-  min-height: 44px;
+  min-height: 46px;
   background: var(--color-surface-input);
   color: var(--color-text);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: .65rem .75rem;
+  padding: .7rem .9rem;
+  font: inherit;
+  font-size: var(--text-base);
   outline: none;
   transition: border-color var(--t-base), box-shadow var(--t-base);
   box-shadow: var(--shadow-inset-top);
 
   &::placeholder { color: var(--color-text-dim); }
 
+  &:hover:not(:focus):not(:disabled) { border-color: var(--color-border-strong); }
+
   &:focus {
     border-color: var(--color-accent);
     box-shadow: 0 0 0 3px var(--focus-shadow);
   }
 
-  &:hover:not(:focus) { border-color: var(--color-border-strong); }
+  &:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    background: var(--color-surface-2);
+  }
 }
 
-textarea { min-height: unset; resize: vertical; }
+textarea { min-height: unset; resize: vertical; line-height: var(--leading-relaxed); }
 
 // File input — dashed to signal it accepts drops
 input[type="file"] {
+  min-height: unset;
   border-style: dashed;
   cursor: pointer;
-  padding: .8rem;
+  padding: .9rem 1rem;
   color: var(--color-text-muted);
+  font-size: var(--text-sm);
 }
 
 // Date / time native picker — color-scheme driven by CSS variable
@@ -78,9 +88,10 @@ select {
   appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='%23b8cae0' viewBox='0 0 24 24'><path d='M7 10l5 5 5-5z'/></svg>");
   background-repeat: no-repeat;
-  background-position: right .7rem center;
+  background-position: right .75rem center;
   background-size: 18px 18px;
-  padding-right: 2.2rem;
+  padding-right: 2.4rem;
+  cursor: pointer;
 }
 
 // ── Toggle switch ─────────────────────────────────────────
@@ -94,7 +105,7 @@ select {
 
   .toggle {
     flex-shrink: 0;
-    inline-size: 38px;
+    inline-size: 40px;
     block-size: 22px;
     border-radius: var(--radius-full);
     position: relative;
@@ -118,7 +129,7 @@ select {
   input:checked + .toggle {
     background: var(--toggle-checked-bg);
     border-color: var(--color-accent);
-    &::after { transform: translateX(16px); background: var(--color-text-inverse); }
+    &::after { transform: translateX(18px); background: var(--color-text-inverse); }
   }
 }
 
@@ -131,11 +142,11 @@ select {
   @media (max-width: 720px) { grid-template-columns: 1fr; }
 }
 
-// ── Field validation error messages ──────────────────────
+// ── Field wrap + validation ───────────────────────────────
 .field-wrap {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: .45rem;
   min-width: 0;
 
   label { width: 100%; }
@@ -145,8 +156,8 @@ select {
 .field-errors {
   display: flex;
   flex-direction: column;
-  gap: .15rem;
-  margin-top: .3rem;
+  gap: .2rem;
+  margin-top: .1rem;
 
   small {
     font-size: var(--text-sm);
@@ -166,12 +177,14 @@ textarea.is-invalid {
 // ── Actions row ───────────────────────────────────────────
 .actions {
   display: flex;
-  gap: .6rem;
+  gap: var(--spacing-sm);
   flex-wrap: wrap;
-  margin-top: .5rem;
+  align-items: center;
+  margin-top: var(--spacing-md);
 
   @media (max-width: 560px) {
     justify-content: stretch;
+    flex-direction: column;
     .btn { width: 100%; }
   }
 }

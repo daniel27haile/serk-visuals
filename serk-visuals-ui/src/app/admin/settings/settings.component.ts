@@ -1,44 +1,20 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { AdminThemeService } from '../admin-shared/theme/admin-theme.service';
 
-type ThemeMode = 'system' | 'dark' | 'light';
-
-interface AppSettings {
-  apiBaseUrl: string;
-  timeoutMs: number;
-  useMockApi: boolean;
-
-  themeMode: ThemeMode;
+interface AdminPreferences {
   compactMode: boolean;
-  accentColor: string;
-
-  emailAlerts: boolean;
-  pushAlerts: boolean;
-  weeklyDigest: boolean;
-
-  telemetry: boolean;
-  crashReports: boolean;
+  confirmBeforeDelete: boolean;
+  defaultGalleryColumns: number;
 }
 
-const STORAGE_KEY = 'app_settings_v1';
+const STORAGE_KEY = 'sv_admin_prefs_v2';
 
-const DEFAULTS: AppSettings = {
-  apiBaseUrl: 'https://api.example.com',
-  timeoutMs: 15000,
-  useMockApi: false,
-
-  themeMode: 'system',
+const DEFAULTS: AdminPreferences = {
   compactMode: false,
-  accentColor: '#6ea8fe',
-
-  emailAlerts: true,
-  pushAlerts: false,
-  weeklyDigest: true,
-
-  telemetry: false,
-  crashReports: true,
+  confirmBeforeDelete: true,
+  defaultGalleryColumns: 3,
 };
 
 @Component({
@@ -56,23 +32,9 @@ export class SettingsComponent {
   saving = false;
 
   form = this.fb.group({
-    apiBaseUrl: [DEFAULTS.apiBaseUrl, [Validators.required]],
-    timeoutMs: [
-      DEFAULTS.timeoutMs,
-      [Validators.required, Validators.min(1000), Validators.max(120000)],
-    ],
-    useMockApi: [DEFAULTS.useMockApi],
-
-    themeMode: [DEFAULTS.themeMode as ThemeMode, [Validators.required]],
-    compactMode: [DEFAULTS.compactMode],
-    accentColor: [DEFAULTS.accentColor, [Validators.required]],
-
-    emailAlerts: [DEFAULTS.emailAlerts],
-    pushAlerts: [DEFAULTS.pushAlerts],
-    weeklyDigest: [DEFAULTS.weeklyDigest],
-
-    telemetry: [DEFAULTS.telemetry],
-    crashReports: [DEFAULTS.crashReports],
+    compactMode:          [DEFAULTS.compactMode],
+    confirmBeforeDelete:  [DEFAULTS.confirmBeforeDelete],
+    defaultGalleryColumns:[DEFAULTS.defaultGalleryColumns],
   });
 
   constructor() {
@@ -84,22 +46,13 @@ export class SettingsComponent {
   }
 
   save(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      this.flash('Please fix validation errors.');
-      return;
-    }
-
     this.saving = true;
-
-    const value = this.form.getRawValue() as AppSettings;
-
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.form.getRawValue()));
       this.form.markAsPristine();
-      this.flash('Saved ✓');
+      this.flash('Preferences saved');
     } catch {
-      this.flash('Failed to save (storage blocked?)');
+      this.flash('Could not save (storage unavailable)');
     } finally {
       this.saving = false;
     }
@@ -109,31 +62,24 @@ export class SettingsComponent {
     localStorage.removeItem(STORAGE_KEY);
     this.form.reset(DEFAULTS);
     this.form.markAsPristine();
-    this.flash('Reset to defaults.');
+    this.flash('Reset to defaults');
   }
 
   load(): void {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return;
-
     try {
-      const parsed = JSON.parse(raw) as Partial<AppSettings>;
-      const merged: AppSettings = { ...DEFAULTS, ...parsed };
-      this.form.reset(merged);
+      const parsed = JSON.parse(raw) as Partial<AdminPreferences>;
+      this.form.reset({ ...DEFAULTS, ...parsed });
       this.form.markAsPristine();
     } catch {
       localStorage.removeItem(STORAGE_KEY);
-      this.form.reset(DEFAULTS);
-      this.form.markAsPristine();
     }
   }
 
   private flash(msg: string): void {
     this.savedBanner = msg;
-    window.clearTimeout((this as any)._bannerTimer);
-    (this as any)._bannerTimer = window.setTimeout(
-      () => (this.savedBanner = ''),
-      2400
-    );
+    window.clearTimeout((this as any)._t);
+    (this as any)._t = window.setTimeout(() => (this.savedBanner = ''), 2800);
   }
 }

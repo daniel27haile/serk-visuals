@@ -1,5 +1,5 @@
 // ============================================================
-// Admin Layout — fully-dark sidebar + topbar shell
+// Admin Layout — sidebar + topbar shell
 // ============================================================
 
 .admin-layout {
@@ -7,7 +7,6 @@
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr;
   grid-template-rows: auto 1fr;
-  // Content area bg is now the same dark surface as the whole app
   background: var(--color-admin-surface);
 
   // ── Sidebar ────────────────────────────────────────────
@@ -16,163 +15,296 @@
     background: var(--color-admin-bg);
     color: var(--color-admin-text);
     border-right: 1px solid var(--color-admin-border);
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
     position: relative;
     z-index: var(--z-sidebar);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
 
-    .logo {
-      margin: .25rem 0 var(--spacing-sm);
-      font-weight: var(--weight-black);
-      font-size: var(--text-lg);
-      letter-spacing: .2px;
-      color: var(--color-admin-text);
+  // Sidebar brand block
+  .sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .875rem .5rem 1.25rem;
+    border-bottom: 1px solid var(--color-admin-border);
+    margin-bottom: .5rem;
+    flex-shrink: 0;
+  }
+
+  .sidebar__brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--color-admin-accent);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(255, 106, 0, .30);
+
+    svg {
+      width: 18px;
+      height: 18px;
+      stroke: #fff;
     }
+  }
 
-    .sidebar__nav {
-      display: grid;
-      gap: .3rem;
+  .sidebar__brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+    min-width: 0;
+  }
 
-      a {
-        position: relative;
-        display: flex;
-        align-items: center;
-        color: var(--color-admin-muted);
-        text-decoration: none;
-        padding: .68rem .85rem;
-        border-radius: var(--radius-md);
-        background: transparent;
-        border: 1px solid transparent;
-        font-size: var(--text-sm);
-        font-weight: var(--weight-medium);
-        transition: background var(--t-base), color var(--t-base), border-color var(--t-base), transform var(--t-fast);
+  .sidebar__brand-name {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-extrabold);
+    color: var(--color-admin-text);
+    letter-spacing: .01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-        // Left orange rail indicator
+  .sidebar__brand-role {
+    font-size: .7rem;
+    color: var(--color-admin-muted);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    font-weight: var(--weight-medium);
+  }
+
+  // Nav links
+  .sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem;
+    flex: 1;
+    padding-block: .25rem;
+
+    a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      color: var(--color-admin-muted);
+      text-decoration: none;
+      padding: .625rem .75rem;
+      border-radius: var(--radius-md);
+      background: transparent;
+      border: 1px solid transparent;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      transition:
+        background var(--t-base),
+        color var(--t-base),
+        border-color var(--t-base),
+        transform var(--t-fast);
+
+      .nav-icon {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+        opacity: .7;
+        transition: opacity var(--t-base);
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, .05);
+        color: var(--color-admin-text);
+        border-color: rgba(255, 87, 34, .12);
+
+        .nav-icon { opacity: 1; }
+      }
+
+      &:active { transform: translateY(1px); }
+      &:focus-visible { outline: 2px solid var(--color-admin-accent); outline-offset: 2px; }
+
+      &.is-active {
+        color: var(--color-admin-text);
+        background:
+          linear-gradient(90deg, rgba(255, 106, 0, .16), rgba(255, 106, 0, .04)),
+          rgba(255, 255, 255, .02);
+        border-color: rgba(255, 106, 0, .25);
+        box-shadow: 0 0 0 1px rgba(255, 106, 0, .10) inset;
+
+        .nav-icon { opacity: 1; color: var(--color-admin-accent); }
+
         &::before {
           content: "";
           position: absolute;
-          left: .35rem; top: 50%;
-          transform: translateY(-50%);
-          width: 4px; height: 0;
-          border-radius: var(--radius-full);
+          left: 0; top: 20%; bottom: 20%;
+          width: 3px;
+          border-radius: 0 3px 3px 0;
           background: var(--color-admin-accent);
-          opacity: 0;
-          transition: height var(--t-base), opacity var(--t-base);
         }
+      }
 
-        &:hover {
-          background: rgba(255, 255, 255, .05);
-          color: var(--color-admin-text);
-          border-color: rgba(255, 87, 34, .15);
-        }
-        &:active { transform: translateY(1px); }
-        &:focus-visible { outline: 2px solid var(--color-admin-accent); outline-offset: 2px; }
-
-        &.is-active {
-          color: var(--color-admin-text);
-          border-color: rgba(255, 87, 34, .30);
-          background:
-            linear-gradient(90deg, rgba(255, 87, 34, .18), rgba(255, 87, 34, .05)),
-            rgba(255, 255, 255, .03);
-          box-shadow: 0 0 0 1px rgba(255, 87, 34, .12);
-
-          &::before { opacity: 1; height: 70%; }
-        }
-
-        &.is-active:hover {
-          background:
-            linear-gradient(90deg, rgba(255, 87, 34, .24), rgba(255, 87, 34, .08)),
-            rgba(255, 255, 255, .04);
-        }
+      &.is-active:hover {
+        background:
+          linear-gradient(90deg, rgba(255, 106, 0, .22), rgba(255, 106, 0, .07)),
+          rgba(255, 255, 255, .03);
       }
     }
   }
 
-  // ── Topbar (NOW DARK — was #fafafa, critical fix) ───────
+  // Divider between primary and secondary nav items
+  .sidebar__divider {
+    height: 1px;
+    background: var(--color-admin-border);
+    margin: .5rem .5rem;
+    flex-shrink: 0;
+  }
+
+  // Sidebar footer
+  .sidebar__footer {
+    padding: .75rem .5rem .5rem;
+    border-top: 1px solid var(--color-admin-border);
+    margin-top: auto;
+    flex-shrink: 0;
+  }
+
+  .sidebar__view-site {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    color: var(--color-admin-muted);
+    text-decoration: none;
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    padding: .45rem .5rem;
+    border-radius: var(--radius-sm);
+    transition: color var(--t-base), background var(--t-base);
+    letter-spacing: .02em;
+
+    svg { width: 13px; height: 13px; flex-shrink: 0; opacity: .7; }
+
+    &:hover {
+      color: var(--color-admin-text);
+      background: rgba(255, 255, 255, .05);
+    }
+    &:focus-visible { outline: 2px solid var(--color-admin-accent); outline-offset: 2px; }
+  }
+
+  // ── Topbar ────────────────────────────────────────────
   .topbar {
     grid-column: 2;
     position: sticky; top: 0;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: var(--spacing-sm);
-    // Dark surface — consistent with rest of admin panel
     background: var(--color-admin-surface);
     border-bottom: 1px solid var(--color-admin-surface-border);
-    padding: .7rem var(--spacing-md);
+    padding: 0 var(--spacing-md);
+    height: 56px;
     z-index: var(--z-topbar);
     box-shadow: 0 1px 0 rgba(255, 255, 255, .04);
+  }
 
-    .welcome {
-      margin: 0;
-      font-weight: var(--weight-semibold);
-      font-size: var(--text-sm);
-      color: var(--color-admin-text);   // was #1a1a1a (dark on light) — now light on dark
+  .topbar__spacer { flex: 1; }
+
+  .topbar__right {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+
+  .topbar__user {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+  }
+
+  .topbar__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-admin-accent);
+    color: #fff;
+    font-size: .75rem;
+    font-weight: var(--weight-extrabold);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(255, 106, 0, .25);
+  }
+
+  .topbar__username {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    color: var(--color-admin-text);
+  }
+
+  .logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    padding: .4rem .75rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    transition: background var(--t-base), border-color var(--t-base), color var(--t-base);
+
+    svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    &:hover {
+      background: rgba(255, 255, 255, .06);
+      border-color: var(--color-border-strong);
+      color: var(--color-text);
     }
+    &:focus-visible { outline: 2px solid var(--color-admin-accent); outline-offset: 2px; }
+  }
 
-    .logout-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: .4rem;
-      background: transparent;
-      border: 1px solid var(--color-border);   // was #d6d8de (light border)
-      padding: .4rem .75rem;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      color: var(--color-text-muted);           // was #1f1f1f (dark text)
-      font-size: var(--text-sm);
-      transition: background var(--t-base), border-color var(--t-base), color var(--t-base);
+  // Hamburger — shown on mobile
+  .menu-btn {
+    --size: 36px;
+    width: var(--size); height: var(--size);
+    display: none;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    place-items: center;
+    flex-shrink: 0;
 
-      &:hover {
-        background: rgba(255, 255, 255, .06);   // was #f1f2f5 (light hover)
-        border-color: var(--color-border-strong);
-        color: var(--color-text);
-      }
-      &:focus-visible { outline: 2px solid var(--color-admin-accent); outline-offset: 2px; }
+    &:hover { background: rgba(255, 255, 255, .06); }
+    &:focus-visible { outline: 2px solid var(--color-admin-accent); outline-offset: 2px; }
+
+    .bar, .bar::before, .bar::after {
+      content: "";
+      display: block; width: 20px; height: 2px;
+      background: var(--color-admin-text);
+      border-radius: 2px;
+      position: relative;
+      transition: transform var(--t-slow);
     }
-
-    // Hamburger — shown on mobile
-    .menu-btn {
-      --size: 36px;
-      width: var(--size); height: var(--size);
-      display: none;
-      border: 0;
-      background: transparent;
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      place-items: center;
-
-      &:hover { background: rgba(255, 255, 255, .06); }
-      &:focus-visible { outline: 2px solid var(--color-admin-accent); outline-offset: 2px; }
-
-      .bar, .bar::before, .bar::after {
-        content: "";
-        display: block; width: 22px; height: 2px;
-        background: var(--color-admin-text);   // was #111 (dark on light) — now light on dark
-        border-radius: 2px;
-        position: relative;
-        transition: transform var(--t-slow);
-      }
-      .bar::before { position: absolute; top: -7px; }
-      .bar::after  { position: absolute; top:  7px; }
-    }
+    .bar::before { position: absolute; top: -7px; }
+    .bar::after  { position: absolute; top:  7px; }
   }
 
   // ── Main content area ────────────────────────────────────
   .main-area {
     grid-column: 2;
-    padding: var(--spacing-md);
+    padding: var(--spacing-lg);
     min-width: 0;
-    color: var(--color-text);           // was #161616 (dark text for old light bg)
+    color: var(--color-text);
     background: var(--color-admin-surface);
+    min-height: calc(100dvh - 56px);
   }
 
   // ── Drawer backdrop ──────────────────────────────────────
   .backdrop {
     position: fixed; inset: 0;
-    background: rgba(0, 0, 0, .5);
+    background: rgba(0, 0, 0, .55);
     border: 0; padding: 0; margin: 0;
     z-index: 35;
     display: none;
@@ -190,8 +322,8 @@
       width: var(--sidebar-w); max-width: 86vw;
       transform: translateX(-100%);
       transition: transform var(--t-slow);
-      padding-top: max(var(--spacing-md), env(safe-area-inset-top));
-      box-shadow: 10px 0 30px rgba(0, 0, 0, .6);
+      padding-top: max(var(--spacing-sm), env(safe-area-inset-top));
+      box-shadow: 10px 0 40px rgba(0, 0, 0, .65);
     }
 
     .sidebar.sidebar--open { transform: translateX(0); }
@@ -202,7 +334,7 @@
       .backdrop         { display: block; }
     }
 
-    .main-area { padding: var(--spacing-sm); }
+    .main-area { padding: var(--spacing-md); }
   }
 }
 
@@ -210,161 +342,13 @@
 @media (min-width: 1280px) {
   .admin-layout {
     grid-template-columns: 280px 1fr;
-    .main-area { padding: var(--spacing-lg) var(--spacing-xl); }
+    .main-area { padding: var(--spacing-xl) var(--spacing-2xl); }
   }
 }
 
 // ── Reduced motion ────────────────────────────────────────
 @media (prefers-reduced-motion: reduce) {
   .admin-layout .sidebar { transition: none; }
-  .admin-layout .sidebar__nav a::before { transition: none; }
-}
-
-// ── Theme 2: Pure Black / Pure White ─────────────────────
-.admin-layout[data-admin-theme="theme-2"] {
-
-  // ── Core colour tokens ──────────────────────────────────
-  --color-bg:             #ffffff;
-  --color-surface:        #ffffff;
-  --color-surface-2:      #f0f0f0;
-  --color-surface-input:  #ffffff;
-  --color-surface-hover:  #f5f5f5;
-  --color-text:           #000000;
-  --color-text-muted:     rgba(0, 0, 0, .55);
-  --color-text-dim:       rgba(0, 0, 0, .35);
-  --color-text-label:     rgba(0, 0, 0, .72);
-  --color-text-inverse:   #ffffff;
-  --color-border:         rgba(0, 0, 0, .12);
-  --color-border-subtle:  rgba(0, 0, 0, .06);
-  --color-border-strong:  rgba(0, 0, 0, .24);
-  --color-accent:         #000000;
-  --color-accent-dark:    #000000;
-  --color-accent-muted:   rgba(0, 0, 0, .07);
-  --color-primary:        #000000;
-  --color-primary-dark:   #000000;
-  --color-primary-ink:    #ffffff;
-  --color-secondary:      #000000;
-  --color-secondary-dark: #000000;
-
-  // ── Semantic tokens ──────────────────────────────────────
-  --color-success:        #15803d;
-  --color-success-bg:     rgba(21, 128, 61, .08);
-  --color-success-border: rgba(21, 128, 61, .22);
-  --color-warning:        #b45309;
-  --color-warning-bg:     rgba(180, 83, 9, .07);
-  --color-danger:         #b91c1c;
-  --color-danger-bg:      rgba(185, 28, 28, .07);
-  --color-danger-border:  rgba(185, 28, 28, .22);
-
-  // ── Admin-specific tokens ────────────────────────────────
-  --color-admin-bg:             #f0f0f0;
-  --color-admin-surface:        #ffffff;
-  --color-admin-surface-border: rgba(0, 0, 0, .12);
-  --color-admin-text:           #000000;
-  --color-admin-muted:          rgba(0, 0, 0, .55);
-  --color-admin-border:         rgba(0, 0, 0, .14);
-  --color-admin-accent:         #000000;
-
-  // ── Shadow overrides ─────────────────────────────────────
-  --shadow-xs:   0 1px 3px  rgba(0, 0, 0, .06);
-  --shadow-sm:   0 4px 14px rgba(0, 0, 0, .08);
-  --shadow-md:   0 8px 28px rgba(0, 0, 0, .10);
-  --shadow-lg:   0 16px 44px rgba(0, 0, 0, .12);
-  --shadow-xl:   0 24px 60px rgba(0, 0, 0, .14);
-  --shadow-inset-top: inset 0 1px 0 rgba(0, 0, 0, .04);
-
-  // ── Component tokens ─────────────────────────────────────
-  --chip-bg:     #000000;
-  --chip-color:  #ffffff;
-  --chip-border: transparent;
-
-  --btn-primary-shadow:       0 6px 22px rgba(0, 0, 0, .14);
-  --btn-primary-hover-shadow: 0 10px 28px rgba(0, 0, 0, .22);
-  --btn-ghost-hover-bg:       rgba(0, 0, 0, .05);
-  --btn-accent-shadow:        0 6px 20px rgba(0, 0, 0, .12);
-  --btn-accent-hover-shadow:  0 10px 24px rgba(0, 0, 0, .20);
-
-  --alert-error-text:   #7f1d1d;
-  --alert-success-text: #064e3b;
-  --alert-info-text:    #1e3a8a;
-  --alert-info-border:  rgba(0, 0, 0, .12);
-  --shimmer-highlight:  rgba(0, 0, 0, .05);
-
-  --focus-shadow:       rgba(0, 0, 0, .18);
-  --field-error-text:   #991b1b;
-  --field-error-border: #dc2626;
-  --field-error-shadow: rgba(220, 38, 38, .15);
-  --toggle-checked-bg:  #000000;
-  --date-color-scheme:  light;
-  --date-icon-filter:   none;
-  --date-icon-opacity:  .55;
-
-  // ── Sidebar ───────────────────────────────────────────────
-  .sidebar {
-    box-shadow: 1px 0 0 rgba(0, 0, 0, .10);
-
-    .sidebar__nav a {
-      &:hover {
-        background: rgba(0, 0, 0, .05);
-        border-color: rgba(0, 0, 0, .08);
-        color: var(--color-admin-text);
-      }
-
-      &.is-active {
-        background: #000000;
-        border-color: #000000;
-        color: #ffffff;
-        box-shadow: none;
-
-        &::before { background: #ffffff; }
-      }
-
-      &.is-active:hover {
-        background: rgba(0, 0, 0, .85);
-      }
-    }
-  }
-
-  // ── Topbar ────────────────────────────────────────────────
-  .topbar {
-    box-shadow: 0 1px 0 rgba(0, 0, 0, .08);
-
-    .logout-btn:hover { background: rgba(0, 0, 0, .05); }
-  }
-
-  // ── Hamburger hover ───────────────────────────────────────
-  .menu-btn:hover { background: rgba(0, 0, 0, .05); }
-
-  // ── Date / time inputs ────────────────────────────────────
-  input[type="date"],
-  input[type="time"] {
-    color-scheme: light;
-    &::-webkit-calendar-picker-indicator {
-      filter: none;
-      opacity: .55;
-    }
-  }
-
-  // ── Status chips — light tinted backgrounds ───────────────
-  .chip.s1 {
-    background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe;
-  }
-  .chip.s2 {
-    background: #ecfeff; color: #0e7490; border-color: #a5f3fc;
-  }
-  .chip.s3 {
-    background: #f0fdf4; color: #15803d; border-color: #bbf7d0;
-  }
-  .chip.s4 {
-    background: #fefce8; color: #a16207; border-color: #fde68a;
-  }
-
-  // ── Status badges ─────────────────────────────────────────
-  .badge            { background: #f0f0f0; color: #000000; }
-  .badge--new       { background: #fefce8; color: #a16207; }
-  .badge--confirmed { background: #f0fdf4; color: #15803d; }
-  .badge--completed { background: #eff6ff; color: #1d4ed8; }
-  .badge--cancelled { background: #fef2f2; color: #b91c1c; }
 }
 
 // ── Sidebar scrollbar ─────────────────────────────────────
@@ -373,7 +357,190 @@
     scrollbar-width: thin;
     scrollbar-color: var(--color-admin-border) transparent;
 
-    &::-webkit-scrollbar { width: 6px; }
-    &::-webkit-scrollbar-thumb { background: var(--color-admin-border); border-radius: 6px; }
+    &::-webkit-scrollbar { width: 4px; }
+    &::-webkit-scrollbar-thumb { background: var(--color-admin-border); border-radius: 4px; }
   }
+}
+
+// ── Theme 2: Clean Monochrome Light ──────────────────────
+// Zinc palette + orange brand — inspired by Vercel, Linear, Stripe
+.admin-layout[data-admin-theme="theme-2"] {
+
+  // ── CSS custom property overrides ─────────────────────────
+  // (structural selectors below override what tokens.scss declares
+  //  at the same specificity, since this is a component SCSS file)
+  --color-bg:             #FAFAFA;
+  --color-surface:        #FFFFFF;
+  --color-surface-2:      #F4F4F5;
+  --color-surface-input:  #FFFFFF;
+  --color-surface-hover:  #F4F4F5;
+  --color-text:           #18181B;
+  --color-text-muted:     #71717A;
+  --color-text-dim:       #A1A1AA;
+  --color-text-label:     #52525B;
+  --color-text-inverse:   #FFFFFF;
+  --color-border:         #E4E4E7;
+  --color-border-subtle:  #F4F4F5;
+  --color-border-strong:  #D4D4D8;
+
+  // Keep orange primary — the brand doesn't disappear in light mode
+  --color-primary:        #E8610A;
+  --color-primary-dark:   #C94F00;
+  --color-primary-ink:    #FFFFFF;
+
+  // Indigo accent (darker for light bg)
+  --color-secondary:      #4F46E5;
+  --color-secondary-dark: #4338CA;
+  --color-accent:         #4F46E5;
+  --color-accent-dark:    #4338CA;
+  --color-accent-muted:   rgba(79, 70, 229, .10);
+
+  --color-success:        #16A34A;
+  --color-success-bg:     rgba(22, 163, 74, .08);
+  --color-success-border: rgba(22, 163, 74, .22);
+  --color-warning:        #D97706;
+  --color-warning-bg:     rgba(217, 119, 6, .08);
+  --color-danger:         #DC2626;
+  --color-danger-bg:      rgba(220, 38, 38, .07);
+  --color-danger-border:  rgba(220, 38, 38, .22);
+
+  --color-admin-bg:             #FAFAFA;
+  --color-admin-deeper:         #F4F4F5;
+  --color-admin-surface:        #FFFFFF;
+  --color-admin-surface-border: #E4E4E7;
+  --color-admin-text:           #18181B;
+  --color-admin-muted:          #71717A;
+  --color-admin-border:         #E4E4E7;
+  --color-admin-accent:         #E8610A;   // ← orange remains the admin accent
+
+  --color-glass:   rgba(255, 255, 255, .80);
+  --color-overlay: rgba(0, 0, 0, .40);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, .04), 0 1px 4px rgba(0, 0, 0, .04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, .06), 0 4px 12px rgba(0, 0, 0, .06);
+  --shadow-md: 0 4px 8px  rgba(0, 0, 0, .06), 0 8px 24px rgba(0, 0, 0, .06);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, .08), 0 16px 40px rgba(0, 0, 0, .08);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, .10), 0 24px 56px rgba(0, 0, 0, .10);
+  --shadow-inset-top: inset 0 1px 0 rgba(255, 255, 255, .90);
+
+  --chip-bg:     #F4F4F5;
+  --chip-color:  #18181B;
+  --chip-border: #E4E4E7;
+
+  --btn-primary-shadow:       0 4px 14px rgba(79, 70, 229, .20);
+  --btn-primary-hover-shadow: 0 8px 22px rgba(79, 70, 229, .28);
+  --btn-ghost-hover-bg:       rgba(0, 0, 0, .04);
+  --btn-accent-shadow:        0 4px 14px rgba(232, 97, 10, .22);
+  --btn-accent-hover-shadow:  0 8px 22px rgba(232, 97, 10, .32);
+
+  --alert-error-text:   #991B1B;
+  --alert-success-text: #14532D;
+  --alert-info-text:    #1E40AF;
+  --alert-info-border:  rgba(79, 70, 229, .20);
+  --shimmer-highlight:  rgba(0, 0, 0, .04);
+  --focus-shadow:       rgba(79, 70, 229, .18);
+  --field-error-text:   #B91C1C;
+  --field-error-border: #DC2626;
+  --field-error-shadow: rgba(220, 38, 38, .15);
+  --toggle-checked-bg:  rgba(232, 97, 10, .15);
+  --date-color-scheme:  light;
+  --date-icon-filter:   none;
+  --date-icon-opacity:  .55;
+
+  // ── Sidebar — light zinc with orange brand rail ────────────
+  .sidebar {
+    box-shadow: 1px 0 0 #E4E4E7;
+    border-right-color: #E4E4E7;
+
+    .sidebar__brand-icon {
+      background: #E8610A;
+      box-shadow: 0 2px 8px rgba(232, 97, 10, .28);
+      svg { stroke: #fff; }
+    }
+
+    .sidebar__brand-name { color: #18181B; }
+    .sidebar__brand-role { color: #71717A; }
+    .sidebar__divider    { background: #E4E4E7; }
+
+    .sidebar__nav a {
+      color: #52525B;
+
+      .nav-icon { color: #71717A; }
+
+      &:hover {
+        background: rgba(0, 0, 0, .04);
+        border-color: rgba(0, 0, 0, .08);
+        color: #18181B;
+        .nav-icon { color: #18181B; opacity: 1; }
+      }
+
+      // Active: orange tinted row + orange rail
+      &.is-active {
+        color: #18181B;
+        background: rgba(232, 97, 10, .08);
+        border-color: rgba(232, 97, 10, .20);
+        box-shadow: none;
+
+        .nav-icon { opacity: 1; color: #E8610A; }
+
+        &::before { background: #E8610A; }
+      }
+
+      &.is-active:hover { background: rgba(232, 97, 10, .12); }
+    }
+
+    .sidebar__view-site {
+      color: #71717A;
+      &:hover { background: rgba(0, 0, 0, .04); color: #18181B; }
+    }
+  }
+
+  // ── Topbar ────────────────────────────────────────────────
+  .topbar {
+    background: #FFFFFF;
+    border-bottom-color: #E4E4E7;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .06);
+  }
+
+  .topbar__username { color: #18181B; }
+
+  .topbar__avatar {
+    background: #E8610A;
+    box-shadow: 0 2px 6px rgba(232, 97, 10, .28);
+  }
+
+  .logout-btn {
+    border-color: #E4E4E7;
+    color: #71717A;
+    &:hover { background: #F4F4F5; border-color: #D4D4D8; color: #18181B; }
+  }
+
+  .menu-btn:hover { background: rgba(0, 0, 0, .04); }
+  .backdrop       { background: rgba(0, 0, 0, .40); }
+
+  // ── Native inputs ─────────────────────────────────────────
+  input[type="date"],
+  input[type="time"] {
+    color-scheme: light;
+    &::-webkit-calendar-picker-indicator { filter: none; opacity: .55; }
+  }
+
+  // ── Dashboard KPI icon colours ────────────────────────────
+  .kpi-card__icon--orange { background: rgba(232, 97, 10, .10); color: #E8610A; }
+  .kpi-card__icon--amber  { background: rgba(217, 119, 6, .10); color: #D97706; }
+  .kpi-card__icon--green  { background: rgba(22, 163, 74, .10); color: #16A34A; }
+  .kpi-card__icon--purple { background: rgba(79, 70, 229, .10); color: #4F46E5; }
+
+  // ── Status badges ─────────────────────────────────────────
+  .badge            { background: #F4F4F5; color: #52525B; border-color: #E4E4E7; }
+  .badge--new       { background: #FFFBEB; color: #92400E; border-color: #FDE68A; }
+  .badge--confirmed { background: #ECFDF5; color: #065F46; border-color: #A7F3D0; }
+  .badge--completed { background: #EFF6FF; color: #1E40AF; border-color: #BFDBFE; }
+  .badge--cancelled { background: #FEF2F2; color: #991B1B; border-color: #FECACA; }
+
+  // ── Project status chips ──────────────────────────────────
+  .chip.s1 { background: #EFF6FF; color: #1D4ED8; border-color: #BFDBFE; }
+  .chip.s2 { background: #ECFEFF; color: #0E7490; border-color: #A5F3FC; }
+  .chip.s3 { background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }
+  .chip.s4 { background: #FEFCE8; color: #A16207; border-color: #FDE68A; }
 }

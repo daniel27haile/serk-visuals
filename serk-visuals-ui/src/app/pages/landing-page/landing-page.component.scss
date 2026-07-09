@@ -341,6 +341,70 @@
   }
 }
 
+// ── Mobile hero: image above, text below (≤ 767px) ──────────
+// On mobile the overlay is removed and text lives in its own
+// section below the image so the photo is always fully visible.
+@media (max-width: 767px) {
+
+  // Register the image-zone height as a CSS token — inherited by
+  // all descendants so dots and nav can reference the same value.
+  .hero-slider {
+    --_img-h: clamp(210px, 60vw, 290px);
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  // Image track: fixed to the image zone only.
+  .hero-slides {
+    height: var(--_img-h);
+    min-height: var(--_img-h);
+    flex-shrink: 0;
+  }
+
+  // Show the full image without cropping.
+  // Dark fill covers letterbox gaps.
+  .hero-slide {
+    object-fit: contain;
+    background: #0b0a10;
+    &--placeholder { padding: .75rem; }
+  }
+
+  // No overlay needed — text is safely below the image.
+  .hero-overlay { display: none; }
+
+  // Text section: exits absolute stacking, appears below image.
+  .hero-copy {
+    position: relative;
+    inset: unset;
+    display: block;
+    padding: 1.5rem var(--container-pad) 2.25rem;
+    background: var(--color-surface);
+    pointer-events: auto;
+
+    .container {
+      max-width: 100%;
+      margin-inline: 0;
+    }
+
+    .lead { max-width: 100%; }
+  }
+
+  // Dots stay inside the image zone.
+  .dots {
+    top: calc(var(--_img-h) - 2.25rem);
+    bottom: auto;
+  }
+
+  // Arrow buttons confined to the image zone only.
+  .nav {
+    height: var(--_img-h);
+    bottom: auto;
+  }
+
+  .hero-scroll { display: none; }
+}
+
 // Gallery section CTA buttons (different context — non-hero, uses theme colors)
 .button-group {
   margin-top: var(--spacing-md);

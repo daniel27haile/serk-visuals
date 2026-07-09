@@ -49,9 +49,15 @@
           </div>
         </div>
 
-        <label for="phone">Phone
-          <input id="phone" formControlName="phone" type="tel" placeholder="(206) 000-0000" autocomplete="tel" />
-        </label>
+        <div class="field-wrap">
+          <label for="phone">Phone<span *ngIf="phoneRequired" class="req" aria-hidden="true">*</span>
+            <input id="phone" formControlName="phone" type="tel" placeholder="(206) 000-0000" autocomplete="tel"
+              [class.is-invalid]="form.controls['phone'].touched && form.controls['phone'].invalid" />
+          </label>
+          <div class="field-errors" *ngIf="form.controls['phone'].touched && form.controls['phone'].invalid">
+            <small *ngIf="form.controls['phone'].errors?.['required']">Phone is required when contacting by Phone or Text.</small>
+          </div>
+        </div>
 
         <label for="preferred-contact">Preferred Contact
           <select id="preferred-contact" formControlName="preferredContactMethod">

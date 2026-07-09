@@ -80,7 +80,23 @@ export class BookingFormPage {
     message:                this.fb.control(''),
   });
 
+  get phoneRequired(): boolean {
+    const v = this.form.controls.preferredContactMethod.value;
+    return v === 'Phone' || v === 'Text Message';
+  }
+
   constructor() {
+    // Dynamically require phone when contact method is Phone or Text Message
+    this.form.controls.preferredContactMethod.valueChanges.subscribe(method => {
+      const phoneCtrl = this.form.controls.phone;
+      if (method === 'Phone' || method === 'Text Message') {
+        phoneCtrl.addValidators(Validators.required);
+      } else {
+        phoneCtrl.removeValidators(Validators.required);
+      }
+      phoneCtrl.updateValueAndValidity();
+    });
+
     this.form.controls.type.valueChanges.subscribe(type => {
       this.rebuildDetailsGroup(type as SessionType);
       if (type === 'Real Estate' || type === 'Product') {

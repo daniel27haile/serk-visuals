@@ -483,41 +483,34 @@
   .button-group { justify-content: center; }
 }
 
-// Clip container with edge-fade mask
+// Clip container — no edge fade so cards are never partially visible
 .feat-viewport {
   width: 100%;
   overflow: hidden;
   margin-block: clamp(1.25rem, 2.5vw, 2rem);
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 clamp(1.5rem, 4vw, 4rem),
-    #000 calc(100% - clamp(1.5rem, 4vw, 4rem)),
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    #000 clamp(1.5rem, 4vw, 4rem),
-    #000 calc(100% - clamp(1.5rem, 4vw, 4rem)),
-    transparent 100%
-  );
 }
 
 // Flat flex row — position controlled by JS via translateX
 .feat-track {
   display: flex;
-  gap: clamp(.65rem, 1.2vw, 1rem);
+  gap: 12px; // must match _featGapPx constant in TS
   will-change: transform;
 
   &.is-animating {
     transition: transform .7s cubic-bezier(.25, .46, .45, .94);
   }
+
+  // Static mode: all cards fit — center them
+  &--static {
+    justify-content: center;
+  }
 }
 
-// Individual image card
+// Individual image card — width set by JS via [style.width.px]; CSS is the pre-JS fallback
 .feat-item {
   flex-shrink: 0;
+  // Fallback width before JS measurement fires (~2 frames after mount)
+  width: clamp(140px, 45vw, 260px);
   padding: 0;
   border: none;
   background: none;
@@ -535,8 +528,9 @@
 
   img {
     display: block;
-    height: clamp(220px, 25vw, 340px);
-    width: calc(clamp(220px, 25vw, 340px) * 3 / 4);
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    height: auto;
     object-fit: cover;
     object-position: center;
     border-radius: var(--radius-lg);

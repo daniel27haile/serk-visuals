@@ -135,14 +135,15 @@
        (touchstart)="onFeatTouchStart($event)"
        (touchend)="onFeatTouchEnd($event)">
     <div class="feat-track"
-         #featTrack
          [class.is-animating]="featTransition()"
+         [class.feat-track--static]="!featInfinite()"
          [style.transform]="'translateX(' + featX() + 'px)'"
          (transitionend)="onFeatTransitionEnd($event)">
       <button
         *ngFor="let f of featRenderItems(); let i = index; trackBy: trackByFeatItem"
         class="feat-item"
         type="button"
+        [style.width.px]="featCardWidth()"
         [attr.aria-label]="isFeatClone(i) ? null : 'Open ' + f.title"
         [attr.aria-hidden]="isFeatClone(i) ? 'true' : null"
         [attr.tabindex]="isFeatClone(i) ? '-1' : null"

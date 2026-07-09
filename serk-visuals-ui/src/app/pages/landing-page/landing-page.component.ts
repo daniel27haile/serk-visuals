@@ -58,16 +58,18 @@ export class LandingPageComponent implements OnDestroy {
 
   // ===== FEATURED CAROUSEL =====
   @ViewChild('featViewport') private featViewportEl?: ElementRef<HTMLElement>;
-  @ViewChild('featTrack')    private featTrackEl?: ElementRef<HTMLElement>;
 
   readonly featRenderItems = signal<GalleryItem[]>([]);
   readonly featX           = signal(0);
   readonly featTransition  = signal(false);
   readonly featInfinite    = signal(false);
+  /** JS-computed card width in px. null in static mode — CSS handles sizing then. */
+  readonly featCardWidth   = signal<number | null>(null);
 
+  private _featOrigItems: GalleryItem[] = [];
   private _featOriginLen    = 0;
   private _featCardPx       = 0;
-  private _featGapPx        = 0;
+  private _featGapPx        = 12; // constant gap, must match CSS gap value
   private _featIdx          = 0;
   private _featPaused       = false;
   private _featTimer: ReturnType<typeof setTimeout> | null = null;
@@ -268,34 +270,56 @@ export class LandingPageComponent implements OnDestroy {
   // ===== FEATURED GALLERY CAROUSEL =====
 
   private initFeatCarousel(items: GalleryItem[]): void {
+    this._featOrigItems = items;
     this._featOriginLen = items.length;
-    const infinite = items.length >= 3;
-    this.featInfinite.set(infinite);
-    if (infinite) {
-      this.featRenderItems.set([...items, ...items, ...items]);
-      this._featIdx = items.length; // start at middle copy
-    } else {
-      this.featRenderItems.set([...items]);
-      this._featIdx = 0;
-    }
+    // Show items immediately with single copy; _layoutFeat builds the 3× buffer if needed.
+    this.featInfinite.set(false);
+    this.featRenderItems.set([...items]);
+    this._featIdx = 0;
     this.featTransition.set(false);
     // Double setTimeout: first tick lets Angular flush signal writes to DOM;
     // second tick ensures the browser has completed layout on the new elements.
     setTimeout(() => setTimeout(() => {
-      this.measureFeatCard();
-      this.featX.set(this.calcFeatOffset(this._featIdx));
-      if (infinite) this.startFeatTimer();
+      this._layoutFeat();
       this.setupFeatResize();
     }));
   }
 
-  private measureFeatCard(): void {
-    const track = this.featTrackEl?.nativeElement;
-    if (!track) return;
-    const item = track.querySelector<HTMLElement>('.feat-item');
-    if (!item) return;
-    this._featCardPx = item.getBoundingClientRect().width;
-    this._featGapPx  = parseFloat(getComputedStyle(track).columnGap) || 0;
+  /** Measure + re-position. Called on init and on viewport resize. */
+  private _layoutFeat(): void {
+    this.stopFeatTimer();
+    const vp = this.featViewportEl?.nativeElement;
+    if (!vp) return;
+    const vpW = vp.getBoundingClientRect().width;
+    const count = this._computeVisibleCount(vpW);
+    this._featCardPx = (vpW - (count - 1) * this._featGapPx) / count;
+    this.featCardWidth.set(this._featCardPx);
+
+    const items = this._featOrigItems;
+    const shouldBeInfinite = items.length > count;
+
+    if (shouldBeInfinite !== this.featInfinite()) {
+      // Rebuild buffer only when infinite mode flips (e.g. orientation change)
+      if (shouldBeInfinite) {
+        this.featRenderItems.set([...items, ...items, ...items]);
+        this._featIdx = items.length;
+      } else {
+        this.featRenderItems.set([...items]);
+        this._featIdx = 0;
+      }
+      this.featInfinite.set(shouldBeInfinite);
+    }
+
+    this.featTransition.set(false);
+    this.featX.set(this.calcFeatOffset(this._featIdx));
+    if (shouldBeInfinite) this.startFeatTimer();
+  }
+
+  private _computeVisibleCount(vpW: number): number {
+    if (vpW < 480)  return 2;
+    if (vpW < 768)  return 3;
+    if (vpW < 1200) return 4;
+    return 5;
   }
 
   private calcFeatOffset(idx: number): number {
@@ -321,7 +345,7 @@ export class LandingPageComponent implements OnDestroy {
 
   advanceFeat(dir: 1 | -1): void {
     const total = this.featRenderItems().length;
-    if (total === 0 || this.featTransition()) return;
+    if (total === 0 || this.featTransition() || !this.featInfinite()) return;
     this._featIdx = Math.max(0, Math.min(this._featIdx + dir, total - 1));
     this.featTransition.set(true);
     this.featX.set(this.calcFeatOffset(this._featIdx));
@@ -371,11 +395,7 @@ export class LandingPageComponent implements OnDestroy {
     if (!vp || typeof ResizeObserver === 'undefined') return;
     this._featResizeObs = new ResizeObserver(() => {
       if (this._featResizeDebounce) clearTimeout(this._featResizeDebounce);
-      this._featResizeDebounce = setTimeout(() => {
-        this.featTransition.set(false);
-        this.measureFeatCard();
-        this.featX.set(this.calcFeatOffset(this._featIdx));
-      }, 150);
+      this._featResizeDebounce = setTimeout(() => this._layoutFeat(), 150);
     });
     this._featResizeObs.observe(vp);
   }

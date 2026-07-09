@@ -55,13 +55,23 @@
 .hero-slider {
   position: relative;
   width: 100%;
-  height: clamp(460px, 90vw, 560px); // mobile default — tall enough for bottom overlay
+  // Responsive height ladder — keeps aspect ratio close to source images at
+  // every size so cover doesn't zoom in excessively.
+  //
+  //   Zoom analysis (16:9 landscape image, natural height = vw × 9/16):
+  //   • 375px wide, 300px tall → natural = 211px → 1.42× zoom (good)
+  //   • 768px wide, 445px tall → natural = 432px → 1.03× zoom (near-perfect)
+  //   • 1280px wide, 700px tall → natural = 720px → 0.97× (fits, slight crop)
+  height: clamp(300px, 75vw, 400px);              // < 480px: portrait-phone
+
+  @media (min-width: 480px)  { height: clamp(360px, 68vw, 480px); } // phablet
+  @media (min-width: 768px)  { height: clamp(420px, 58vw, 580px); } // tablet
+  @media (min-width: 1024px) { height: clamp(540px, 65vh, 740px); } // laptop
+  @media (min-width: 1280px) { height: clamp(600px, 70vh, 820px); } // desktop+
+
   overflow: hidden;
   outline: none;
   background: var(--color-surface-2);
-
-  @media (min-width: 768px)  { height: clamp(520px, 72vh, 760px); }
-  @media (min-width: 1024px) { height: clamp(620px, 80vh, 860px); }
 
   &:focus-visible {
     outline: 3px solid var(--color-secondary);
@@ -114,12 +124,13 @@
       rgba(0, 0, 0, .40) 82%,
       rgba(0, 0, 0, .58) 100%
     ),
-    // Left-to-right: shields the text column, fades out before center
+    // Left-to-right: shields the text column (~44% wide), fades before the
+    // subject area — stops at 56% so the right half stays completely clean.
     linear-gradient(to right,
-      rgba(0, 0, 0, .45) 0%,
-      rgba(0, 0, 0, .20) 32%,
-      rgba(0, 0, 0, .04) 52%,
-      rgba(0, 0, 0, 0)   62%
+      rgba(0, 0, 0, .35) 0%,
+      rgba(0, 0, 0, .14) 28%,
+      rgba(0, 0, 0, .03) 46%,
+      rgba(0, 0, 0, 0)   56%
     );
 }
 
@@ -346,16 +357,18 @@
 // Top ~42% of image stays completely clear so the subject is visible.
 @media (max-width: 767px) {
 
-  // Bottom-only gradient — upper image is untouched.
+  // Bottom-only gradient — top half of image stays completely clean.
+  // With the shorter mobile heights (300–400px) the text block (~150px)
+  // sits in the bottom ~50%, so we keep the top 50% transparent.
   .hero-overlay {
     background: linear-gradient(
       to bottom,
-      transparent                0%,
-      transparent                42%,
-      rgba(0, 0, 0, .12)        55%,
-      rgba(0, 0, 0, .52)        70%,
-      rgba(0, 0, 0, .74)        84%,
-      rgba(0, 0, 0, .86)       100%
+      transparent          0%,
+      transparent         50%,
+      rgba(0,0,0,.10)     60%,
+      rgba(0,0,0,.50)     73%,
+      rgba(0,0,0,.72)     85%,
+      rgba(0,0,0,.84)    100%
     );
   }
 

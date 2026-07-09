@@ -99,9 +99,11 @@
   }
   </script>
 
-  <!-- ── DNS/connection hints for production API ─────────── -->
-  <link rel="dns-prefetch" href="https://serk-visuals-api.onrender.com">
-  <link rel="preconnect" href="https://serk-visuals-api.onrender.com" crossorigin>
+  <!-- ── DNS/connection hints ───────────────────────────── -->
+  <!-- API is same-origin (/api/*) — no preconnect needed -->
+  <!-- Preconnect to S3/CloudFront for gallery images -->
+  <link rel="dns-prefetch" href="https://serkvisuals-prod.s3.amazonaws.com">
+  <link rel="preconnect" href="https://serkvisuals-prod.s3.amazonaws.com" crossorigin>
 
   <!-- ── Fonts — async load to eliminate render-blocking ─── -->
   <!-- TCP+TLS to Google Fonts is established early via preconnect -->

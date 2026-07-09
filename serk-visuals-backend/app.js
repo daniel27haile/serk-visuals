@@ -51,7 +51,40 @@ app.use(
   })
 );
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+app.use(
+  helmet({
+    // Allow the Nginx-served Angular app (different origin) to load resources
+    // served by this Express API (e.g. presigned-URL redirects).
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+
+    // Explicit CSP — the Angular SPA is served by Nginx (not Express), so
+    // this CSP only applies to Express API responses. Still set correctly so
+    // any direct browser navigation to /api/* is handled safely, and in case
+    // the browser ever inherits these headers for the document context.
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc:     ["'self'"],
+        scriptSrc:      ["'self'"],
+        styleSrc:       ["'self'", "'unsafe-inline'"],
+        fontSrc:        ["'self'", "data:", "https://fonts.gstatic.com"],
+        imgSrc: [
+          "'self'",
+          "data:",
+          "blob:",
+          "https://serkvisuals-prod.s3.amazonaws.com",
+          "https://*.amazonaws.com",
+          "https://*.cloudfront.net",
+        ],
+        connectSrc:     ["'self'"],
+        frameSrc:       ["'none'"],
+        objectSrc:      ["'none'"],
+        baseUri:        ["'self'"],
+        formAction:     ["'self'"],
+        frameAncestors: ["'self'"],
+      },
+    },
+  })
+);
 app.use(cookieParser());
 app.use(express.json({ limit: "1mb" }));
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));

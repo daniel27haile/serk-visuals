@@ -3,5 +3,5 @@
 // Kept here only to avoid confusion — DO NOT import from this path.
 export const environment = {
   production: true,
-  apiUrl: 'apiUrl = "https://serkvisuals.com/api"', // Nginx reverse-proxy: /api/* → localhost:5000
+  apiUrl: "https://serkvisuals.com/api", 
 };

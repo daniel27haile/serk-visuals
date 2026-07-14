@@ -8,7 +8,7 @@
   background: var(--color-bg);
 }
 
-.section { padding-block: clamp(3rem, 6vw, 5rem); }
+.section { padding-block: var(--section-py-lg); }
 
 .lead { color: var(--color-text-muted); line-height: 1.7; }
 
@@ -549,7 +549,7 @@
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
-  padding-block: clamp(3.5rem, 7vw, 6rem);
+  padding-block: var(--section-py-xl);
 }
 
 .why-lead {
@@ -637,7 +637,7 @@
 .cta-banner {
   position: relative;
   background: #0d0b14;
-  padding-block: clamp(5rem, 10vw, 8rem);
+  padding-block: var(--section-py-xl);
   overflow: hidden;
   text-align: center;
 }

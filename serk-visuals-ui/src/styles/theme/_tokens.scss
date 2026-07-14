@@ -86,6 +86,17 @@
   --spacing-xl:  var(--space-12);
   --spacing-2xl: var(--space-20);
 
+  // ── Section vertical padding scale ────────────────────────
+  // Use these tokens on padding-block to keep all pages in sync.
+  // compact → strips/footers   sm → standard   md → feature   lg → CTA/promo
+  --section-py-compact: clamp(1.5rem, 3vw, 2.5rem);  // 24–40 px
+  --section-py-sm:      clamp(2rem,   4vw, 3rem);     // 32–48 px
+  --section-py-md:      clamp(2.5rem, 5vw, 4rem);     // 40–64 px  ← standard
+  --section-py-lg:      clamp(3rem,   6vw, 5rem);     // 48–80 px  ← feature/landing
+  --section-py-xl:      clamp(3.5rem, 7vw, 6rem);     // 56–96 px  ← CTA banners
+  // Editorial text-only page heroes (no full-bleed image)
+  --hero-py:            clamp(2.75rem, 7vw, 5rem);    // 44–80 px
+
   // ── Border radius — shared by ALL themes ──────────────────
   --radius-sm:   .5rem;
   --radius-md:   .65rem;

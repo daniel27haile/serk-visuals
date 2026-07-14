@@ -10,7 +10,7 @@
 
 // ── Page hero ─────────────────────────────────────────────
 .booking-hero {
-  padding-block: clamp(4rem, 9vw, 7rem);
+  padding-block: var(--hero-py);
   text-align: center;
   border-bottom: 1px solid var(--color-border);
   background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);

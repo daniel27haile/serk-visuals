@@ -12,7 +12,7 @@
 
 // ── Page hero ─────────────────────────────────────────────
 .contact-hero {
-  padding-block: clamp(4rem, 9vw, 7rem);
+  padding-block: var(--hero-py);
   text-align: center;
   border-bottom: 1px solid var(--color-border);
   background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
@@ -71,7 +71,7 @@
 .contact.container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: clamp(2.5rem, 5vw, 4rem) clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(2rem, 4vw, 3rem) clamp(1.25rem, 3vw, 2rem);
 }
 
 .contact,

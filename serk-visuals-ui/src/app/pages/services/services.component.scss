@@ -8,7 +8,7 @@
   background: var(--color-bg);
 }
 
-.section { padding-block: clamp(3rem, 6vw, 5rem); }
+.section { padding-block: var(--section-py-lg); }
 
 .lead { color: var(--color-text-muted); line-height: 1.7; }
 
@@ -24,7 +24,7 @@
 
 // ── Page hero ─────────────────────────────────────────────
 .services-hero {
-  padding-block: clamp(4rem, 9vw, 7rem);
+  padding-block: var(--hero-py);
   text-align: center;
   border-bottom: 1px solid var(--color-border);
   background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);

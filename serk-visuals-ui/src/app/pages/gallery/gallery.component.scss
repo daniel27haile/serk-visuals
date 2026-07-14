@@ -10,7 +10,7 @@
 
 // ── Page hero ─────────────────────────────────────────────
 .gallery-hero {
-  padding-block: clamp(4rem, 9vw, 7rem);
+  padding-block: var(--hero-py);
   text-align: center;
   border-bottom: 1px solid var(--color-border);
   background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
@@ -125,7 +125,7 @@
   grid-template-columns: repeat(2, 1fr);
   max-width: 1280px;
   margin-inline: auto;
-  padding: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 4vw, 2.5rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem) clamp(1.25rem, 4vw, 2.5rem);
 
   @media (min-width: 640px)  { grid-template-columns: repeat(3, 1fr); }
   @media (min-width: 1024px) { grid-template-columns: repeat(4, 1fr); }

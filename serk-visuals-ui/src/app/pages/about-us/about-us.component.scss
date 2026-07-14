@@ -10,7 +10,7 @@
 
 // ── Page hero ─────────────────────────────────────────────
 .about-hero {
-  padding-block: clamp(4rem, 9vw, 7rem);
+  padding-block: var(--hero-py);
   text-align: center;
   border-bottom: 1px solid var(--color-border);
   background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
@@ -69,7 +69,7 @@
 
 // ── Story section ─────────────────────────────────────────
 .about-story {
-  padding-block: clamp(3.5rem, 7vw, 6rem);
+  padding-block: var(--section-py-lg);
 }
 
 .about-story__grid {
@@ -165,7 +165,7 @@
 // ── Values section ────────────────────────────────────────
 .about-values {
   border-top: 1px solid var(--color-border);
-  padding-block: clamp(3rem, 6vw, 5rem);
+  padding-block: var(--section-py-lg);
   background: var(--color-surface);
 }
 

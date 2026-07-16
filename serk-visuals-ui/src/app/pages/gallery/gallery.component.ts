@@ -27,7 +27,7 @@ export class GalleryPage implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  readonly albums: Album[] = ['Wedding', 'Event', 'Birthday', 'Product', 'Personal', 'Other'];
+  readonly albums: Album[] = ['Real Estate', 'Wedding', 'Event', 'Birthday', 'Product', 'Personal', 'Other'];
 
   // ── View state ────────────────────────────────────────────
   view = signal<'albums' | 'images'>('albums');
@@ -52,11 +52,12 @@ export class GalleryPage implements OnInit, OnDestroy {
   private changeSub?: Subscription;
 
   private readonly albumIcons: Record<Album, string> = {
-    Wedding: '💍', Event: '🎪', Birthday: '🎂',
+    'Real Estate': '🏡', Wedding: '💍', Event: '🎪', Birthday: '🎂',
     Product: '📷', Personal: '👤', Other: '✨',
   };
 
   private readonly albumDescs: Record<Album, string> = {
+    'Real Estate': 'Property & listing photography',
     Wedding: 'Weddings & engagements',
     Event: 'Corporate & social events',
     Birthday: 'Birthday sessions',
@@ -103,6 +104,11 @@ export class GalleryPage implements OnInit, OnDestroy {
       const res = await firstValueFrom(this.api.getAlbums({ placement: 'gallery' }));
       this.albumStats.set(res.albums);
       this.totalAllImages.set(res.albums.reduce((n, s) => n + s.publishedCount, 0));
+      // Default to Real Estate album when it has published images
+      const hasRealEstate = res.albums.some(s => s.album === 'Real Estate' && s.publishedCount > 0);
+      if (hasRealEstate) {
+        this.openAlbum('Real Estate');
+      }
     } catch (e: any) {
       const status = e?.status ?? 'network';
       const msg = e?.error?.message || e?.message || 'Could not load albums.';

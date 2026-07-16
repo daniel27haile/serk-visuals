@@ -7,7 +7,7 @@ const GalleryItemSchema = new Schema(
     title: { type: String, required: true },
     album: {
       type: String,
-      enum: ["Wedding", "Event", "Birthday", "Product", "Personal", "Other"],
+      enum: ["Real Estate", "Wedding", "Event", "Birthday", "Product", "Personal", "Other"],
       required: true,
     },
     placement: {

@@ -1,5 +1,6 @@
 // src/app/shared/models/gallery.model.ts
 export type Album =
+  | 'Real Estate'
   | 'Wedding'
   | 'Event'
   | 'Birthday'

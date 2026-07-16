@@ -26,14 +26,15 @@ export interface AdminFolder {
 }
 
 const ADMIN_FOLDERS: AdminFolder[] = [
-  { id: 'slider',   label: 'Hero Slides',      icon: '🖼️',  placement: 'slider',   description: 'Homepage hero slider images' },
-  { id: 'featured', label: 'Featured Gallery', icon: '⭐',  placement: 'featured', description: 'Homepage featured section' },
-  { id: 'wedding',  label: 'Wedding',          icon: '💍',  placement: 'gallery',  album: 'Wedding',  description: 'Wedding photography' },
-  { id: 'event',    label: 'Event',            icon: '🎪',  placement: 'gallery',  album: 'Event',    description: 'Events & celebrations' },
-  { id: 'birthday', label: 'Birthday',         icon: '🎂',  placement: 'gallery',  album: 'Birthday', description: 'Birthday sessions' },
-  { id: 'product',  label: 'Product',          icon: '📷',  placement: 'gallery',  album: 'Product',  description: 'Product & commercial' },
-  { id: 'personal', label: 'Personal',         icon: '👤',  placement: 'gallery',  album: 'Personal', description: 'Portraits & personal' },
-  { id: 'other',    label: 'Other',            icon: '✨',  placement: 'gallery',  album: 'Other',    description: 'Specialty & mixed' },
+  { id: 'slider',       label: 'Hero Slides',        icon: '🖼️',  placement: 'slider',   description: 'Homepage hero slider images' },
+  { id: 'featured',     label: 'Featured Gallery',   icon: '⭐',  placement: 'featured', description: 'Homepage featured section' },
+  { id: 'real-estate',  label: 'Real Estate',        icon: '🏡',  placement: 'gallery',  album: 'Real Estate', description: 'Property & listing photography' },
+  { id: 'wedding',      label: 'Wedding',            icon: '💍',  placement: 'gallery',  album: 'Wedding',  description: 'Wedding photography' },
+  { id: 'event',        label: 'Event',              icon: '🎪',  placement: 'gallery',  album: 'Event',    description: 'Events & celebrations' },
+  { id: 'birthday',     label: 'Birthday',           icon: '🎂',  placement: 'gallery',  album: 'Birthday', description: 'Birthday sessions' },
+  { id: 'product',      label: 'Product',            icon: '📷',  placement: 'gallery',  album: 'Product',  description: 'Product & commercial' },
+  { id: 'personal',     label: 'Personal',           icon: '👤',  placement: 'gallery',  album: 'Personal', description: 'Portraits & personal' },
+  { id: 'other',        label: 'Other',              icon: '✨',  placement: 'gallery',  album: 'Other',    description: 'Specialty & mixed' },
 ];
 
 @Component({
@@ -49,7 +50,7 @@ export class AdminGalleryComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   readonly folders = ADMIN_FOLDERS;
-  readonly albums: Album[] = ['Wedding', 'Event', 'Birthday', 'Product', 'Personal', 'Other'];
+  readonly albums: Album[] = ['Real Estate', 'Wedding', 'Event', 'Birthday', 'Product', 'Personal', 'Other'];
 
   // ── View state ────────────────────────────────────────────
   view = signal<'folders' | 'images'>('folders');
@@ -76,7 +77,7 @@ export class AdminGalleryComponent implements OnInit {
 
   form = this.fb.group({
     title:     ['', [Validators.required, Validators.minLength(2)]],
-    album:     ['Wedding' as Album, Validators.required],
+    album:     ['Real Estate' as Album, Validators.required],
     tags:      [''],
     published: [true],
     image:     [null as File | null],
@@ -133,7 +134,7 @@ export class AdminGalleryComponent implements OnInit {
     this.cancelEdit();
     this.form.patchValue({
       placement: folder.placement,
-      album: folder.album ?? 'Wedding',
+      album: folder.album ?? 'Real Estate',
     });
     void this.fetchImages();
   }
@@ -273,7 +274,7 @@ export class AdminGalleryComponent implements OnInit {
     this.editingId.set(null);
     const folder = this.selectedFolder();
     this.form.reset({
-      title: '', album: folder?.album ?? 'Wedding',
+      title: '', album: folder?.album ?? 'Real Estate',
       tags: '', published: true, image: null, thumb: null,
       placement: folder?.placement ?? 'gallery', order: 0,
     });

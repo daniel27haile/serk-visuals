@@ -32,12 +32,12 @@ export class BookingFormPage {
   private readonly route       = inject(ActivatedRoute);
 
   readonly sessionTypes: { value: SessionType; label: string }[] = [
+    { value: 'Real Estate',   label: 'Real Estate Photography'},
+    { value: 'Wedding',       label: 'Wedding Photography'    },
     { value: 'Portrait',      label: 'Portrait Session'       },
     { value: 'Family',        label: 'Family Session'         },
-    { value: 'Wedding',       label: 'Wedding Photography'    },
     { value: 'Event',         label: 'Event Coverage'         },
     { value: 'Graduation',    label: 'Graduation Session'     },
-    { value: 'Real Estate',   label: 'Real Estate Photography'},
     { value: 'Commercial',    label: 'Commercial / Branding'  },
     { value: 'Engagement',    label: 'Engagement Session'     },
     { value: 'Birthday',      label: 'Birthday Session'       },
@@ -65,7 +65,7 @@ export class BookingFormPage {
   pricingBreakdown         = signal<PricingBreakdown | null>(null);
   productPricingBreakdown  = signal<ProductPricingBreakdown | null>(null);
 
-  private readonly defaultType: SessionType = 'Portrait';
+  private readonly defaultType: SessionType = 'Real Estate';
 
   // Session-type-specific dynamic fields — rebuilt when type changes
   readonly bookingDetails: FormGroup = new FormGroup({});
@@ -125,6 +125,9 @@ export class BookingFormPage {
     const qType = this.route.snapshot.queryParamMap.get('type') as SessionType;
     if (qType && SESSION_CONFIGS[qType]) {
       this.form.controls.type.setValue(qType);
+    } else if (['Real Estate', 'Wedding', 'Product'].includes(this.defaultType)) {
+      // valueChanges doesn't fire for the initial form value, so fetch pricing explicitly
+      this.fetchPricingConfig();
     }
   }
 

@@ -1,11 +1,11 @@
 <!-- PAGE HERO -->
 <header class="services-hero">
   <div class="container">
-    <p class="hero-eyebrow">Photography &amp; Videography · Seattle, WA</p>
-    <h1 class="page-title">Every Story Deserves to Be<br aria-hidden="true"> <em>Beautifully Told.</em></h1>
+    <p class="hero-eyebrow">Real Estate Photography &amp; More · Seattle, WA</p>
+    <h1 class="page-title">Professional Photography<br aria-hidden="true"> For Every <em>Need.</em></h1>
     <p class="lead">
-      From wedding films and portrait sessions to branding shoots and real estate photography —
-      we offer everything you need to tell your story, right here in Seattle and the Pacific Northwest.
+      Real estate photography is our primary focus — delivered fast, edited professionally, and ready for every listing platform.
+      We also serve weddings, events, portraits, and brands across Seattle and the Pacific Northwest.
     </p>
   </div>
 </header>
@@ -38,10 +38,10 @@
 
 <!-- BOTTOM CTA -->
 <section class="container section cta-section">
-  <h2 class="section-heading">Ready to get started?</h2>
-  <p class="lead">Let's bring your vision to life together.</p>
+  <h2 class="section-heading">Ready to book your property shoot?</h2>
+  <p class="lead">Book online in minutes. We confirm within 24 hours and deliver edited photos within 48 hours of the shoot.</p>
   <div class="button-group">
-    <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+    <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent">Book a Property Shoot</a>
     <a [routerLink]="['/contact']" class="btn btn--ghost">Contact Us</a>
   </div>
 </section>

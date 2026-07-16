@@ -44,15 +44,15 @@
     <!-- Text content overlaid on images -->
     <div class="hero-copy">
       <div class="container">
-        <p class="eyebrow">Photography &amp; Videography · Seattle, WA</p>
-        <h1>Bring your vision<br aria-hidden="true"> to <em>life.</em></h1>
+        <p class="eyebrow">Real Estate Photography · Seattle Area</p>
+        <h1>Professional Photos That<br aria-hidden="true"> Help Listings <em>Sell.</em></h1>
         <p class="lead">
-          Cinematic coverage and polished editing — all crafted
-          with intention and delivered with care.
+          Interior, exterior, twilight, and aerial photography —
+          MLS-ready and delivered within 48 hours.
         </p>
         <div class="cta-row">
-          <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
-          <a [routerLink]="['/gallery']" class="btn btn--ghost">View Work</a>
+          <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent">Book a Shoot</a>
+          <a [routerLink]="['/gallery']" class="btn btn--ghost">View Portfolio</a>
         </div>
       </div>
     </div>
@@ -97,7 +97,7 @@
   <div class="container stats-inner">
     <div class="stat">
       <span class="stat__num">200<span class="stat__plus">+</span></span>
-      <span class="stat__label">Sessions Captured</span>
+      <span class="stat__label">Properties Photographed</span>
     </div>
     <div class="stat-divider" aria-hidden="true"></div>
     <div class="stat">
@@ -112,8 +112,26 @@
     <div class="stat-divider" aria-hidden="true"></div>
     <div class="stat">
       <span class="stat__num">48<span class="stat__unit">hr</span></span>
-      <span class="stat__label">Avg. Turnaround</span>
+      <span class="stat__label">Photo Delivery</span>
     </div>
+  </div>
+</div>
+
+<!-- WHO WE WORK WITH -->
+<div class="clients-band" aria-label="Who we work with">
+  <div class="container clients-band__inner">
+    <span class="clients-band__label">We work with</span>
+    <ul class="clients-band__list" role="list">
+      <li>Realtors &amp; Brokers</li>
+      <li aria-hidden="true">·</li>
+      <li>Property Managers</li>
+      <li aria-hidden="true">·</li>
+      <li>Home Builders</li>
+      <li aria-hidden="true">·</li>
+      <li>Airbnb Hosts</li>
+      <li aria-hidden="true">·</li>
+      <li>Real Estate Investors</li>
+    </ul>
   </div>
 </div>
 
@@ -122,7 +140,7 @@
 
   <div class="container">
     <p class="section-eyebrow">Portfolio</p>
-    <h2 class="section-heading">Featured Gallery</h2>
+    <h2 class="section-heading">Featured Properties</h2>
   </div>
 
   <!-- JS-driven infinite carousel — one card advances every ~9 s -->
@@ -171,56 +189,92 @@
     <p class="hint error" *ngIf="errorFeatured()">{{ errorFeatured() }}</p>
 
     <div class="button-group">
-      <a [routerLink]="['/gallery']" class="btn btn--ghost">See More</a>
-      <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+      <a [routerLink]="['/gallery']" class="btn btn--ghost">View Portfolio</a>
+      <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent">Book a Shoot</a>
     </div>
   </div>
 
 </section>
 
-<!-- WHY SERK VISUALS -->
+<!-- WHY PROFESSIONAL LISTING PHOTOS -->
 <section class="why-section">
   <div class="container">
     <p class="section-eyebrow">The Difference</p>
-    <h2 class="section-heading">Why Serk Visuals?</h2>
+    <h2 class="section-heading">Why Professional Listing Photos?</h2>
     <p class="lead why-lead">
-      We don't just press a button — we craft every frame with purpose.
+      Properties with professional photography sell faster, attract more online attention, and generate better offers.
     </p>
 
     <div class="why-grid">
       <div class="why-card">
         <div class="why-card__icon" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
         </div>
-        <h3>Your Vision First</h3>
-        <p>We listen before we shoot. Every session starts with understanding your story, style, and goals — so the final product is unmistakably yours.</p>
+        <h3>More Showings</h3>
+        <p>Listings with professional photography receive significantly more online views and attract more buyers to schedule in-person showings.</p>
       </div>
       <div class="why-card">
         <div class="why-card__icon" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l4.553-2.069A1 1 0 0 1 21 8.845v6.310a1 1 0 0 1-1.447.914L15 14M3 8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M3 9a9 9 0 0 1 9-6 9 9 0 0 1 9 6"/><path d="M3 15a9 9 0 0 0 9 6 9 9 0 0 0 9-6"/></svg>
         </div>
-        <h3>Cinematic Quality</h3>
-        <p>Studio-grade equipment, intentional composition, and professional color grading — delivering images and films that stand the test of time.</p>
+        <h3>HDR Photography</h3>
+        <p>Professional HDR processing, wide-angle lenses, and calibrated lighting make every space look its absolute best across all listing platforms.</p>
       </div>
       <div class="why-card">
         <div class="why-card__icon" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
-        <h3>Fast Turnaround</h3>
-        <p>No waiting weeks to relive your moments. Edited galleries and final cuts delivered in days, not months — without cutting corners.</p>
+        <h3>48-Hour Delivery</h3>
+        <p>Edited, MLS-ready images delivered within 48 hours of the shoot — so your listing goes live before your competitors.</p>
       </div>
     </div>
 
     <div class="why-cta">
-      <a [routerLink]="['/services']" class="btn btn--ghost">Explore Services</a>
+      <a [routerLink]="['/real-estate']" class="btn btn--ghost">See All Services</a>
     </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="hiw-section container section">
+  <p class="section-eyebrow">Simple Process</p>
+  <h2 class="section-heading">From Booking to Listed</h2>
+  <div class="hiw-steps">
+    <div class="hiw-step">
+      <span class="hiw-step__num" aria-hidden="true">01</span>
+      <h3 class="hiw-step__title">Book Online</h3>
+      <p class="hiw-step__desc">Select your services, preferred date, and property address. We confirm your appointment within 24 hours.</p>
+    </div>
+    <div class="hiw-step">
+      <span class="hiw-step__num" aria-hidden="true">02</span>
+      <h3 class="hiw-step__title">Confirm Appointment</h3>
+      <p class="hiw-step__desc">We'll reach out to finalize shoot time and share preparation tips to get the best results from your property.</p>
+    </div>
+    <div class="hiw-step">
+      <span class="hiw-step__num" aria-hidden="true">03</span>
+      <h3 class="hiw-step__title">Property Shoot</h3>
+      <p class="hiw-step__desc">Our photographer arrives on time, works efficiently, and captures every space to its best advantage.</p>
+    </div>
+    <div class="hiw-step">
+      <span class="hiw-step__num" aria-hidden="true">04</span>
+      <h3 class="hiw-step__title">Professional Editing</h3>
+      <p class="hiw-step__desc">Every image is professionally edited — HDR processing, color correction, vertical line straightening, and sky enhancement where needed.</p>
+    </div>
+    <div class="hiw-step">
+      <span class="hiw-step__num" aria-hidden="true">05</span>
+      <h3 class="hiw-step__title">Receive MLS Ready Photos</h3>
+      <p class="hiw-step__desc">High-resolution, web-optimized images delivered within 48 hours — ready to upload to MLS, Zillow, and Realtor.com.</p>
+    </div>
+  </div>
+  <div class="button-group">
+    <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent">Book a Shoot</a>
   </div>
 </section>
 
 <!-- TESTIMONIALS -->
 <section id="testimonials" class="container section">
-  <p class="section-eyebrow">Testimonials</p>
-  <h2 class="section-heading">Client Stories</h2>
+  <p class="section-eyebrow">Client Reviews</p>
+  <h2 class="section-heading">What Our Clients Say</h2>
 
   <div
     class="testimonial-slider"
@@ -300,43 +354,44 @@
 
 <!-- SERVICES OVERVIEW -->
 <section class="services-overview container section">
-  <p class="section-eyebrow">What We Offer</p>
-  <h2 class="section-heading">Full-Service Visual Storytelling</h2>
+  <p class="section-eyebrow">Our Services</p>
+  <h2 class="section-heading">Real Estate Photography &amp; More</h2>
   <p class="lead services-overview__intro">
-    From weddings to brands, portraits to properties — every shoot is crafted with intention
-    and delivered with pride, across Seattle and the Pacific Northwest.
+    Real estate photography is our primary service — delivered fast, edited professionally, and ready for every listing platform.
+    We also provide photography for weddings, events, portraits, and brands across Seattle and the Pacific Northwest.
   </p>
   <div class="services-overview__grid">
-    <div class="overview-card">
+    <a class="overview-card overview-card--link" [routerLink]="['/real-estate']">
       <span class="overview-card__num" aria-hidden="true">01</span>
+      <h3>Real Estate Photography</h3>
+      <p>Interior, exterior, twilight, aerial, and walkthrough video — everything a listing needs, delivered within 48 hours.</p>
+      <span class="overview-card__cta">View Pricing &amp; Services →</span>
+    </a>
+    <a class="overview-card overview-card--link" [routerLink]="['/real-estate']" fragment="re-pricing">
+      <span class="overview-card__num" aria-hidden="true">02</span>
+      <h3>Property Measurements</h3>
+      <p>Accurate 2D floor plans and room measurements that give buyers a clear understanding of layout and size.</p>
+      <span class="overview-card__cta">Learn More →</span>
+    </a>
+    <div class="overview-card">
+      <span class="overview-card__num" aria-hidden="true">03</span>
       <h3>Wedding Photography</h3>
       <p>Authentic, cinematic coverage of your entire wedding day — from getting ready to the last dance.</p>
     </div>
     <div class="overview-card">
-      <span class="overview-card__num" aria-hidden="true">02</span>
+      <span class="overview-card__num" aria-hidden="true">04</span>
       <h3>Event Photography</h3>
       <p>Corporate events, milestone celebrations, fundraisers, and everything in between.</p>
     </div>
     <div class="overview-card">
-      <span class="overview-card__num" aria-hidden="true">03</span>
+      <span class="overview-card__num" aria-hidden="true">05</span>
       <h3>Portrait Sessions</h3>
       <p>Headshots, family portraits, senior photos, and creative studio or outdoor sessions.</p>
     </div>
     <div class="overview-card">
-      <span class="overview-card__num" aria-hidden="true">04</span>
+      <span class="overview-card__num" aria-hidden="true">06</span>
       <h3>Branding Photography</h3>
       <p>Polished imagery for your website, social media, and marketing — tailored to your brand.</p>
-    </div>
-    <a class="overview-card overview-card--link" [routerLink]="['/real-estate']">
-      <span class="overview-card__num" aria-hidden="true">05</span>
-      <h3>Real Estate Photography</h3>
-      <p>Crisp, well-lit property photos — interiors, exteriors, twilight, drone &amp; more — that help listings sell faster.</p>
-      <span class="overview-card__cta">Explore Service →</span>
-    </a>
-    <div class="overview-card">
-      <span class="overview-card__num" aria-hidden="true">06</span>
-      <h3>Videography</h3>
-      <p>Cinematic wedding films, event recaps, brand stories, and social content — beautifully edited.</p>
     </div>
   </div>
   <div class="button-group">
@@ -346,16 +401,51 @@
 
 <!-- SERVICE AREA -->
 <section class="service-area container section">
-  <h2 class="section-heading">Serving the Seattle Area &amp; Beyond</h2>
+  <p class="section-eyebrow">Coverage Area</p>
+  <h2 class="section-heading">Serving Greater Seattle</h2>
   <p class="lead">
-    We're based in the greater Seattle area and proudly work with clients across Washington — including
-    <strong>Mill Creek</strong>, <strong>Everett</strong>, <strong>Lynnwood</strong>, <strong>Bellevue</strong>,
-    <strong>Redmond</strong>, <strong>Kirkland</strong>, <strong>Snohomish</strong>, and the surrounding
-    Puget Sound region. Travel to other locations is available for weddings and larger projects.
+    Based in the Seattle metro, we photograph properties for agents, property managers, builders, and homeowners across
+    <strong>Seattle</strong>, <strong>Bellevue</strong>, <strong>Kirkland</strong>, <strong>Redmond</strong>,
+    <strong>Bothell</strong>, <strong>Mill Creek</strong>, <strong>Everett</strong>, <strong>Lynnwood</strong>,
+    <strong>Mukilteo</strong>, <strong>Edmonds</strong>, <strong>Snohomish</strong>, and throughout
+    <strong>King</strong> and <strong>Snohomish Counties</strong>.
+    Contact us for locations beyond these areas.
   </p>
   <div class="button-group">
-    <a [routerLink]="['/bookings']" class="btn btn--accent">Book a Session</a>
+    <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent">Book a Shoot</a>
     <a [routerLink]="['/contact']" class="btn btn--ghost">Ask a Question</a>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section container section">
+  <p class="section-eyebrow">FAQ</p>
+  <h2 class="section-heading">Frequently Asked Questions</h2>
+  <div class="faq-list">
+    <details class="faq-item">
+      <summary class="faq-item__q">How quickly will I receive my photos?</summary>
+      <p class="faq-item__a">Standard delivery is 24–48 hours after the shoot. Rush delivery options are available — contact us for details.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-item__q">How many photos are included?</summary>
+      <p class="faq-item__a">The number of images depends on the property size. A typical listing receives 25–60 professionally edited photos. We'll confirm the expected count at booking.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-item__q">What should homeowners do to prepare?</summary>
+      <p class="faq-item__a">Declutter countertops and surfaces, open all blinds and curtains, turn on all interior lights, and park vehicles away from the front of the property. We'll handle everything else.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-item__q">How are photos delivered?</summary>
+      <p class="faq-item__a">You'll receive a download link with high-resolution, MLS-ready JPEG files formatted for web and print — ready to upload directly to your listing platform.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-item__q">Do you provide property measurements or floor plans?</summary>
+      <p class="faq-item__a">Yes. Accurate property measurements and 2D floor plan diagrams are available as an add-on. Select this during booking or contact us to add it to your order.</p>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-item__q">Do you photograph occupied homes?</summary>
+      <p class="faq-item__a">Yes. We regularly photograph occupied listings and work efficiently in lived-in spaces. We'll share preparation guidelines in advance to ensure the best results.</p>
+    </details>
   </div>
 </section>
 
@@ -363,11 +453,11 @@
 <section class="cta-banner">
   <div class="cta-banner__bg" aria-hidden="true"></div>
   <div class="container cta-banner__inner">
-    <p class="cta-banner__eyebrow">Let's Work Together</p>
-    <h2 class="cta-banner__title">Ready to capture<br aria-hidden="true"> your story?</h2>
-    <p class="cta-banner__sub">Let's make something unforgettable together.</p>
+    <p class="cta-banner__eyebrow">Ready to List?</p>
+    <h2 class="cta-banner__title">Professional Photos.<br aria-hidden="true"> Faster <em>Sales.</em></h2>
+    <p class="cta-banner__sub">Book online in minutes. We confirm within 24 hours and deliver edited photos within 48 hours of the shoot.</p>
     <div class="cta-banner__actions">
-      <a [routerLink]="['/bookings']" class="btn btn--accent btn--lg">Book a Session</a>
+      <a [routerLink]="['/bookings']" [queryParams]="{'type': 'Real Estate'}" class="btn btn--accent btn--lg">Book a Property Shoot</a>
       <a [routerLink]="['/contact']" class="btn btn--ghost-light">Get in Touch</a>
     </div>
   </div>

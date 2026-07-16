@@ -23,6 +23,35 @@ export class ServicesComponent implements OnDestroy {
 
   services: ServiceCard[] = [
     {
+      icon: '🏡',
+      title: 'Real Estate Photography',
+      copy: 'Professional property photography that helps listings attract serious buyers and sell faster. Interior, exterior, twilight, aerial, and video — all delivered within 24–48 hours.',
+      bullets: [
+        'Interior & Exterior Photography',
+        'HDR Processing & Professional Editing',
+        'Twilight & Blue-Hour Sessions',
+        'Drone / Aerial Photography',
+        'Walkthrough Video',
+        '24–48 Hour Delivery',
+      ],
+      ctaText: 'View Pricing & Services →',
+      ctaLink: ['/real-estate'],
+    },
+    {
+      icon: '📐',
+      title: 'Property Measurements & Floor Plans',
+      copy: 'Accurate room-by-room measurements and 2D floor plan diagrams that give buyers a clear understanding of layout, proportions, and how spaces connect.',
+      bullets: [
+        'Accurate Square Footage Measurement',
+        '2D Floor Plan Diagrams',
+        'Room Labeling & Dimensions',
+        'MLS & Marketing Ready Format',
+        'Available as a Stand-Alone Service',
+      ],
+      ctaText: 'Book a Measurement →',
+      ctaLink: ['/bookings'],
+    },
+    {
       icon: '💍',
       title: 'Wedding Photography & Films',
       copy: 'From the first look to the final dance — authentic, cinematic coverage of your wedding day. We capture the moments you\'ll want to relive for a lifetime.',
@@ -73,33 +102,6 @@ export class ServicesComponent implements OnDestroy {
       ],
       ctaText: 'Book a Brand Shoot →',
       ctaLink: ['/bookings'],
-    },
-    {
-      icon: '🏡',
-      title: 'Real Estate Photography',
-      copy: 'Professional property photography that helps listings attract serious buyers and sell faster — delivered within 24–48 hours.',
-      bullets: [
-        'Interior & Exterior Photography',
-        'Twilight & Drone Aerial Shots',
-        'Walkthrough Video & Virtual Tours',
-        'Floor Plans Available',
-        '24–48 Hour Delivery',
-      ],
-      ctaText: 'Learn More →',
-      ctaLink: ['/real-estate'],
-    },
-    {
-      icon: '🪄',
-      title: 'Photo & Video Editing',
-      copy: 'Professional color grading, retouching, and post-production for photos and footage — whether we shot it or you did.',
-      bullets: [
-        'Color Grading & Retouching',
-        'Batch Photo Editing',
-        'Short-form Reels & Ads',
-        'YouTube & Web Videos',
-      ],
-      ctaText: 'Get in Touch →',
-      ctaLink: ['/contact'],
     },
   ];
 

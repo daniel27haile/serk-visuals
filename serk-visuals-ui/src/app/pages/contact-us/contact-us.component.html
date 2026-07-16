@@ -1,10 +1,10 @@
 <!-- PAGE HERO -->
 <header class="contact-hero">
   <div class="container contact-hero__inner">
-    <p class="contact-eyebrow">Let's Connect</p>
-    <h1 class="contact-title">Ready to Start<br aria-hidden="true"> <em>Your Story?</em></h1>
+    <p class="contact-eyebrow">Get in Touch</p>
+    <h1 class="contact-title">Let's Talk About<br aria-hidden="true"> <em>Your Listing.</em></h1>
     <p class="contact-subtitle">
-      Tell us about your vision — we usually reply within 24 hours.
+      Questions about pricing, availability, or services? We reply within one business day.
     </p>
   </div>
 </header>
@@ -85,7 +85,7 @@
           <label for="message">Message <span class="req" aria-hidden="true">*</span></label>
           <textarea id="message" rows="6" formControlName="message"
             [class.is-invalid]="f.message.touched && f.message.invalid"
-            placeholder="Tell us about your project, date, and vision…"></textarea>
+            placeholder="Tell us about your property, preferred date, and any questions…"></textarea>
           @if (f.message.touched && f.message.invalid) {
             <div class="error">
               @if (f.message.errors?.['required']) { <span>Message is required.</span> }
@@ -160,7 +160,7 @@
         <strong>Bellevue</strong>, <strong>Redmond</strong>, <strong>Kirkland</strong>,
         and <strong>Snohomish</strong>, WA.
       </p>
-      <p class="contact-card__text">Travel available for weddings and larger projects.</p>
+      <p class="contact-card__text">Travel available outside the service area — just ask.</p>
     </div>
 
   </aside>

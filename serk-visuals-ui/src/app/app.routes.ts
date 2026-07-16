@@ -10,10 +10,10 @@ export const routes = [
     children: [
       {
         path: '',
-        title: 'Serk Visuals | Wedding & Portrait Photographer in Seattle, WA',
+        title: 'Serk Visuals | Real Estate Photography Seattle, WA',
         data: {
           description:
-            'Serk Visuals — professional photography and videography for weddings, portraits, events, branding, and real estate in Seattle, Mill Creek, Everett, and across the greater Puget Sound region.',
+            'Professional real estate photography in Seattle and Greater Puget Sound — interior, exterior, twilight, aerial, floor plans, and walkthrough video. MLS-ready images delivered within 48 hours. Serving agents, property managers, and homeowners.',
         },
         loadComponent: () =>
           import('./pages/landing-page/landing-page.component').then(
@@ -24,10 +24,10 @@ export const routes = [
 
       {
         path: 'contact',
-        title: 'Contact Serk Visuals | Seattle Photography Studio',
+        title: 'Contact Serk Visuals | Real Estate Photography Seattle',
         data: {
           description:
-            'Get in touch with Serk Visuals to book a session or ask about photography and videography services in Seattle, Bellevue, Everett, Kirkland, and surrounding areas.',
+            'Get in touch with Serk Visuals to book a property shoot or ask about real estate photography services in Seattle, Bellevue, Kirkland, Everett, and surrounding areas of Greater Puget Sound.',
         },
         loadComponent: () =>
           import('./pages/contact-us/contact-us.component').then(
@@ -36,10 +36,10 @@ export const routes = [
       },
       {
         path: 'about-us',
-        title: 'About Serk Visuals | Seattle Photography & Videography Studio',
+        title: 'About Serk Visuals | Real Estate Photography Studio Seattle',
         data: {
           description:
-            'Meet the team behind Serk Visuals — a passionate photography and videography studio based in the Seattle area, dedicated to capturing weddings, portraits, events, and brands with intention.',
+            'Learn about Serk Visuals — a professional real estate photography studio based in the Seattle area, dedicated to helping agents, property managers, and homeowners market their properties with high-quality photography.',
         },
         loadComponent: () =>
           import('./pages/about-us/about-us.component').then(
@@ -48,10 +48,10 @@ export const routes = [
       },
       {
         path: 'gallery',
-        title: 'Photography Portfolio | Weddings, Portraits & Events — Serk Visuals',
+        title: 'Property Photography Portfolio | Serk Visuals Seattle',
         data: {
           description:
-            'Browse the Serk Visuals portfolio — wedding photography, portrait sessions, corporate events, branding shoots, real estate photography, and videography across the Seattle and Puget Sound area.',
+            'Browse the Serk Visuals portfolio — residential homes, luxury listings, condos, townhomes, commercial properties, and more. Professional real estate photography across Seattle and Greater Puget Sound.',
         },
         loadComponent: () =>
           import('./pages/gallery/gallery.component').then(
@@ -60,10 +60,10 @@ export const routes = [
       },
       {
         path: 'services',
-        title: 'Photography & Videography Services in Seattle | Serk Visuals',
+        title: 'Real Estate Photography Services Seattle | Serk Visuals',
         data: {
           description:
-            'Explore all Serk Visuals services — wedding photography, event photography, portrait sessions, branding shoots, real estate photography, videography, and professional photo and video editing.',
+            'Real estate photography, property measurements, wedding photography, events, and portraits — Serk Visuals provides full-service visual media for agents, property managers, and individuals across Seattle and Greater Puget Sound.',
         },
         loadComponent: () =>
           import('./pages/services/services.component').then(
@@ -72,10 +72,10 @@ export const routes = [
       },
       {
         path: 'bookings',
-        title: 'Book a Photography Session | Serk Visuals Seattle',
+        title: 'Book a Property Shoot | Serk Visuals Real Estate Photography',
         data: {
           description:
-            'Ready to book? Schedule your wedding, portrait, event, branding, or real estate photography session with Serk Visuals. Serving Seattle, Bellevue, Kirkland, Everett, and surrounding Washington communities.',
+            'Book your real estate photography session with Serk Visuals. Select your services, choose a date, and receive MLS-ready photos within 48 hours. Serving Seattle, Bellevue, Kirkland, Everett, and surrounding Washington communities.',
         },
         loadComponent: () =>
           import('./pages/booking/booking.component').then(

@@ -26,7 +26,7 @@ const DEFAULTS = {
     serviceAddOns: [
       { value: "Interior Photography", label: "Interior Photography", price: 0,   included: true  },
       { value: "Exterior Photography", label: "Exterior Photography", price: 0,   included: true  },
-      { value: "Drone Footage",        label: "Drone Footage",        price: 150, included: false },
+      { value: "Drone Footage",        label: "Drone Photography",    price: 150, included: false },
       { value: "Twilight Shoot",       label: "Twilight Shoot",       price: 125, included: false },
       { value: "Walkthrough Video",    label: "Walkthrough Video",    price: 200, included: false },
       { value: "Floor Plan",           label: "Floor Plan",           price: 100, included: false },

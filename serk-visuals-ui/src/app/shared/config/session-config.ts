@@ -269,7 +269,7 @@ export const SESSION_CONFIGS: Record<SessionType, SessionConfig> = {
         options: [
           { value: 'Interior Photography', label: 'Interior Photography' },
           { value: 'Exterior Photography', label: 'Exterior Photography' },
-          { value: 'Drone Footage',        label: 'Drone Footage'        },
+          { value: 'Drone Footage',        label: 'Drone Photography'    },
           { value: 'Twilight Shoot',       label: 'Twilight Shoot'       },
           { value: 'Walkthrough Video',    label: 'Walkthrough Video'    },
           { value: 'Floor Plan',           label: 'Floor Plan'           },

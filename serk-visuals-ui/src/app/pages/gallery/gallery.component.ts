@@ -27,7 +27,7 @@ export class GalleryPage implements OnInit, OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private readonly isBrowser = isPlatformBrowser(this.platformId);
 
-  readonly albums: Album[] = ['Real Estate', 'Wedding', 'Event', 'Birthday', 'Product', 'Personal', 'Other'];
+  readonly albums: Album[] = ['Real Estate'];
 
   // ── View state ────────────────────────────────────────────
   view = signal<'albums' | 'images'>('albums');

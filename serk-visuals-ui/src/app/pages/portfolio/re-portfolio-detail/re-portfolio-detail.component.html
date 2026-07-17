@@ -1,0 +1,97 @@
+@if (loading()) {
+  <div class="detail-loading" aria-busy="true" aria-label="Loading project">
+    <div class="detail-skeleton__hero"></div>
+    <div class="detail-skeleton__body">
+      <div class="detail-skeleton__line detail-skeleton__line--title"></div>
+      <div class="detail-skeleton__line"></div>
+      <div class="detail-skeleton__line detail-skeleton__line--short"></div>
+    </div>
+  </div>
+}
+
+@if (error()) {
+  <div class="detail-error" role="alert">
+    <p>{{ error() }}</p>
+    <a [routerLink]="['/portfolio/real-estate']" class="btn btn--accent">Back to Portfolio</a>
+  </div>
+}
+
+@if (!loading() && !error() && project()) {
+  <!-- Back link -->
+  <div class="detail-back">
+    <a [routerLink]="['/portfolio/real-estate']" class="detail-back__link" aria-label="Back to portfolio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </svg>
+      Real Estate Portfolio
+    </a>
+  </div>
+
+  <!-- Cover image -->
+  <div class="detail-cover">
+    <img
+      [src]="project()!.coverUrl"
+      [alt]="project()!.title"
+      fetchpriority="high"
+      (error)="onImgError($event)"
+    />
+  </div>
+
+  <!-- Project metadata -->
+  <div class="detail-meta">
+    <div class="detail-meta__inner">
+      <div class="detail-meta__header">
+        <span class="detail-meta__type">{{ project()!.propertyType }}</span>
+        @if (project()!.location) {
+          <span class="detail-meta__sep" aria-hidden="true">&middot;</span>
+          <span class="detail-meta__location">{{ project()!.location }}</span>
+        }
+      </div>
+      <h1 class="detail-meta__title">{{ project()!.title }}</h1>
+      @if (project()!.description) {
+        <p class="detail-meta__desc">{{ project()!.description }}</p>
+      }
+      <a [routerLink]="['/bookings']" [queryParams]="{ type: 'Real Estate' }" class="btn btn--accent detail-meta__cta">
+        Book a Shoot
+      </a>
+    </div>
+  </div>
+
+  <!-- Image gallery -->
+  @if (project()!.images.length > 0) {
+    <section class="detail-gallery" aria-label="Project images">
+      <div class="detail-gallery__inner">
+        <ul class="detail-img-grid">
+          @for (img of project()!.images; track trackById($index, img); let i = $index) {
+            <li>
+              <button
+                class="detail-img-btn"
+                (click)="openLightbox(i)"
+                [attr.aria-label]="'View image ' + (i + 1) + ' of ' + project()!.images.length"
+              >
+                <img
+                  [src]="img.thumbnail || img.url"
+                  [alt]="img.alt || project()!.title"
+                  loading="lazy"
+                  decoding="async"
+                  (error)="onImgError($event)"
+                />
+              </button>
+            </li>
+          }
+        </ul>
+      </div>
+    </section>
+  }
+
+  <!-- Lightbox -->
+  <app-lightbox />
+
+  <!-- Footer CTA -->
+  <div class="detail-footer-cta">
+    <p>Ready to showcase your property?</p>
+    <a [routerLink]="['/bookings']" [queryParams]="{ type: 'Real Estate' }" class="btn btn--accent btn--lg">
+      Book a Real Estate Session
+    </a>
+  </div>
+}

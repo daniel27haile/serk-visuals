@@ -94,6 +94,29 @@ export const routes = [
             (m) => m.RealEstateComponent
           ),
       },
+      {
+        path: 'portfolio/real-estate',
+        title: 'Real Estate Photography Portfolio | Serk Visuals Seattle',
+        data: {
+          description:
+            'Browse our real estate photography portfolio — residential homes, luxury listings, condos, townhomes, and commercial properties across Seattle and Greater Puget Sound.',
+        },
+        loadComponent: () =>
+          import('./pages/portfolio/re-portfolio.component').then(
+            (m) => m.RePortfolioComponent
+          ),
+      },
+      {
+        path: 'portfolio/real-estate/:slug',
+        title: 'Property Portfolio | Serk Visuals Seattle',
+        data: {
+          description: 'Real estate photography project by Serk Visuals — professional property photography in Seattle, WA.',
+        },
+        loadComponent: () =>
+          import('./pages/portfolio/re-portfolio-detail/re-portfolio-detail.component').then(
+            (m) => m.RePortfolioDetailComponent
+          ),
+      },
     ],
   },
 

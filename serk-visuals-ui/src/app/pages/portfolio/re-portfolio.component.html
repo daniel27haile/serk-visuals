@@ -1,0 +1,98 @@
+<section class="portfolio-hero">
+  <div class="portfolio-hero__inner">
+    <p class="page-eyebrow">Portfolio</p>
+    <h1 class="page-title">Real Estate <em>Photography</em></h1>
+    <p class="portfolio-hero__sub">
+      Interior, exterior, twilight, and aerial photography for residential and
+      commercial listings across Greater Seattle.
+    </p>
+  </div>
+</section>
+
+<main class="portfolio-main">
+
+  @if (loading()) {
+    <div class="portfolio-skeleton" aria-busy="true" aria-label="Loading projects">
+      @for (n of [1,2,3,4,5,6]; track n) {
+        <div class="skeleton-card">
+          <div class="skeleton-img"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line skeleton-line--short"></div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (error()) {
+    <div class="portfolio-error" role="alert">
+      <p>{{ error() }}</p>
+      <button class="btn btn--accent" (click)="load(1, false)">Try again</button>
+    </div>
+  }
+
+  @if (!loading() && !error()) {
+    @if (items().length === 0) {
+      <div class="portfolio-empty">
+        <svg viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <rect x="8" y="16" width="48" height="36" rx="1" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 40l14-12 10 10 8-8 14 10" stroke="currentColor" stroke-width="2"/>
+          <circle cx="22" cy="28" r="4" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        <p>No projects published yet. Check back soon.</p>
+      </div>
+    } @else {
+      <ul class="project-grid" aria-label="Real estate portfolio projects">
+        @for (project of items(); track trackById($index, project)) {
+          <li class="project-card">
+            <a [routerLink]="['/portfolio/real-estate', project.slug]" class="project-card__link">
+              <div class="project-card__cover">
+                <img
+                  [src]="project.coverThumbUrl || project.coverUrl"
+                  [alt]="project.title"
+                  loading="lazy"
+                  decoding="async"
+                  (error)="onImgError($event)"
+                />
+                @if (project.featured) {
+                  <span class="project-card__badge">Featured</span>
+                }
+              </div>
+              <div class="project-card__info">
+                <h2 class="project-card__title">{{ project.title }}</h2>
+                <p class="project-card__meta">
+                  <span class="project-card__type">{{ project.propertyType }}</span>
+                  @if (project.location) {
+                    <span class="project-card__sep" aria-hidden="true">&middot;</span>
+                    <span class="project-card__location">{{ project.location }}</span>
+                  }
+                </p>
+              </div>
+            </a>
+          </li>
+        }
+      </ul>
+
+      @if (hasMore()) {
+        <div class="portfolio-more">
+          <button
+            class="btn btn--ghost load-more-btn"
+            [disabled]="loadingMore()"
+            (click)="loadMore()"
+            aria-label="Load more properties"
+          >
+            @if (loadingMore()) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              Loading&hellip;
+            } @else {
+              See More Properties
+            }
+          </button>
+          <p class="portfolio-count">
+            Showing {{ items().length }} of {{ total() }} projects
+          </p>
+        </div>
+      }
+    }
+  }
+
+</main>

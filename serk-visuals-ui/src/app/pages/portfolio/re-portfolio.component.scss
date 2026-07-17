@@ -1,0 +1,217 @@
+// ── Page hero ────────────────────────────────────────────────────────────────
+
+.portfolio-hero {
+  background: var(--color-surface-alt, #0c0c0c);
+  padding-block: var(--section-py-lg, 5rem);
+  border-bottom: 1px solid var(--color-border, rgba(255,255,255,.08));
+
+  &__inner {
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: var(--page-px, 1.5rem);
+  }
+
+  &__sub {
+    margin-top: 1.25rem;
+    max-width: 52ch;
+    color: var(--color-text-muted, #aaa);
+    font-size: clamp(1rem, 1.5vw, 1.125rem);
+    line-height: 1.6;
+  }
+}
+
+// ── Main content ─────────────────────────────────────────────────────────────
+
+.portfolio-main {
+  max-width: 90rem;
+  margin-inline: auto;
+  padding: clamp(2.5rem, 5vw, 4rem) var(--page-px, 1.5rem) 5rem;
+}
+
+// ── Project grid ─────────────────────────────────────────────────────────────
+
+.project-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 3vw, 2rem);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  @media (min-width: 600px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 900px)  { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 1280px) { grid-template-columns: repeat(4, 1fr); }
+}
+
+// ── Project card ─────────────────────────────────────────────────────────────
+
+.project-card {
+  &__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+
+    &:focus-visible .project-card__cover {
+      outline: 2px solid var(--color-accent, #e07b39);
+      outline-offset: 3px;
+    }
+  }
+
+  &__cover {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--color-surface-alt, #111);
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      // No border-radius — sharp property photography
+      border-radius: 0;
+      transition: transform 0.35s ease;
+
+      &.img--broken {
+        opacity: 0;
+      }
+    }
+  }
+
+  &__link:hover &__cover img,
+  &__link:focus-visible &__cover img {
+    transform: scale(1.04);
+  }
+
+  &__badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.625rem;
+    background: var(--color-accent, #e07b39);
+    color: #fff;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  &__info {
+    padding: 0.875rem 0 0;
+  }
+
+  &__title {
+    font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-text, #f0ece4);
+    margin: 0 0 0.35rem;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted, #888);
+    margin: 0;
+  }
+
+  &__sep { color: var(--color-border, rgba(255,255,255,.25)); }
+}
+
+// ── Skeleton loading ──────────────────────────────────────────────────────────
+
+.portfolio-skeleton {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.5rem, 3vw, 2rem);
+
+  @media (min-width: 600px)  { grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 900px)  { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 1280px) { grid-template-columns: repeat(4, 1fr); }
+}
+
+.skeleton-card {
+  .skeleton-img {
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(
+      90deg,
+      var(--color-surface-alt, #1a1a1a) 25%,
+      var(--color-border, #222) 50%,
+      var(--color-surface-alt, #1a1a1a) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  .skeleton-line {
+    height: 1rem;
+    margin-top: 0.875rem;
+    background: var(--color-surface-alt, #1a1a1a);
+    animation: shimmer 1.5s infinite;
+
+    &--short { width: 60%; height: 0.75rem; margin-top: 0.45rem; }
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ── Error / empty ─────────────────────────────────────────────────────────────
+
+.portfolio-error,
+.portfolio-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 5rem 1.5rem;
+  text-align: center;
+  color: var(--color-text-muted, #888);
+}
+
+.portfolio-empty svg {
+  width: 64px;
+  height: 64px;
+  opacity: 0.35;
+}
+
+// ── Load more ────────────────────────────────────────────────────────────────
+
+.portfolio-more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  margin-top: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+.load-more-btn {
+  min-width: 220px;
+}
+
+.portfolio-count {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #888);
+  margin: 0;
+}
+
+// ── Spinner (reuses global pattern) ──────────────────────────────────────────
+
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

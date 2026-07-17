@@ -23,6 +23,8 @@ const testimonialRoutes = require("./routes/testimonial_routes");
 const uploadSignRoutes = require("./routes/upload_sign_routes");
 const pricingConfigRoutes = require("./routes/pricing_config_routes");
 const adminPricingConfigRoutes = require("./routes/admin_pricing_config_routes");
+const rePortfolioRoutes = require("./routes/re_portfolio_routes");
+const adminRePortfolioRoutes = require("./routes/admin_re_portfolio_routes");
 
 const app = express();
 
@@ -108,6 +110,8 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/uploads", uploadSignRoutes);
 app.use("/api/pricing-config", pricingConfigRoutes);
 app.use("/api/admin/pricing-config", adminPricingConfigRoutes);
+app.use("/api/portfolio/real-estate", rePortfolioRoutes);
+app.use("/api/admin/portfolio/real-estate", adminRePortfolioRoutes);
 
 /** Health — accessible via Nginx proxy at https://serkvisuals.com/api/health */
 app.get("/api/health", (_req, res) =>

@@ -61,4 +61,12 @@ export const ADMIN_ROUTES: Routes = [
       ),
     title: 'Admin • Pricing',
   },
+  {
+    path: 'portfolio',
+    loadComponent: () =>
+      import('./admin-portfolio/admin-portfolio.component').then(
+        (m) => m.AdminPortfolioComponent
+      ),
+    title: 'Admin • Portfolio',
+  },
 ];
